@@ -285,9 +285,9 @@
     margin-bottom: 16px;
   }
   .product-thumb .big-title {
-    font-size: 52px;
+    font-size: 68px;
     font-weight: 900;
-    line-height: 1.15;
+    line-height: 1.25;
     letter-spacing: -2px;
   }
   .product-thumb .big-title span {
@@ -295,13 +295,14 @@
   }
   .product-thumb .big-title .gen {
     display: inline-block;
-    margin-top: 8px;
-    font-size: 32px;
+    margin-top: 16px;
+    font-size: 38px;
     background: #FFFFFF;
     color: #2563EB;
-    padding: 4px 18px;
+    padding: 6px 24px;
     border-radius: 999px;
     letter-spacing: -1px;
+    line-height: 1.1;
   }
   .product-info {
     text-align: left;
@@ -364,25 +365,74 @@
     color: #1A1A1A;
   }
 
+  /* ===== COPY EMPHASIS ===== */
+  .copy-section .quote-box {
+    display: block;
+    max-width: 500px;
+    margin: 28px auto;
+    background: #F9FAFB;
+    border-left: 4px solid #2563EB;
+    border-radius: 0 10px 10px 0;
+    padding: 20px 26px;
+    text-align: left;
+  }
+  .copy-section .quote-box p {
+    font-weight: 700;
+    font-size: 18px;
+    margin: 4px 0;
+    color: #1A1A1A;
+    line-height: 1.6;
+  }
+  .copy-section .highlight {
+    background: linear-gradient(180deg, transparent 55%, rgba(252, 211, 77, 0.55) 55%);
+    padding: 0 2px;
+    font-weight: 700;
+  }
+  .copy-section .accent {
+    color: #2563EB;
+    font-weight: 800;
+  }
+  .copy-section .conclusion {
+    display: inline-block;
+    background: #EFF6FF;
+    color: #2563EB;
+    padding: 10px 24px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 19px;
+    margin-top: 8px;
+  }
+  @media (max-width: 640px) {
+    .copy-section .quote-box { padding: 16px 18px; margin: 22px auto; }
+    .copy-section .quote-box p { font-size: 16px; }
+    .copy-section .conclusion { font-size: 17px; padding: 8px 18px; }
+  }
+
   /* ===== PIN SECTION ===== */
   .pin-section {
     text-align: center;
-    padding: 48px 24px;
+    padding: 56px 24px;
   }
   .pin-title {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 800;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    background: #EFF6FF;
+    color: #2563EB;
+    padding: 8px 20px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
   }
   .pin-section p {
     margin: 4px 0;
   }
   .pin-section .strong {
     font-weight: 700;
-    font-size: 17px;
+    font-size: 18px;
+    color: #1A1A1A;
   }
   .pin-section .note {
     font-size: 13px;
@@ -443,6 +493,174 @@
     height: 1px;
     background: #F0F0F0;
     margin: 0;
+  }
+
+  /* ===== FADE-IN ON SCROLL ===== */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    will-change: opacity, transform;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* ===== SUCCESS REWARDS ===== */
+  .rewards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    max-width: 520px;
+    margin: 24px auto 0;
+  }
+  .reward-card {
+    background: #FFFFFF;
+    border: 2px solid #2563EB;
+    border-radius: 14px;
+    padding: 22px 18px;
+    text-align: center;
+    transition: transform 0.15s ease;
+  }
+  .reward-card.gold {
+    border-color: #F59E0B;
+    background: linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 100%);
+  }
+  .reward-card .reward-badge {
+    display: inline-block;
+    background: #2563EB;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+  .reward-card.gold .reward-badge {
+    background: #F59E0B;
+  }
+  .reward-card .reward-amount {
+    font-size: 26px;
+    font-weight: 900;
+    color: #1A1A1A;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+  }
+  .reward-card .reward-sub {
+    font-size: 13px;
+    color: #6B7280;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .rewards-note {
+    max-width: 620px;
+    margin: 56px auto 0;
+    font-size: 13px;
+    color: #6B7280;
+    line-height: 1.7;
+    text-align: center;
+    padding: 0 16px;
+    word-break: keep-all;
+  }
+  .rewards-note strong { color: #374151; }
+  @media (max-width: 640px) {
+    .rewards-grid { gap: 10px; }
+    .reward-card { padding: 18px 14px; }
+    .reward-card .reward-amount { font-size: 22px; }
+    .reward-card .reward-badge { font-size: 11px; padding: 3px 10px; }
+  }
+
+  /* ===== FAQ ===== */
+  .faq-section {
+    padding: 64px 24px;
+    background: #FAFAFA;
+  }
+  .faq-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .faq-subtitle {
+    text-align: center;
+    color: #6B7280;
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+  .faq-list {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .faq-item {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+  }
+  .faq-item[open] {
+    border-color: #2563EB;
+  }
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A1A1A;
+    list-style: none;
+    line-height: 1.5;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: "+";
+    flex-shrink: 0;
+    font-size: 24px;
+    color: #9CA3AF;
+    font-weight: 400;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  .faq-item[open] summary::after {
+    transform: rotate(45deg);
+    color: #2563EB;
+  }
+  .faq-item .faq-q-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: #2563EB;
+    color: #FFFFFF;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 800;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  .faq-item .faq-answer {
+    padding: 0 20px 20px 56px;
+    font-size: 15px;
+    color: #4B5563;
+    line-height: 1.7;
+  }
+  .faq-item .faq-answer strong {
+    color: #1A1A1A;
+  }
+  @media (max-width: 640px) {
+    .faq-section { padding: 48px 20px; }
+    .faq-item summary { font-size: 15px; padding: 16px 18px; }
+    .faq-item .faq-answer { padding: 0 18px 18px 52px; font-size: 14px; }
   }
 
   /* ===== CHECKLIST ===== */
@@ -762,8 +980,8 @@
   /* ===== MOBILE ===== */
   @media (max-width: 640px) {
     body { font-size: 15px; }
-    .product-thumb .big-title { font-size: 40px; }
-    .product-thumb .big-title .gen { font-size: 24px; padding: 3px 14px; }
+    .product-thumb .big-title { font-size: 50px; line-height: 1.25; }
+    .product-thumb .big-title .gen { font-size: 28px; padding: 4px 18px; margin-top: 12px; }
     .product-thumb .small-title { font-size: 17px; }
     .copy-section { padding: 48px 20px; }
     .pin-section { padding: 40px 20px; }
@@ -817,12 +1035,12 @@
     <div class="container">
       <p>아무 것도 하지 않으면</p>
       <p>아무 일도 일어나지 않습니다</p>
-      <div class="gap-sm"></div>
-      <p class="bold">"아무 영상도 올리지 않으면</p>
-      <p class="bold">아무 일도 일어나지 않습니다"</p>
-      <div class="gap-md"></div>
+      <div class="quote-box">
+        <p>"아무 영상도 올리지 않으면</p>
+        <p>아무 일도 일어나지 않습니다"</p>
+      </div>
       <p>유튜브를 꾸준히 올리는 힘,</p>
-      <p>이번엔 혼자가 아니라 시스템으로 만드세요</p>
+      <p>이번엔 혼자가 아니라 <span class="accent">시스템으로</span> 만드세요</p>
       <div class="gap-sm"></div>
       <p>콘텐츠 업로드를 습관화 해줄 시스템,</p>
       <p><span class="brand-name">유뿌챌</span> 입니다</p>
@@ -836,10 +1054,11 @@
     <div class="container">
       <p>아이디어가 막혀서, 방향이 헷갈려서,</p>
       <p>작심삼일로 끝나서 영상을 미루고 있었다면</p>
-      <p class="bold">이번 챌린지에서 'AI 아이디어 생성 프롬프트 + 2회 라이브 강의'로</p>
+      <div class="gap-sm"></div>
+      <p class="bold">이번 챌린지에서 <span class="highlight">'AI 아이디어 생성 프롬프트 + 2회 라이브 강의'</span>로</p>
       <p class="bold">지속 가능한 콘텐츠 루틴을 만들어주세요.</p>
       <div class="gap-sm"></div>
-      <p>초보자도 시작할 수 있게 캡컷 기초 VOD까지 함께 제공합니다.</p>
+      <p>초보자도 시작할 수 있게 <span class="accent">캡컷 기초 VOD</span>까지 함께 제공합니다.</p>
     </div>
   </section>
 
@@ -857,7 +1076,8 @@
       <div class="gap-md"></div>
       <p>그런데, 못 할 것 같다구요?</p>
       <p>아니요!!</p>
-      <p class="bold">시스템 안에 있으면 가능합니다</p>
+      <div style="height:12px"></div>
+      <p class="conclusion">시스템 안에 있으면 가능합니다</p>
     </div>
   </section>
 
@@ -892,7 +1112,7 @@
       <p class="note">(6/3 수 밤 8시 · 녹화본 제공)</p>
       <div style="height:14px"></div>
       <p class="strong">60분 마무리 웨비나 1회</p>
-      <p class="note">(6/30 화 밤 10시 · 정규 과정 커리큘럼 함께 설계)</p>
+      <p class="note">(6/30 화 밤 8시 · 우수 참여자 라이브 피드백 및 정규 과정 커리큘럼 안내)</p>
       <div style="height:14px"></div>
       <p class="strong">유튜브 아이디어 AI 프롬프트</p>
       <div style="height:14px"></div>
@@ -931,6 +1151,31 @@
     </div>
   </section>
 
+  <!-- ===== 성공 혜택 ===== -->
+  <section class="pin-section">
+    <div class="container">
+      <div class="pin-title">📍 성공 혜택</div>
+      <p class="strong">완주하면 다음 챌린지·강의에 쓸 수 있는 크레딧을 드립니다</p>
+
+      <div class="rewards-grid">
+        <div class="reward-card gold">
+          <div class="reward-badge">100% 성공</div>
+          <div class="reward-amount">30,000원</div>
+          <div class="reward-sub">크레딧 쿠폰</div>
+        </div>
+        <div class="reward-card">
+          <div class="reward-badge">75% 성공</div>
+          <div class="reward-amount">15,000원</div>
+          <div class="reward-sub">크레딧 쿠폰</div>
+        </div>
+      </div>
+
+      <p class="rewards-note">
+        크레딧은 추후 <strong>유뿌챌 재참가</strong> 및 <strong>1:1 컨설팅</strong>, <strong>하이프리덤 정규강의</strong>까지<br>원하는 곳에서 사용 가능합니다
+      </p>
+    </div>
+  </section>
+
   <!-- ===== 모집 기간 ===== -->
   <section class="pin-section">
     <div class="container">
@@ -951,6 +1196,69 @@
       <div style="height:32px"></div>
       <p style="font-weight:400; color:#6B7280;">저는 최대한 많은 분들이</p>
       <p style="font-weight:400; color:#6B7280;">성공하길 원합니다</p>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="faq-section">
+    <div class="container">
+      <h2 class="faq-title">자주 묻는 질문</h2>
+      <p class="faq-subtitle">신청 전에 궁금하실 만한 질문들을 정리했어요</p>
+
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>기본 참가에 1:1 컨설팅이 포함되나요?</span></summary>
+          <div class="faq-answer">
+            <strong>기본 참가(59,000원)에는 1:1 개별 컨설팅이 포함되지 않습니다.</strong><br>
+            1:1 컨설팅을 원하시면 신청 시 <strong>옵션 A (온라인 컨설팅 80분, +220,000원)</strong> 또는
+            <strong>옵션 B (오프라인 컨설팅 110분, +350,000원)</strong>를 선택해주세요.<br>
+            단톡방 내 Q&amp;A는 모든 참여자에게 항시 열려 있습니다.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>롱폼이나 쇼츠 중 꼭 하나만 만들어야 하나요?</span></summary>
+          <div class="faq-answer">
+            아니요, <strong>자유롭게 선택하실 수 있습니다.</strong><br>
+            매주 3점 이상 (롱폼 3점 · 쇼츠 1점)만 채우시면 됩니다. 그 주 사정에 따라 쇼츠만 3개 올리셔도 되고, 롱폼 1개로 마무리해도 됩니다.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>주간 점수를 채우지 못하면 어떻게 되나요?</span></summary>
+          <div class="faq-answer">
+            챌린지 완주 인증을 받지 못하지만, 강의·VOD·아이디어 프롬프트 등 모든 콘텐츠는 그대로 이용하실 수 있습니다.<br>
+            <strong>4주 12점 100% 달성 시 30,000원, 75% 달성 시 15,000원</strong>의 크레딧 쿠폰이 지급되며, 다음 챌린지/컨설팅에 사용 가능합니다.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>유튜브 채널이 아직 없는데 참여 가능한가요?</span></summary>
+          <div class="faq-answer">
+            참여는 가능합니다. 단, <strong>6/3 (수) 시작 웨비나 전까지 본인 채널은 직접 개설</strong>해두셔야 하며,
+            <strong>유튜브에 영상을 업로드하는 기본적인 방법은 미리 익혀두셔야 합니다.</strong><br>
+            본 챌린지에서는 채널 개설 및 업로드 방법을 별도로 안내하지 않습니다. (영상 편집은 캡컷 기초 VOD로 도움드립니다)
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>1:1 컨설팅은 어디서, 언제 진행되나요?</span></summary>
+          <div class="faq-answer">
+            <strong>오프라인 컨설팅 (옵션 B, 110분)</strong>은 <strong>강남역 앞 사무실</strong>에서 진행됩니다. (상세 주소는 신청 후 개별 안내)<br>
+            <strong>온라인 컨설팅 (옵션 A, 80분)</strong>은 Zoom으로 진행됩니다.<br>
+            온/오프라인 컨설팅 신청자는 <strong>5/31 (일) 단톡방 초대 이후 개별적으로 일정을 조율</strong>해드립니다.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>결제 후 환불이 가능한가요?</span></summary>
+          <div class="faq-answer">
+            <strong>모집 기간(~5/31) 중에는 환불이 가능합니다.</strong><br>
+            단, <strong>5/31(일) 오후 단톡방 개설 이후로는 환불이 불가능</strong>합니다. 신중히 결정 부탁드려요.<br>
+            기타 문의는 우측 하단 카카오톡 채널로 연락주세요.
+          </div>
+        </details>
+      </div>
     </div>
   </section>
 
@@ -1013,6 +1321,7 @@
             <li>기본 참가 혜택 전부 포함</li>
             <li>1:1 온라인 컨설팅 80분 (Zoom)</li>
             <li>채널 진단 + 콘텐츠 방향성 제안</li>
+            <li>일정은 단톡방 초대 후 개별 조율</li>
           </ul>
         </div>
 
@@ -1032,8 +1341,10 @@
           <ul>
             <li>기본 참가 혜택 전부 포함</li>
             <li>1:1 오프라인 컨설팅 110분 (대면 미팅)</li>
+            <li>장소: <strong style="color:#FFD700">강남역 앞 사무실</strong> (상세 주소는 신청 후 안내)</li>
             <li>채널 심화 진단 + 맞춤 콘텐츠 전략 설계</li>
             <li>사업자·자영업자 브랜딩 맞춤 상담</li>
+            <li>일정은 단톡방 초대 후 개별 조율</li>
           </ul>
         </div>
       </div>
@@ -1060,18 +1371,10 @@
 
       <!-- CTA 버튼들 -->
       <div class="cta-wrap">
-        <!--
-          ⚠️ 신청 버튼: aria-href를 구글 설문 URL로 교체하세요
-          예: <a href="https://forms.gle/xxxxxx" class="cta-btn apply" target="_blank">
-        -->
-        <a href="#" id="apply-btn" class="cta-btn apply" target="_blank" rel="noopener">
+        <a href="https://www.latpeed.com/products/lMEK_" id="apply-btn" class="cta-btn apply" target="_blank" rel="noopener">
           유뿌챌 1기 신청하기 — 59,000원
         </a>
-        <!--
-          ⚠️ 카카오톡 문의 버튼: href를 카카오톡 채널 URL로 교체하세요
-          예: <a href="https://pf.kakao.com/_xxxx" class="cta-btn kakao" target="_blank">
-        -->
-        <a href="#" class="cta-btn kakao" target="_blank" rel="noopener">
+        <a href="http://pf.kakao.com/_nxhFAX/chat" class="cta-btn kakao" target="_blank" rel="noopener">
           💬 카카오톡 문의
         </a>
         <div class="cta-warning">⚠️ 선착순 마감 · 추가 모집 없음</div>
@@ -1098,11 +1401,7 @@
   </div>
 
   <!-- ===== KAKAO FLOATING BUTTON ===== -->
-  <!--
-    ⚠️ 카카오톡 채널 연결: href="#"을 본인 카카오톡 채널 URL로 교체하세요
-    예: <a href="https://pf.kakao.com/_xxxxx" target="_blank">
-  -->
-  <a href="#" class="kakao-float" target="_blank" rel="noopener" aria-label="카카오톡 문의">
+  <a href="http://pf.kakao.com/_nxhFAX/chat" class="kakao-float" target="_blank" rel="noopener" aria-label="카카오톡 문의">
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 3C6.477 3 2 6.582 2 11.001c0 2.85 1.866 5.343 4.677 6.738l-1.18 4.31a.36.36 0 0 0 .553.4l5.122-3.4c.27.018.546.027.828.027 5.523 0 10-3.582 10-8.001S17.523 3 12 3Z" fill="#391B1B"/>
     </svg>
@@ -1112,6 +1411,11 @@
   <script>
     (function () {
       var BASE_PRICE = 59000;
+      var APPLY_URLS = {
+        basic: 'https://www.latpeed.com/products/lMEK_',
+        online: 'https://www.latpeed.com/products/S2CKQ',
+        offline: 'https://www.latpeed.com/products/6_gvc'
+      };
       var cards = document.querySelectorAll('.option-card');
       var summaryOption = document.getElementById('summary-option');
       var summaryExtraRow = document.getElementById('summary-extra-row');
@@ -1139,6 +1443,7 @@
 
         summaryOption.textContent = labels[option];
         summaryTotal.textContent = formatPrice(total);
+        applyBtn.href = APPLY_URLS[option];
 
         if (extra > 0) {
           summaryExtraRow.style.display = 'flex';
@@ -1153,6 +1458,31 @@
       cards.forEach(function (card) {
         card.addEventListener('click', function () { selectCard(card); });
       });
+    })();
+
+    // ===== 스크롤 페이드인 모션 =====
+    (function () {
+      var targets = document.querySelectorAll(
+        '.copy-section, .pin-section, .checklist, .flame-line, .options-section, .reward-card, .faq-section'
+      );
+
+      targets.forEach(function (el) { el.classList.add('fade-in'); });
+
+      if (!('IntersectionObserver' in window)) {
+        targets.forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+      targets.forEach(function (el) { observer.observe(el); });
     })();
 
     // ===== 마감 카운트다운 타이머 =====
