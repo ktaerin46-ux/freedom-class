@@ -350,7 +350,11 @@
     font-size: 16px;
     color: #1A1A1A;
     margin: 4px 0;
+    text-wrap: balance;
+    -webkit-text-wrap: balance;
   }
+  .pin-section p { text-wrap: balance; }
+  .faq-answer { text-wrap: pretty; }
   .copy-section p.bold {
     font-weight: 700;
     font-size: 17px;
@@ -649,13 +653,41 @@
     flex-shrink: 0;
   }
   .faq-item .faq-answer {
-    padding: 0 20px 20px 56px;
+    padding: 4px 20px 22px 56px;
     font-size: 15px;
     color: #4B5563;
-    line-height: 1.7;
+    line-height: 1.75;
   }
   .faq-item .faq-answer strong {
     color: #1A1A1A;
+  }
+  .faq-item .faq-answer p {
+    margin: 0 0 10px 0;
+  }
+  .faq-item .faq-answer p:last-child {
+    margin-bottom: 0;
+  }
+  .faq-item .faq-answer .lead {
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 12px;
+  }
+  .faq-item .faq-answer ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+  }
+  .faq-item .faq-answer ul li {
+    position: relative;
+    padding-left: 16px;
+    margin: 6px 0;
+  }
+  .faq-item .faq-answer ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #2563EB;
+    font-weight: 800;
   }
   @media (max-width: 640px) {
     .faq-section { padding: 48px 20px; }
@@ -823,6 +855,19 @@
     padding: 4px 10px;
     border-radius: 999px;
     letter-spacing: 1px;
+  }
+  .option-card .best-badge {
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    background: #2563EB;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
   }
   .option-card ul {
     list-style: none;
@@ -1092,11 +1137,11 @@
     </div>
   </section>
 
-  <!-- ===== 시작 웨비나 ===== -->
+  <!-- ===== 개강식 웨비나 ===== -->
   <section class="pin-section">
     <div class="container">
       <div class="pin-title">✨ 6/3 (수) 밤 8시 ✨</div>
-      <p class="strong">[시작 웨비나 60분 + Q&A 30분]</p>
+      <p class="strong">[개강식 웨비나 60분 + Q&A 30분]</p>
       <div style="height:16px"></div>
       <p>가벼운 OT가 아닙니다</p>
       <p class="strong">유료급 강의입니다</p>
@@ -1108,10 +1153,10 @@
   <section class="pin-section">
     <div class="container">
       <div class="pin-title">📍 제공 사항</div>
-      <p class="strong">90분 시작 웨비나 1회</p>
+      <p class="strong">90분 개강식 웨비나 1회</p>
       <p class="note">(6/3 수 밤 8시 · 녹화본 제공)</p>
       <div style="height:14px"></div>
-      <p class="strong">60분 마무리 웨비나 1회</p>
+      <p class="strong">60분 종강식 웨비나 1회</p>
       <p class="note">(6/30 화 밤 8시 · 우수 참여자 라이브 피드백 및 정규 과정 커리큘럼 안내)</p>
       <div style="height:14px"></div>
       <p class="strong">유튜브 아이디어 AI 프롬프트</p>
@@ -1209,53 +1254,75 @@
         <details class="faq-item">
           <summary><span><span class="faq-q-icon">Q</span>기본 참가에 1:1 컨설팅이 포함되나요?</span></summary>
           <div class="faq-answer">
-            <strong>기본 참가(59,000원)에는 1:1 개별 컨설팅이 포함되지 않습니다.</strong><br>
-            1:1 컨설팅을 원하시면 신청 시 <strong>옵션 A (온라인 컨설팅 80분, +220,000원)</strong> 또는
-            <strong>옵션 B (오프라인 컨설팅 110분, +350,000원)</strong>를 선택해주세요.<br>
-            단톡방 내 Q&amp;A는 모든 참여자에게 항시 열려 있습니다.
+            <p class="lead">기본 참가(59,000원)에는 1:1 개별 컨설팅이 포함되지 않습니다.</p>
+            <p>1:1 컨설팅을 원하시면 신청 시 아래 옵션을 추가로 선택해주세요.</p>
+            <ul>
+              <li><strong>옵션 A</strong> · 온라인 컨설팅 60분 (+220,000원)</li>
+              <li><strong>옵션 B</strong> · 오프라인 컨설팅 110분 (+350,000원)</li>
+            </ul>
+            <p>단톡방 내 Q&amp;A는 모든 참여자에게 항시 열려 있습니다.</p>
           </div>
         </details>
 
         <details class="faq-item">
           <summary><span><span class="faq-q-icon">Q</span>롱폼이나 쇼츠 중 꼭 하나만 만들어야 하나요?</span></summary>
           <div class="faq-answer">
-            아니요, <strong>자유롭게 선택하실 수 있습니다.</strong><br>
-            매주 3점 이상 (롱폼 3점 · 쇼츠 1점)만 채우시면 됩니다. 그 주 사정에 따라 쇼츠만 3개 올리셔도 되고, 롱폼 1개로 마무리해도 됩니다.
+            <p class="lead">아니요, 자유롭게 선택하실 수 있습니다.</p>
+            <p>매주 3점 이상 (롱폼 3점 · 쇼츠 1점)만 채우시면 됩니다.</p>
+            <p>그 주 사정에 따라 쇼츠만 3개 올리셔도 되고, 롱폼 1개로 마무리해도 됩니다.</p>
           </div>
         </details>
 
         <details class="faq-item">
           <summary><span><span class="faq-q-icon">Q</span>주간 점수를 채우지 못하면 어떻게 되나요?</span></summary>
           <div class="faq-answer">
-            챌린지 완주 인증을 받지 못하지만, 강의·VOD·아이디어 프롬프트 등 모든 콘텐츠는 그대로 이용하실 수 있습니다.<br>
-            <strong>4주 12점 100% 달성 시 30,000원, 75% 달성 시 15,000원</strong>의 크레딧 쿠폰이 지급되며, 다음 챌린지/컨설팅에 사용 가능합니다.
+            <p class="lead">완주 인증은 받지 못하지만, 콘텐츠는 그대로 이용 가능합니다.</p>
+            <p>강의·VOD·AI 아이디어 프롬프트 등 모든 자료는 그대로 제공되며, 단톡방 활동도 계속하실 수 있습니다.</p>
+            <p><strong>완주 시 크레딧 쿠폰이 지급됩니다.</strong></p>
+            <ul>
+              <li>4주 12점 <strong>100% 달성</strong> → 30,000원 크레딧</li>
+              <li>4주 12점 <strong>75% 이상 달성</strong> → 15,000원 크레딧</li>
+            </ul>
+            <p>크레딧은 추후 유뿌챌 재참가·1:1 컨설팅·하이프리덤 정규강의에 사용 가능합니다.</p>
           </div>
         </details>
 
         <details class="faq-item">
           <summary><span><span class="faq-q-icon">Q</span>유튜브 채널이 아직 없는데 참여 가능한가요?</span></summary>
           <div class="faq-answer">
-            참여는 가능합니다. 단, <strong>6/3 (수) 시작 웨비나 전까지 본인 채널은 직접 개설</strong>해두셔야 하며,
-            <strong>유튜브에 영상을 업로드하는 기본적인 방법은 미리 익혀두셔야 합니다.</strong><br>
-            본 챌린지에서는 채널 개설 및 업로드 방법을 별도로 안내하지 않습니다. (영상 편집은 캡컷 기초 VOD로 도움드립니다)
+            <p class="lead">참여는 가능하나, 사전 준비가 필요합니다.</p>
+            <p><strong>6/3 (수) 개강식 웨비나 전까지</strong> 아래 두 가지를 직접 준비해주셔야 합니다.</p>
+            <ul>
+              <li>본인 유튜브 채널 개설</li>
+              <li>유튜브 영상 업로드 방법 숙지</li>
+            </ul>
+            <p>본 챌린지에서는 채널 개설 및 업로드 방법을 별도로 안내하지 않습니다.</p>
+            <p>(영상 편집은 캡컷 기초 VOD로 도움드립니다)</p>
           </div>
         </details>
 
         <details class="faq-item">
           <summary><span><span class="faq-q-icon">Q</span>1:1 컨설팅은 어디서, 언제 진행되나요?</span></summary>
           <div class="faq-answer">
-            <strong>오프라인 컨설팅 (옵션 B, 110분)</strong>은 <strong>강남역 앞 사무실</strong>에서 진행됩니다. (상세 주소는 신청 후 개별 안내)<br>
-            <strong>온라인 컨설팅 (옵션 A, 80분)</strong>은 Zoom으로 진행됩니다.<br>
-            온/오프라인 컨설팅 신청자는 <strong>5/31 (일) 단톡방 초대 이후 개별적으로 일정을 조율</strong>해드립니다.
+            <p class="lead">옵션별로 진행 방식이 다릅니다.</p>
+            <ul>
+              <li><strong>옵션 A · 온라인 60분</strong> — Zoom으로 진행</li>
+              <li><strong>옵션 B · 오프라인 110분</strong> — 강남역 앞 사무실에서 진행 (상세 주소는 신청 후 개별 안내)</li>
+            </ul>
+            <p><strong>일정 조율은 5/31 (일) 단톡방 초대 이후 개별적으로</strong> 진행해드립니다.</p>
           </div>
         </details>
 
         <details class="faq-item">
           <summary><span><span class="faq-q-icon">Q</span>결제 후 환불이 가능한가요?</span></summary>
           <div class="faq-answer">
-            <strong>모집 기간(~5/31) 중에는 환불이 가능합니다.</strong><br>
-            단, <strong>5/31(일) 오후 단톡방 개설 이후로는 환불이 불가능</strong>합니다. 신중히 결정 부탁드려요.<br>
-            기타 문의는 우측 하단 카카오톡 채널로 연락주세요.
+            <p class="lead">단톡방 개설 전까지만 환불 가능합니다.</p>
+            <ul>
+              <li><strong>모집 기간(~5/31) 중</strong> → 환불 가능</li>
+              <li><strong>5/31 (일) 오후 단톡방 개설 이후</strong> → 환불 불가</li>
+            </ul>
+            <p>신중하게 결정 부탁드립니다.</p>
+            <p>기타 문의는 우측 하단 카카오톡 채널로 연락주세요.</p>
           </div>
         </details>
       </div>
@@ -1299,7 +1366,7 @@
           </div>
           <ul>
             <li>4주 업로드 챌린지 참여 (주 3점 이상)</li>
-            <li>시작·마무리 웨비나 2회</li>
+            <li>개강식·종강식 웨비나 2회</li>
             <li>캡컷 기초 VOD + 유튜브 아이디어 AI 프롬프트</li>
             <li>전용 단톡방 참여 (Q&amp;A 가능)</li>
           </ul>
@@ -1307,10 +1374,11 @@
 
         <!-- 옵션 2: 온라인 컨설팅 -->
         <div class="option-card" data-option="online" data-extra="220000">
+          <span class="best-badge">BEST</span>
           <div class="option-header">
             <div class="option-label-wrap">
               <div class="option-tier">추가 옵션 A</div>
-              <div class="option-name">+ 온라인 컨설팅 (80분)</div>
+              <div class="option-name">+ 온라인 컨설팅 (60분)</div>
               <div class="option-sub">기본 59,000원 + 옵션 220,000원 = 총 279,000원</div>
             </div>
             <div class="option-price">
@@ -1319,7 +1387,7 @@
           </div>
           <ul>
             <li>기본 참가 혜택 전부 포함</li>
-            <li>1:1 온라인 컨설팅 80분 (Zoom)</li>
+            <li>1:1 온라인 컨설팅 60분 (Zoom)</li>
             <li>채널 진단 + 콘텐츠 방향성 제안</li>
             <li>일정은 단톡방 초대 후 개별 조율</li>
           </ul>
@@ -1437,7 +1505,7 @@
 
         var labels = {
           basic: '기본 참가',
-          online: '기본 + 온라인 컨설팅 80분',
+          online: '기본 + 온라인 컨설팅 60분 (Zoom)',
           offline: '기본 + 오프라인 컨설팅 110분'
         };
 
