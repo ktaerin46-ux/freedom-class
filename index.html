@@ -1029,6 +1029,129 @@
     border-top: 1px solid #F0F0F0;
   }
 
+  /* ===== REVIEWS ===== */
+  .reviews-section {
+    padding: 64px 24px;
+    background: #FFFFFF;
+  }
+  .reviews-title-wrap {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .reviews-eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    color: #2563EB;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+  }
+  .reviews-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .reviews-subtitle {
+    color: #6B7280;
+    font-size: 14px;
+  }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .review-photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .review-photo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  }
+  .review-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .review-photo .photo-placeholder {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #9CA3AF;
+    font-weight: 700;
+    gap: 8px;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        #F9FAFB,
+        #F9FAFB 10px,
+        #F3F4F6 10px,
+        #F3F4F6 20px
+      );
+  }
+  .review-photo.no-image .photo-placeholder {
+    display: flex;
+  }
+  .review-photo .photo-placeholder .ph-icon {
+    font-size: 28px;
+  }
+  .review-photo .photo-placeholder .ph-label {
+    font-size: 13px;
+  }
+  .reviews-note {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 13px;
+    color: #9CA3AF;
+  }
+
+  /* ===== OPTIONS WARNING ===== */
+  .options-warning {
+    max-width: 540px;
+    margin: 0 auto 24px;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 10px;
+    padding: 14px 18px;
+    text-align: center;
+    font-size: 14px;
+    color: #991B1B;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  /* ===== NEXT BATCH NOTICE ===== */
+  .cta-next-batch {
+    margin-top: 14px;
+    background: #FEF3C7;
+    border: 1px solid #FCD34D;
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 13px;
+    color: #78350F;
+    font-weight: 700;
+    line-height: 1.55;
+  }
+  .cta-next-batch strong {
+    color: #78350F;
+  }
+
   /* ===== MOBILE ===== */
   @media (max-width: 640px) {
     body { font-size: 15px; }
@@ -1041,6 +1164,12 @@
     .option-card .option-name { font-size: 18px; }
     .option-card .option-price { font-size: 18px; }
     .options-title { font-size: 22px; }
+    .reviews-section { padding: 48px 20px; }
+    .reviews-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .reviews-title { font-size: 22px; }
   }
 </style>
 </head>
@@ -1251,6 +1380,74 @@
     </div>
   </section>
 
+  <div class="divider"></div>
+
+  <!-- ===== 수강생 후기 ===== -->
+  <section class="reviews-section">
+    <div class="container">
+      <div class="reviews-title-wrap">
+        <div class="reviews-eyebrow">REAL REVIEWS</div>
+        <h2 class="reviews-title">먼저 함께한 분들의 후기</h2>
+        <p class="reviews-subtitle">유튜브 코칭·컨설팅을 받으신 분들이 직접 보내주신 카카오톡 후기입니다</p>
+      </div>
+
+      <div class="reviews-grid">
+        <a href="reviews/review-01.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-01.jpg" alt="수강생 후기 1" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 1</span>
+          </span>
+        </a>
+        <a href="reviews/review-02.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-02.jpg" alt="수강생 후기 2" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 2</span>
+          </span>
+        </a>
+        <a href="reviews/review-03.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-03.jpg" alt="수강생 후기 3" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 3</span>
+          </span>
+        </a>
+        <a href="reviews/review-04.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-04.jpg" alt="수강생 후기 4" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 4</span>
+          </span>
+        </a>
+        <a href="reviews/review-05.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-05.jpg" alt="수강생 후기 5" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 5</span>
+          </span>
+        </a>
+        <a href="reviews/review-06.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-06.jpg" alt="수강생 후기 6" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 6</span>
+          </span>
+        </a>
+      </div>
+
+      <p class="reviews-note">📷 사진을 누르시면 크게 보실 수 있습니다</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
   <!-- ===== FAQ ===== -->
   <section class="faq-section">
     <div class="container">
@@ -1268,6 +1465,16 @@
               <li><strong>옵션 B</strong> · 오프라인 컨설팅 100분 (+350,000원)</li>
             </ul>
             <p>단톡방 내 Q&amp;A는 모든 참여자에게 항시 열려 있습니다.</p>
+            <p><strong style="color:#991B1B;">⚠️ 컨설팅 옵션(A·B)은 정원이 적어 모집 마감 전에도 조기 마감될 수 있습니다.</strong></p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>다음 기수(2기)는 언제 열리나요?</span></summary>
+          <div class="faq-answer">
+            <p class="lead">다음 기수(2기)의 판매 일정은 아직 미정입니다.</p>
+            <p>유뿌챌은 이번 1기가 첫 번째 운영이며, 2기 이후의 판매 시점·가격·운영 방식은 아직 정해진 바가 없습니다.</p>
+            <p>특히 <strong>1:1 컨설팅(옵션 A·B)</strong>은 정원이 매우 적게 운영되어 조기 마감될 수 있으니, 컨설팅이 필요하시거나 이번 기회를 놓치고 싶지 않으시다면 이번 기수에서 신청해주시는 것을 권해드립니다.</p>
           </div>
         </details>
 
@@ -1355,6 +1562,10 @@
       <div class="options-guide">
         <span class="guide-emoji">👇</span> 아래 박스를 <u>클릭</u>해서 옵션을 선택해주세요
         <span class="guide-sub">선택하시면 가격이 자동으로 계산됩니다</span>
+      </div>
+
+      <div class="options-warning">
+        ⚠️ 1:1 컨설팅 옵션(A·B)은 정원이 적어<br>모집 마감 전에도 조기 마감될 수 있습니다
       </div>
 
       <div class="option-grid">
@@ -1454,6 +1665,10 @@
         </a>
         <div class="cta-warning">⚠️ 선착순 마감 · 추가 모집 없음</div>
         <div class="cta-deadline">📅 모집 마감 : 2026. 5. 31 (일)</div>
+        <div class="cta-next-batch">
+          📢 <strong>다음 기수(2기)는 판매 일정이 미정입니다.</strong><br>
+          이번 기수에서 함께해주세요.
+        </div>
       </div>
     </div>
   </section>
