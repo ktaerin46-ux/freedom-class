@@ -444,6 +444,79 @@
     margin-top: 6px;
   }
 
+  /* ===== BIG DATE (제공 사항) ===== */
+  .pin-section .big-date {
+    font-size: 28px;
+    font-weight: 900;
+    color: #2563EB;
+    margin: 10px 0 6px;
+    letter-spacing: -0.5px;
+    line-height: 1.3;
+  }
+  .pin-section .auto-cert-box {
+    max-width: 540px;
+    margin: 36px auto 0;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 10px;
+    padding: 18px 22px;
+    text-align: center;
+    font-size: 14px;
+    color: #1E3A8A;
+    line-height: 1.75;
+    font-weight: 600;
+  }
+  .pin-section .auto-cert-box strong {
+    color: #1E3A8A;
+    font-weight: 800;
+  }
+  .pin-section .auto-cert-box .cert-emoji {
+    display: inline-block;
+    margin-right: 4px;
+  }
+  @media (max-width: 640px) {
+    .pin-section .big-date { font-size: 23px; }
+    .pin-section .auto-cert-box { font-size: 13.5px; padding: 16px 18px; }
+  }
+
+  /* ===== PREMIUM CALLOUT (개강식 가치) ===== */
+  .pin-section .premium-callout {
+    max-width: 420px;
+    margin: 14px auto 0;
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-radius: 10px;
+    padding: 12px 20px;
+    text-align: center;
+  }
+  .pin-section .premium-tag {
+    display: none;
+  }
+  .pin-section .premium-main {
+    font-size: 15px;
+    font-weight: 700;
+    color: #78350F;
+    margin: 0 0 4px;
+    line-height: 1.6;
+  }
+  .pin-section .premium-main strong {
+    color: #B45309;
+    font-weight: 800;
+  }
+  .pin-section .premium-sub {
+    font-size: 12.5px;
+    color: #92400E;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.7;
+    opacity: 0.9;
+  }
+  @media (max-width: 640px) {
+    .pin-section .premium-callout { padding: 11px 16px; }
+    .pin-section .premium-main { font-size: 14.5px; }
+    .pin-section .premium-sub { font-size: 12px; }
+  }
+
   /* ===== POINT SYSTEM BOX ===== */
   .point-box {
     max-width: 480px;
@@ -564,12 +637,13 @@
   .rewards-note {
     max-width: 620px;
     margin: 56px auto 0;
-    font-size: 13px;
+    font-size: 14px;
     color: #6B7280;
-    line-height: 1.7;
+    line-height: 2.2;
     text-align: center;
     padding: 0 16px;
     word-break: keep-all;
+    letter-spacing: 0.2px;
   }
   .rewards-note strong { color: #374151; }
   @media (max-width: 640px) {
@@ -1273,32 +1347,34 @@
     </div>
   </section>
 
-  <!-- ===== 개강식 웨비나 ===== -->
-  <section class="pin-section">
-    <div class="container">
-      <div class="pin-title">✨ 6/3 (수) 밤 8시 ✨</div>
-      <p class="strong">[개강식 웨비나 60분 + Q&A 30분]</p>
-      <div style="height:16px"></div>
-      <p>가벼운 OT가 아닙니다</p>
-      <p class="strong">유료급 강의입니다</p>
-      <p class="note">강의만 들으셔도 참가비가 아깝지 않으실 거예요</p>
-    </div>
-  </section>
-
   <!-- ===== 제공 사항 ===== -->
   <section class="pin-section">
     <div class="container">
       <div class="pin-title">📍 제공 사항</div>
       <p class="strong">90분 개강식 웨비나 1회</p>
-      <p class="note">(6/3 수 밤 8시 · 녹화본 제공)</p>
-      <div style="height:14px"></div>
+      <p class="big-date">📅 6/3 (수) 밤 8시</p>
+      <p class="note">강의 60분 + Q&amp;A 30분 · 녹화본 제공</p>
+
+      <div class="premium-callout">
+        <span class="premium-tag">💎 SPECIAL</span>
+        <p class="premium-main">가벼운 OT가 아닌 <strong>유료급 강의</strong>입니다</p>
+        <p class="premium-sub">강의만 들으셔도 참가비가 아깝지 않으실 거예요</p>
+      </div>
+
+      <div style="height:28px"></div>
       <p class="strong">60분 종강식 웨비나 1회</p>
-      <p class="note">(6/30 화 밤 8시 · 우수 참여자 라이브 피드백 및 정규 과정 커리큘럼 안내)</p>
-      <div style="height:14px"></div>
+      <p class="big-date">📅 6/30 (화) 밤 8시</p>
+      <p class="note">우수 참여자 라이브 피드백 및 정규 과정 커리큘럼 안내</p>
+      <div style="height:28px"></div>
       <p class="strong">유튜브 아이디어 AI 프롬프트</p>
       <div style="height:14px"></div>
       <p class="strong">캡컷 기초 VOD</p>
       <p class="note">(초보자분들도 도전 가능)</p>
+
+      <div class="auto-cert-box">
+        <span class="cert-emoji">ⓘ</span> 라이브 강의 2회 외에는 <strong>자율적으로 인증하는 시스템</strong>입니다<br>
+        첫 강의(6/3)에서 챌린지가 어떻게 진행되는지 <strong>자세히 안내</strong>해드립니다
+      </div>
     </div>
   </section>
 
