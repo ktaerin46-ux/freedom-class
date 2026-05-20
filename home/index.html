@@ -308,12 +308,36 @@
   }
 
   @media (max-width: 640px) {
-    .products { padding: 8px 16px 60px; }
-    .product-grid { grid-template-columns: 1fr; gap: 28px; }
-    .product-square { padding: 24px; }
-    .product-square.ebook .big-title,
-    .product-square.yuppuchal .big-title { font-size: 32px; }
-    .product-square.yuppuchal .gen { font-size: 24px; }
+    .products { padding: 32px 14px 60px; }
+    .product-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .product-square { padding: 14px 10px; }
+
+    /* E-book scaled down */
+    .product-square.ebook .top-tag { font-size: 9px; padding: 3px 7px; top: 8px; left: 8px; }
+    .product-square.ebook .value-tag { font-size: 10px; padding: 3px 8px; margin-bottom: 8px; }
+    .product-square.ebook .big-title { font-size: 18px; margin-bottom: 10px; }
+    .product-square.ebook .limit-pill { font-size: 11px; padding: 3px 10px; }
+
+    /* Yuppuchal scaled down */
+    .product-square.yuppuchal { border-width: 2px; box-shadow: 0 10px 24px rgba(37, 99, 235, 0.3); }
+    .product-square.yuppuchal .top-tag { font-size: 9px; padding: 3px 7px; top: 8px; left: 8px; }
+    .product-square.yuppuchal .small-title { font-size: 10px; margin-bottom: 6px; }
+    .product-square.yuppuchal .big-title { font-size: 18px; }
+    .product-square.yuppuchal .gen { font-size: 13px; padding: 3px 12px; margin-top: 10px; }
+
+    /* Featured badge scaled */
+    .featured-badge {
+      font-size: 10px;
+      padding: 5px 14px;
+      top: -11px;
+      letter-spacing: 1.5px;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.45);
+    }
+
+    /* Captions */
+    .card-caption { font-size: 11px; margin-top: 12px; line-height: 1.5; }
+    .card-caption .sub { font-size: 10px; margin-top: 4px; }
+    .card-caption .arrow { font-size: 11px; }
   }
 
   /* ===== FOOTER ===== */
