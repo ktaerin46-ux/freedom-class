@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FREEDOM CLASS — 유튜브로 자유를 만드는 클래스</title>
+<meta name="description" content="유튜브 시크릿 전자책, 유뿌챌 1기 등 유튜브 성장 프로그램을 만나보세요.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+    background: #FFFFFF;
+    color: #1A1A1A;
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    word-break: keep-all;
+    padding-top: 56px;
+  }
+  a { text-decoration: none; color: inherit; }
+
+  /* ===== TOP HEADER ===== */
+  .top-header {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    color: #1A1A1A;
+    padding: 12px 24px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    border-bottom: 1px solid #F0F0F0;
+  }
+  .top-header .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .top-header .logo {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
+    font-family: "Helvetica Neue", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .top-header .logo-main {
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #1A1A1A;
+  }
+  .top-header .logo-sub {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    color: #6B7280;
+    margin-top: 3px;
+  }
+  .top-header .nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .top-header .nav-menu a {
+    color: #4B5563;
+    transition: color 0.15s ease;
+  }
+  .top-header .nav-menu a:hover {
+    color: #2563EB;
+  }
+  .top-header .nav-menu a.nav-active {
+    color: #2563EB;
+    font-weight: 800;
+  }
+  @media (max-width: 640px) {
+    .top-header { padding: 10px 16px; }
+    .top-header .logo-main { font-size: 17px; }
+    .top-header .logo-sub { font-size: 8px; letter-spacing: 4px; }
+    .top-header .nav-menu { gap: 18px; font-size: 13px; }
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    text-align: center;
+    padding: 64px 24px 32px;
+  }
+  .hero h1 {
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .hero p {
+    color: #6B7280;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  @media (max-width: 640px) {
+    .hero { padding: 48px 20px 24px; }
+    .hero h1 { font-size: 24px; }
+    .hero p { font-size: 14px; }
+  }
+
+  /* ===== PRODUCTS ===== */
+  .products {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 36px 24px 80px;
+  }
+  .product-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .product-card-link {
+    display: block;
+    transition: transform 0.18s ease;
+  }
+  .product-card-link:hover {
+    transform: translateY(-4px);
+  }
+  .product-square {
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #FFFFFF;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.18s ease;
+  }
+  .product-card-link:hover .product-square {
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.15);
+  }
+
+  /* ----- E-BOOK CARD (FREE — SUBDUED) ----- */
+  .product-square.ebook {
+    background: linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+  .product-square.ebook .top-tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    backdrop-filter: blur(4px);
+  }
+  .product-square.ebook .value-tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px 12px;
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .product-square.ebook .big-title {
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: -1px;
+    margin-bottom: 14px;
+    color: rgba(255, 255, 255, 0.95);
+  }
+  .product-square.ebook .limit-pill {
+    display: inline-block;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #4B5563;
+    padding: 5px 16px;
+    border-radius: 999px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  /* ----- YUPPUCHAL CARD (FEATURED — BEST) ----- */
+  .product-square.yuppuchal {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    border: 3px solid #FCD34D;
+    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.3);
+  }
+  .product-square.yuppuchal .top-tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: #DC2626;
+    color: #FFFFFF;
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+  }
+  .product-square.yuppuchal .small-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    opacity: 0.95;
+  }
+  .product-square.yuppuchal .big-title {
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: -1px;
+  }
+  .product-square.yuppuchal .gen {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 22px;
+    background: #FCD34D;
+    color: #78350F;
+    padding: 4px 18px;
+    border-radius: 999px;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    font-weight: 900;
+  }
+
+  /* ----- FEATURED BADGE (BEST + 왕관) ----- */
+  .product-card-link.featured {
+    position: relative;
+  }
+  .product-card-link.featured:hover {
+    transform: translateY(-6px);
+  }
+  .featured-badge {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #FBBF24 0%, #DC2626 100%);
+    color: #FFFFFF;
+    padding: 8px 26px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.45);
+    z-index: 2;
+    white-space: nowrap;
+  }
+  .product-card-link.featured .card-caption {
+    color: #1A1A1A;
+    font-weight: 800;
+  }
+  .product-card-link.featured .card-caption .arrow {
+    color: #DC2626;
+  }
+
+  /* ----- SUBDUED CARD ----- */
+  .product-card-link.subdued:hover {
+    transform: translateY(-2px);
+  }
+  .product-card-link.subdued .card-caption {
+    color: #6B7280;
+    font-weight: 600;
+  }
+  .product-card-link.subdued .card-caption .arrow {
+    color: #9CA3AF;
+  }
+  .product-card-link.subdued .card-caption .sub {
+    color: #9CA3AF;
+  }
+
+  /* ----- CAPTION ----- */
+  .card-caption {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1A1A1A;
+    line-height: 1.55;
+  }
+  .card-caption .arrow {
+    color: #2563EB;
+    margin-left: 4px;
+    font-weight: 800;
+  }
+  .card-caption .sub {
+    display: block;
+    font-weight: 500;
+    color: #9CA3AF;
+    font-size: 12px;
+    margin-top: 6px;
+    letter-spacing: 0.2px;
+  }
+
+  @media (max-width: 640px) {
+    .products { padding: 8px 16px 60px; }
+    .product-grid { grid-template-columns: 1fr; gap: 28px; }
+    .product-square { padding: 24px; }
+    .product-square.ebook .big-title,
+    .product-square.yuppuchal .big-title { font-size: 32px; }
+    .product-square.yuppuchal .gen { font-size: 24px; }
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: #FAFAFA;
+    color: #9CA3AF;
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 13px;
+    border-top: 1px solid #F0F0F0;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ===== TOP BAR ===== -->
+  <header class="top-header">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-main">FREEDOM</span>
+        <span class="logo-sub">CLASS</span>
+      </a>
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-active">HOME</a>
+        <a href="../index.html">유뿌챌</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <h1>유튜브로 월 100만원 더,<br>경제적 자유까지</h1>
+    <p>지금 바로 시작하실 수 있는 프로그램입니다</p>
+  </section>
+
+  <!-- ===== PRODUCTS ===== -->
+  <section class="products">
+    <div class="product-grid">
+
+      <!-- 전자책 (무료 자료 — 회색 톤) -->
+      <a href="https://forms.gle/M81NBt4YT2c6oPpi9" class="product-card-link subdued" target="_blank" rel="noopener">
+        <div class="product-square ebook">
+          <span class="top-tag">100% 무료</span>
+          <div class="value-tag">💎 100만원 가치</div>
+          <div class="big-title">유튜브 시크릿<br>전자책</div>
+          <span class="limit-pill">선착순 16명</span>
+        </div>
+        <div class="card-caption">
+          (선착순 16명 100% 무료) 100만원 가치<br>
+          유튜브 시크릿 전자책 다운로드 받기 <span class="arrow">→</span>
+          <span class="sub">구글 설문 작성 후 다운로드</span>
+        </div>
+      </a>
+
+      <!-- 유뿌챌 (메인 상품 — BEST 강조) -->
+      <a href="../index.html" class="product-card-link featured">
+        <div class="featured-badge">👑 BEST</div>
+        <div class="product-square yuppuchal">
+          <span class="top-tag">선착순 마감</span>
+          <div class="small-title">4주 업로드 챌린지</div>
+          <div class="big-title">유튜브 뿌시기<br>챌린지</div>
+          <span class="gen">1기</span>
+        </div>
+        <div class="card-caption">
+          유튜브 챌린지 1기 신청하기 <span class="arrow">→</span>
+          <span class="sub">2026. 5. 31 (일)까지 모집 · 선착순 마감</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div>© 2026 FREEDOM CLASS</div>
+  </footer>
+
+</body>
+</html>
