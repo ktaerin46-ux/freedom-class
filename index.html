@@ -20,6 +20,77 @@
     padding-bottom: 96px;
   }
 
+  /* ===== PROMO BANNER ===== */
+  .promo-banner {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 110;
+    background: #1E3A8A;
+    color: #FFFFFF;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-decoration: none;
+    font-family: inherit;
+  }
+  .promo-banner .promo-text {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    text-align: center;
+    color: #FFFFFF;
+    line-height: 1.4;
+  }
+  .promo-banner .promo-text .arrow {
+    display: inline-block;
+    margin-left: 6px;
+    transition: transform 0.2s ease;
+  }
+  .promo-banner:hover .promo-text .arrow { transform: translateX(4px); }
+  .promo-banner .promo-actions {
+    position: absolute;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .promo-banner .promo-hide {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+  .promo-banner .promo-hide:hover { color: #FFFFFF; }
+  .promo-banner .promo-hide .check {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid rgba(255, 255, 255, 0.7);
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .promo-banner .promo-close {
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 0 4px;
+  }
+  .promo-banner .promo-close:hover { color: #FFFFFF; }
+  body.promo-on { padding-top: 100px; }
+  body.promo-on .top-header { top: 44px; }
+  @media (max-width: 640px) {
+    .promo-banner { padding: 10px 14px; }
+    .promo-banner .promo-text { font-size: 12px; padding-right: 70px; }
+    .promo-banner .promo-actions { right: 12px; gap: 8px; font-size: 11px; }
+    .promo-banner .promo-hide .label { display: none; }
+    body.promo-on { padding-top: 96px; }
+    body.promo-on .top-header { top: 40px; }
+  }
+
   /* ===== BOTTOM STICKY CTA BAR ===== */
   .bottom-cta-bar {
     position: fixed;
@@ -1253,6 +1324,17 @@
 </head>
 <body>
 
+  <!-- ===== PROMO BANNER ===== -->
+  <a href="free-lecture/index.html" class="promo-banner" id="promoBanner" style="display:none;">
+    <span class="promo-text">초보도 의지만 있다면 월 100만 원 가능! <strong>[무료 웨비나]</strong><span class="arrow">→</span></span>
+    <span class="promo-actions" onclick="event.stopPropagation(); event.preventDefault();">
+      <span class="promo-hide" onclick="hidePromoToday(event)">
+        <span class="check"></span><span class="label">오늘 하루 보지 않기</span>
+      </span>
+      <span class="promo-close" onclick="closePromo(event)">×</span>
+    </span>
+  </a>
+
   <!-- ===== TOP BAR ===== -->
   <header class="top-header">
     <div class="nav-inner">
@@ -1262,6 +1344,7 @@
       </a>
       <nav class="nav-menu">
         <a href="home/index.html">HOME</a>
+        <a href="free-lecture/index.html">무료 특강</a>
         <a href="index.html" class="nav-active">유뿌챌</a>
       </nav>
     </div>
@@ -1889,6 +1972,34 @@
       tick();
       var timer = setInterval(tick, 1000);
     })();
+  </script>
+
+  <script>
+    (function() {
+      var KEY = 'freedom_promo_hidden_until';
+      var banner = document.getElementById('promoBanner');
+      if (location.search.indexOf('promo=reset') !== -1) {
+        localStorage.removeItem(KEY);
+      }
+      var hiddenUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
+      if (Date.now() < hiddenUntil) return;
+      banner.style.display = 'flex';
+      document.body.classList.add('promo-on');
+    })();
+    function hidePromoToday(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var until = Date.now() + 24 * 60 * 60 * 1000;
+      localStorage.setItem('freedom_promo_hidden_until', String(until));
+      document.getElementById('promoBanner').style.display = 'none';
+      document.body.classList.remove('promo-on');
+    }
+    function closePromo(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('promoBanner').style.display = 'none';
+      document.body.classList.remove('promo-on');
+    }
   </script>
 
 </body>
