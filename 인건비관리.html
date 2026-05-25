@@ -318,10 +318,94 @@
     th, td { padding: 8px 6px; }
     .hide-mobile { display: none; }
   }
+
+  /* 로그인 화면 */
+  #login-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+  }
+  .login-box {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  .login-box .lock-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+  .login-box h2 {
+    margin-bottom: 8px;
+    font-size: 22px;
+    color: #1a1a1a;
+  }
+  .login-box .login-subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+  .login-box input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-bottom: 12px;
+    transition: border-color 0.15s;
+    font-family: inherit;
+  }
+  .login-box input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  .login-box button {
+    width: 100%;
+    padding: 14px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .login-box button:hover {
+    background: #5568d3;
+  }
+  .login-error {
+    color: #e74c3c;
+    font-size: 13px;
+    margin-bottom: 12px;
+    display: none;
+  }
+  #main-app { display: none; }
 </style>
 </head>
 <body>
-<div class="container">
+
+<!-- 로그인 화면 -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="lock-icon">🔒</div>
+    <h2>인건비 관리</h2>
+    <p class="login-subtitle">비밀번호를 입력해주세요</p>
+    <div class="login-error" id="login-error">비밀번호가 올바르지 않습니다.</div>
+    <input type="password" id="login-password" placeholder="비밀번호" autocomplete="current-password">
+    <button onclick="tryLogin()">로그인</button>
+  </div>
+</div>
+
+<div class="container" id="main-app">
 
   <header>
     <h1>💰 인건비 관리</h1>
@@ -500,6 +584,55 @@
 </div>
 
 <script>
+// ============================================
+// 비밀번호 보호
+// ============================================
+const PASSWORD_HASH = 'd6219f60a196671281be2043234c42d364d5e06accb778c0eeb36554ac434148';
+const AUTH_KEY = 'payroll_authed_v1';
+
+async function sha256(text) {
+  const buf = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function tryLogin() {
+  const pw = document.getElementById('login-password').value;
+  if (!pw) return;
+  const hash = await sha256(pw);
+  if (hash === PASSWORD_HASH) {
+    sessionStorage.setItem(AUTH_KEY, 'true');
+    showApp();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-password').focus();
+  }
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+}
+
+function checkAuth() {
+  if (sessionStorage.getItem(AUTH_KEY) === 'true') {
+    showApp();
+  } else {
+    setTimeout(() => {
+      const pwField = document.getElementById('login-password');
+      if (pwField) pwField.focus();
+    }, 100);
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && document.activeElement &&
+      document.activeElement.id === 'login-password') {
+    tryLogin();
+  }
+});
+
 // ============================================
 // 데이터 관리
 // ============================================
@@ -1144,6 +1277,7 @@ document.addEventListener('keydown', (e) => {
 // ============================================
 // 초기화
 // ============================================
+checkAuth();
 fillMonthFilter();
 renderRecords();
 renderWorkers();
