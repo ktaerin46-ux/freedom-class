@@ -386,15 +386,35 @@
   }
   .editor-content a { color: #2c7be5; text-decoration: underline; }
 
-  /* 꼬리 메모 (개선점) */
+  /* 꼬리 메모 (개선점) - 화면 하단에 sticky */
   .followup-area {
+    position: sticky;
+    bottom: 16px;
+    z-index: 40;
     margin-top: 16px;
     background: linear-gradient(135deg, #fff5e6, #ffe6cc);
     border-radius: 12px;
     border: 2px dashed #e67e22;
     padding: 16px;
-    box-shadow: 0 2px 8px rgba(230, 126, 34, 0.1);
+    box-shadow: 0 -4px 20px rgba(230, 126, 34, 0.2);
   }
+  .followup-area.collapsed .followup-textarea {
+    display: none;
+  }
+  .followup-area.collapsed {
+    padding: 10px 16px;
+  }
+  .followup-toggle-btn {
+    background: rgba(230, 126, 34, 0.15);
+    border: none;
+    color: #b8651a;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .followup-toggle-btn:hover { background: rgba(230, 126, 34, 0.3); }
   .followup-header {
     display: flex; justify-content: space-between;
     align-items: center; margin-bottom: 10px;
@@ -670,11 +690,12 @@
         </div>
 
         <!-- 꼬리 메모 (개선점) -->
-        <div class="followup-area">
+        <div class="followup-area" id="followup-area">
           <div class="followup-header">
             <div class="followup-title">📌 꼬리 메모 — 어떻게 개선할 수 있을까?</div>
-            <div class="followup-hint">강의를 보고 든 생각, 개선 아이디어, 적용 계획 등</div>
+            <button class="followup-toggle-btn" onclick="toggleFollowup()" id="followup-toggle">접기 ▼</button>
           </div>
+          <div class="followup-hint" style="margin-bottom: 8px;">강의를 보고 든 생각, 개선 아이디어, 적용 계획 등</div>
           <textarea id="followup-textarea" class="followup-textarea"
             placeholder="예: 강사가 말한 '클릭률(CTR)' 부분을 우리 채널에 적용하려면 → 썸네일 A/B 테스트 시작..."></textarea>
         </div>
@@ -1472,6 +1493,17 @@ function insertLink() {
   if (url) {
     document.execCommand('createLink', false, url);
     scheduleAutoSave();
+  }
+}
+
+function toggleFollowup() {
+  const area = document.getElementById('followup-area');
+  const btn = document.getElementById('followup-toggle');
+  area.classList.toggle('collapsed');
+  if (area.classList.contains('collapsed')) {
+    btn.textContent = '펼치기 ▲';
+  } else {
+    btn.textContent = '접기 ▼';
   }
 }
 
