@@ -281,6 +281,186 @@
   }
   .drag-handle:active { cursor: grabbing; }
 
+  /* 자료실 */
+  .resource-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .sub-tabs {
+    display: flex;
+    background: #f5f6f8;
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 16px;
+    width: fit-content;
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+  .sub-tab {
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #888;
+    font-size: 13px;
+  }
+  .sub-tab.active { background: #667eea; color: white; }
+  .resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .resource-card {
+    background: #fafbfc;
+    border: 1px solid #eef0f3;
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .resource-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+  }
+  .resource-card h4 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #1a1a1a;
+  }
+  .resource-meta {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .resource-preview {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.4;
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+  .tag {
+    display: inline-block;
+    background: #e6f0ff;
+    color: #2c7be5;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    margin-right: 4px;
+  }
+
+  /* 판매상품 타임라인 */
+  .product-timeline {
+    position: relative;
+    padding-left: 30px;
+  }
+  .product-timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e0e0e0;
+  }
+  .product-row {
+    position: relative;
+    background: #fafbfc;
+    border: 1px solid #eef0f3;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    border-left: 4px solid #95a5a6;
+  }
+  .product-row::before {
+    content: '';
+    position: absolute;
+    left: -27px;
+    top: 18px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #95a5a6;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px #95a5a6;
+  }
+  .product-row.status-active { border-left-color: #00a651; }
+  .product-row.status-active::before { background: #00a651; box-shadow: 0 0 0 2px #00a651; }
+  .product-row.status-upcoming { border-left-color: #f1c40f; }
+  .product-row.status-upcoming::before { background: #f1c40f; box-shadow: 0 0 0 2px #f1c40f; }
+  .product-row.status-ended { border-left-color: #95a5a6; }
+  .product-row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .product-name { font-weight: 700; font-size: 15px; }
+  .product-price { font-weight: 700; color: #00a651; }
+  .product-period {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 4px;
+  }
+  .product-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+  .status-active .product-status { background: #e6f7ee; color: #00a651; }
+  .status-upcoming .product-status { background: #fff5e6; color: #b8651a; }
+  .status-ended .product-status { background: #f0f0f0; color: #888; }
+
+  /* 매출 표 */
+  .revenue-table input {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+
+  /* 상단 네비 */
+  .top-nav {
+    background: white;
+    border-radius: 12px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex;
+    gap: 6px;
+  }
+  .top-nav a {
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #888;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+  .top-nav a:hover { background: #f5f6f8; }
+  .top-nav a.current {
+    background: #667eea;
+    color: white;
+  }
+
   /* 캘린더 */
   .calendar-controls {
     display: flex;
@@ -544,6 +724,11 @@
 
 <div class="container" id="main-app">
 
+  <nav class="top-nav">
+    <a href="콘텐츠관리.html" class="current">🎬 콘텐츠 관리</a>
+    <a href="강의노트.html">📚 강의 노트</a>
+  </nav>
+
   <header>
     <h1>🎬 콘텐츠 관리 대시보드</h1>
     <p class="subtitle">여러 SNS 채널의 콘텐츠 일정과 외주 진행 상황을 한눈에 확인하세요.</p>
@@ -596,6 +781,7 @@
     <div class="tab active" data-tab="kanban" onclick="switchTab('kanban')">📋 진행 상황 (칸반)</div>
     <div class="tab" data-tab="calendar" onclick="switchTab('calendar')">📅 캘린더</div>
     <div class="tab" data-tab="bychannel" onclick="switchTab('bychannel')">📺 채널별</div>
+    <div class="tab" data-tab="resources" onclick="switchTab('resources')">📚 자료실</div>
     <div class="tab" data-tab="channels" onclick="switchTab('channels')">⚙️ 채널 관리</div>
     <div class="tab" data-tab="workers" onclick="switchTab('workers')">👥 외주 작업자</div>
   </div>
@@ -622,6 +808,24 @@
   <!-- 채널별 뷰 -->
   <div class="panel" id="panel-bychannel" style="display:none;">
     <div id="bychannel-content"></div>
+  </div>
+
+  <!-- 자료실 -->
+  <div class="panel" id="panel-resources" style="display:none;">
+    <div class="panel-header">
+      <h2>📚 채널 자료실</h2>
+      <div>
+        <label style="font-weight:600; margin-right:8px;">채널 선택:</label>
+        <select id="resource-channel" onchange="renderResources()" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-family:inherit;"></select>
+      </div>
+    </div>
+    <div class="sub-tabs">
+      <div class="sub-tab active" data-restab="scripts" onclick="switchResTab('scripts')">📜 대본</div>
+      <div class="sub-tab" data-restab="products" onclick="switchResTab('products')">🛍️ 판매상품</div>
+      <div class="sub-tab" data-restab="ideas" onclick="switchResTab('ideas')">💡 아이디어</div>
+      <div class="sub-tab" data-restab="revenues" onclick="switchResTab('revenues')">💰 매출</div>
+    </div>
+    <div id="resource-content"></div>
   </div>
 
   <!-- 채널 관리 -->
@@ -771,6 +975,120 @@
   </div>
 </div>
 
+<!-- 대본 모달 -->
+<div class="modal-overlay" id="script-modal">
+  <div class="modal">
+    <h2 id="script-modal-title">새 대본</h2>
+    <input type="hidden" id="script-id">
+    <div class="form-row">
+      <div class="form-group">
+        <label>제목 *</label>
+        <input type="text" id="script-title" placeholder="예: 5월 마지막 브이로그 대본">
+      </div>
+      <div class="form-group">
+        <label>채널</label>
+        <select id="script-channel"></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>대본 내용</label>
+      <textarea id="script-content" placeholder="대본을 작성하세요" style="min-height: 300px; font-family: 'Menlo', monospace; font-size: 14px; line-height: 1.6;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="script-delete-btn" onclick="deleteScript()" style="margin-right:auto; display:none;">삭제</button>
+      <button class="btn-gray" onclick="closeScriptModal()">취소</button>
+      <button class="btn-primary" onclick="saveScript()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 판매상품 모달 -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal">
+    <h2 id="product-modal-title">새 판매 상품</h2>
+    <input type="hidden" id="product-id">
+    <div class="form-row">
+      <div class="form-group">
+        <label>상품명 *</label>
+        <input type="text" id="product-name" placeholder="예: 전자책 - 유튜브 스타트업">
+      </div>
+      <div class="form-group">
+        <label>채널</label>
+        <select id="product-channel"></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>판매 시작일</label>
+        <input type="date" id="product-start">
+      </div>
+      <div class="form-group">
+        <label>판매 종료일</label>
+        <input type="date" id="product-end">
+        <div class="form-hint">계속 판매 중이면 비워두세요</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>가격 (원)</label>
+        <input type="number" id="product-price" placeholder="29000">
+      </div>
+      <div class="form-group">
+        <label>상태</label>
+        <select id="product-status">
+          <option value="active">판매중</option>
+          <option value="upcoming">예정</option>
+          <option value="ended">종료</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>판매 링크</label>
+      <input type="text" id="product-url" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label>메모</label>
+      <textarea id="product-memo" placeholder="판매처, 성과, 특이사항 등"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="product-delete-btn" onclick="deleteProduct()" style="margin-right:auto; display:none;">삭제</button>
+      <button class="btn-gray" onclick="closeProductModal()">취소</button>
+      <button class="btn-primary" onclick="saveProduct()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 아이디어 모달 -->
+<div class="modal-overlay" id="idea-modal">
+  <div class="modal">
+    <h2 id="idea-modal-title">새 아이디어</h2>
+    <input type="hidden" id="idea-id">
+    <div class="form-row">
+      <div class="form-group">
+        <label>제목 *</label>
+        <input type="text" id="idea-title" placeholder="예: 신상품 리뷰 아이디어">
+      </div>
+      <div class="form-group">
+        <label>채널</label>
+        <select id="idea-channel"></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>태그 (콤마로 구분)</label>
+      <input type="text" id="idea-tags" placeholder="예: 리뷰, 브이로그, 신상품">
+    </div>
+    <div class="form-group">
+      <label>내용</label>
+      <textarea id="idea-content" placeholder="아이디어를 자유롭게 적어주세요" style="min-height: 200px;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="idea-delete-btn" onclick="deleteIdea()" style="margin-right:auto; display:none;">삭제</button>
+      <button class="btn-gray" onclick="closeIdeaModal()">취소</button>
+      <button class="btn-primary" onclick="saveIdea()">저장</button>
+    </div>
+  </div>
+</div>
+
 <!-- 작업자 모달 -->
 <div class="modal-overlay" id="worker-modal">
   <div class="modal">
@@ -807,7 +1125,7 @@
 // 비밀번호 + 클라우드
 // ============================================
 const PASSWORD_HASH = 'd6219f60a196671281be2043234c42d364d5e06accb778c0eeb36554ac434148';
-const AUTH_KEY = 'content_authed_v1';
+const AUTH_KEY = 'site_authed_v1';
 const STORAGE_KEY = 'content_data_v1';
 const PANTRY_ID = 'ff0aa9af-8ccd-428a-8622-9ef700325e9a';
 const PANTRY_BASKET = 'content-data';
@@ -923,16 +1241,21 @@ function ensureDataShape(d) {
   if (!Array.isArray(d.channels)) d.channels = [];
   if (!Array.isArray(d.contents)) d.contents = [];
   if (!Array.isArray(d.workers)) d.workers = [];
+  if (!Array.isArray(d.scripts)) d.scripts = [];
+  if (!Array.isArray(d.products)) d.products = [];
+  if (!Array.isArray(d.ideas)) d.ideas = [];
+  if (!Array.isArray(d.revenues)) d.revenues = [];
 }
 
 function loadData() {
+  const empty = { channels: [], contents: [], workers: [], scripts: [], products: [], ideas: [], revenues: [] };
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return { channels: [], contents: [], workers: [] };
+  if (!raw) return empty;
   try {
     const d = JSON.parse(raw);
     ensureDataShape(d);
     return d;
-  } catch(e) { return { channels: [], contents: [], workers: [] }; }
+  } catch(e) { return empty; }
 }
 
 function saveData() {
@@ -943,7 +1266,8 @@ function saveData() {
 let data = loadData();
 
 function hasAnyData() {
-  return data.channels.length || data.contents.length || data.workers.length;
+  return data.channels.length || data.contents.length || data.workers.length ||
+    data.scripts.length || data.products.length || data.ideas.length || data.revenues.length;
 }
 
 function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
@@ -996,9 +1320,426 @@ const STAGES = [
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
-  ['kanban', 'calendar', 'bychannel', 'channels', 'workers'].forEach(t => {
+  ['kanban', 'calendar', 'bychannel', 'resources', 'channels', 'workers'].forEach(t => {
     document.getElementById('panel-' + t).style.display = t === tab ? 'block' : 'none';
   });
+  if (tab === 'resources') renderResources();
+}
+
+// ============================================
+// 자료실
+// ============================================
+let currentResTab = 'scripts';
+
+function fillResourceChannelSelect() {
+  const sel = document.getElementById('resource-channel');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="all">📺 모든 채널</option>' +
+    data.channels.map(c => {
+      const p = PLATFORMS[c.platform] || PLATFORMS.other;
+      return `<option value="${c.id}">${p.icon} ${escapeHtml(c.name)}</option>`;
+    }).join('');
+  sel.value = prev || 'all';
+}
+
+function switchResTab(t) {
+  currentResTab = t;
+  document.querySelectorAll('.sub-tab').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.sub-tab[data-restab="${t}"]`).classList.add('active');
+  renderResources();
+}
+
+function renderResources() {
+  fillResourceChannelSelect();
+  const container = document.getElementById('resource-content');
+  if (data.channels.length === 0) {
+    container.innerHTML = '<div class="empty">먼저 채널을 등록해주세요.</div>';
+    return;
+  }
+
+  if (currentResTab === 'scripts') renderScripts(container);
+  else if (currentResTab === 'products') renderProducts(container);
+  else if (currentResTab === 'ideas') renderIdeas(container);
+  else if (currentResTab === 'revenues') renderRevenues(container);
+}
+
+function getResChannelFilter() {
+  return document.getElementById('resource-channel').value;
+}
+
+function getChannelName(channelId) {
+  const c = data.channels.find(x => x.id === channelId);
+  return c ? c.name : '(채널 없음)';
+}
+
+function getChannelPlatform(channelId) {
+  const c = data.channels.find(x => x.id === channelId);
+  return c ? (PLATFORMS[c.platform] || PLATFORMS.other) : PLATFORMS.other;
+}
+
+// 대본
+function renderScripts(container) {
+  const filter = getResChannelFilter();
+  let list = data.scripts.slice();
+  if (filter !== 'all') list = list.filter(s => s.channelId === filter);
+  list.sort((a,b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+
+  let html = `<div style="margin-bottom:12px;">
+    <button class="btn-primary" onclick="openScriptModal()">+ 새 대본</button>
+  </div>`;
+  if (list.length === 0) {
+    html += '<div class="empty">대본이 없습니다.</div>';
+  } else {
+    html += '<div class="resource-grid">';
+    list.forEach(s => {
+      const p = getChannelPlatform(s.channelId);
+      const preview = (s.content || '').slice(0, 120);
+      html += `<div class="resource-card" onclick="editScript('${s.id}')">
+        <h4>${escapeHtml(s.title)}</h4>
+        <div class="resource-meta">
+          <span class="content-platform ${p.cls}">${p.icon} ${escapeHtml(getChannelName(s.channelId))}</span>
+          <span>${escapeHtml((s.createdAt || '').slice(0,10))}</span>
+        </div>
+        <div class="resource-preview">${escapeHtml(preview)}${(s.content||'').length > 120 ? '...' : ''}</div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
+
+function openScriptModal(s) {
+  const sel = document.getElementById('script-channel');
+  sel.innerHTML = data.channels.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+  const currentChannel = getResChannelFilter();
+  document.getElementById('script-modal-title').textContent = s ? '대본 수정' : '새 대본';
+  document.getElementById('script-id').value = s ? s.id : '';
+  document.getElementById('script-title').value = s ? s.title : '';
+  document.getElementById('script-channel').value = s ? s.channelId : (currentChannel !== 'all' ? currentChannel : data.channels[0].id);
+  document.getElementById('script-content').value = s ? (s.content || '') : '';
+  document.getElementById('script-delete-btn').style.display = s ? 'block' : 'none';
+  document.getElementById('script-modal').classList.add('show');
+}
+function closeScriptModal() { document.getElementById('script-modal').classList.remove('show'); }
+
+function saveScript() {
+  const id = document.getElementById('script-id').value;
+  const title = document.getElementById('script-title').value.trim();
+  if (!title) { alert('제목을 입력해주세요.'); return; }
+  const item = {
+    id: id || newId(),
+    title,
+    channelId: document.getElementById('script-channel').value,
+    content: document.getElementById('script-content').value,
+    createdAt: id ? data.scripts.find(s => s.id === id).createdAt : new Date().toISOString()
+  };
+  if (id) {
+    const idx = data.scripts.findIndex(s => s.id === id);
+    if (idx >= 0) data.scripts[idx] = item;
+  } else {
+    data.scripts.push(item);
+  }
+  saveData();
+  closeScriptModal();
+  renderResources();
+}
+
+function editScript(id) {
+  const s = data.scripts.find(x => x.id === id);
+  if (s) openScriptModal(s);
+}
+
+function deleteScript() {
+  const id = document.getElementById('script-id').value;
+  if (!id || !confirm('이 대본을 삭제할까요?')) return;
+  data.scripts = data.scripts.filter(s => s.id !== id);
+  saveData();
+  closeScriptModal();
+  renderResources();
+}
+
+// 판매상품
+function renderProducts(container) {
+  const filter = getResChannelFilter();
+  let list = data.products.slice();
+  if (filter !== 'all') list = list.filter(p => p.channelId === filter);
+  // 시작일 내림차순 (최신 위)
+  list.sort((a,b) => (b.startDate || '').localeCompare(a.startDate || ''));
+
+  let html = `<div style="margin-bottom:12px;">
+    <button class="btn-primary" onclick="openProductModal()">+ 새 판매상품</button>
+  </div>`;
+  if (list.length === 0) {
+    html += '<div class="empty">판매상품이 없습니다.</div>';
+  } else {
+    html += '<div class="product-timeline">';
+    list.forEach(p => {
+      const platform = getChannelPlatform(p.channelId);
+      const statusText = { active: '판매중', upcoming: '예정', ended: '종료' }[p.status] || '';
+      const period = `${p.startDate || '?'} ~ ${p.endDate || '진행중'}`;
+      html += `<div class="product-row status-${p.status}" onclick="editProduct('${p.id}')">
+        <div class="product-row-header">
+          <div>
+            <span class="product-name">${escapeHtml(p.name)}</span>
+            <span class="product-status">${statusText}</span>
+          </div>
+          <div class="product-price">${p.price ? formatMoney(p.price) : ''}</div>
+        </div>
+        <div class="product-period">📅 ${period}</div>
+        <div class="resource-meta">
+          <span class="content-platform ${platform.cls}">${platform.icon} ${escapeHtml(getChannelName(p.channelId))}</span>
+        </div>
+        ${p.memo ? `<div class="resource-preview" style="margin-top:6px;">${escapeHtml(p.memo)}</div>` : ''}
+        ${p.url ? `<div style="margin-top:6px;"><a href="${escapeHtml(p.url)}" target="_blank" style="color:#667eea; font-size:12px;" onclick="event.stopPropagation();">🔗 ${escapeHtml(p.url)}</a></div>` : ''}
+      </div>`;
+    });
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
+
+function openProductModal(p) {
+  const sel = document.getElementById('product-channel');
+  sel.innerHTML = data.channels.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+  const currentChannel = getResChannelFilter();
+  document.getElementById('product-modal-title').textContent = p ? '판매상품 수정' : '새 판매상품';
+  document.getElementById('product-id').value = p ? p.id : '';
+  document.getElementById('product-name').value = p ? p.name : '';
+  document.getElementById('product-channel').value = p ? p.channelId : (currentChannel !== 'all' ? currentChannel : data.channels[0].id);
+  document.getElementById('product-start').value = p ? (p.startDate || '') : '';
+  document.getElementById('product-end').value = p ? (p.endDate || '') : '';
+  document.getElementById('product-price').value = p ? (p.price || '') : '';
+  document.getElementById('product-status').value = p ? p.status : 'active';
+  document.getElementById('product-url').value = p ? (p.url || '') : '';
+  document.getElementById('product-memo').value = p ? (p.memo || '') : '';
+  document.getElementById('product-delete-btn').style.display = p ? 'block' : 'none';
+  document.getElementById('product-modal').classList.add('show');
+}
+function closeProductModal() { document.getElementById('product-modal').classList.remove('show'); }
+
+function saveProduct() {
+  const id = document.getElementById('product-id').value;
+  const name = document.getElementById('product-name').value.trim();
+  if (!name) { alert('상품명을 입력해주세요.'); return; }
+  const item = {
+    id: id || newId(),
+    name,
+    channelId: document.getElementById('product-channel').value,
+    startDate: document.getElementById('product-start').value,
+    endDate: document.getElementById('product-end').value,
+    price: Number(document.getElementById('product-price').value) || 0,
+    status: document.getElementById('product-status').value,
+    url: document.getElementById('product-url').value.trim(),
+    memo: document.getElementById('product-memo').value.trim()
+  };
+  if (id) {
+    const idx = data.products.findIndex(p => p.id === id);
+    if (idx >= 0) data.products[idx] = item;
+  } else {
+    data.products.push(item);
+  }
+  saveData();
+  closeProductModal();
+  renderResources();
+}
+
+function editProduct(id) {
+  const p = data.products.find(x => x.id === id);
+  if (p) openProductModal(p);
+}
+
+function deleteProduct() {
+  const id = document.getElementById('product-id').value;
+  if (!id || !confirm('이 상품을 삭제할까요?')) return;
+  data.products = data.products.filter(p => p.id !== id);
+  saveData();
+  closeProductModal();
+  renderResources();
+}
+
+// 아이디어
+function renderIdeas(container) {
+  const filter = getResChannelFilter();
+  let list = data.ideas.slice();
+  if (filter !== 'all') list = list.filter(i => i.channelId === filter);
+  list.sort((a,b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+
+  let html = `<div style="margin-bottom:12px;">
+    <button class="btn-primary" onclick="openIdeaModal()">+ 새 아이디어</button>
+  </div>`;
+  if (list.length === 0) {
+    html += '<div class="empty">아이디어가 없습니다.</div>';
+  } else {
+    html += '<div class="resource-grid">';
+    list.forEach(i => {
+      const p = getChannelPlatform(i.channelId);
+      const preview = (i.content || '').slice(0, 120);
+      const tags = (i.tags || '').split(',').map(t => t.trim()).filter(Boolean);
+      html += `<div class="resource-card" onclick="editIdea('${i.id}')">
+        <h4>💡 ${escapeHtml(i.title)}</h4>
+        <div class="resource-meta">
+          <span class="content-platform ${p.cls}">${p.icon} ${escapeHtml(getChannelName(i.channelId))}</span>
+          <span>${escapeHtml((i.createdAt || '').slice(0,10))}</span>
+        </div>
+        ${tags.length ? `<div style="margin-bottom:6px;">${tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+        <div class="resource-preview">${escapeHtml(preview)}${(i.content||'').length > 120 ? '...' : ''}</div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
+
+function openIdeaModal(i) {
+  const sel = document.getElementById('idea-channel');
+  sel.innerHTML = data.channels.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+  const currentChannel = getResChannelFilter();
+  document.getElementById('idea-modal-title').textContent = i ? '아이디어 수정' : '새 아이디어';
+  document.getElementById('idea-id').value = i ? i.id : '';
+  document.getElementById('idea-title').value = i ? i.title : '';
+  document.getElementById('idea-channel').value = i ? i.channelId : (currentChannel !== 'all' ? currentChannel : data.channels[0].id);
+  document.getElementById('idea-tags').value = i ? (i.tags || '') : '';
+  document.getElementById('idea-content').value = i ? (i.content || '') : '';
+  document.getElementById('idea-delete-btn').style.display = i ? 'block' : 'none';
+  document.getElementById('idea-modal').classList.add('show');
+}
+function closeIdeaModal() { document.getElementById('idea-modal').classList.remove('show'); }
+
+function saveIdea() {
+  const id = document.getElementById('idea-id').value;
+  const title = document.getElementById('idea-title').value.trim();
+  if (!title) { alert('제목을 입력해주세요.'); return; }
+  const item = {
+    id: id || newId(),
+    title,
+    channelId: document.getElementById('idea-channel').value,
+    tags: document.getElementById('idea-tags').value.trim(),
+    content: document.getElementById('idea-content').value,
+    createdAt: id ? data.ideas.find(x => x.id === id).createdAt : new Date().toISOString()
+  };
+  if (id) {
+    const idx = data.ideas.findIndex(x => x.id === id);
+    if (idx >= 0) data.ideas[idx] = item;
+  } else {
+    data.ideas.push(item);
+  }
+  saveData();
+  closeIdeaModal();
+  renderResources();
+}
+
+function editIdea(id) {
+  const i = data.ideas.find(x => x.id === id);
+  if (i) openIdeaModal(i);
+}
+
+function deleteIdea() {
+  const id = document.getElementById('idea-id').value;
+  if (!id || !confirm('이 아이디어를 삭제할까요?')) return;
+  data.ideas = data.ideas.filter(i => i.id !== id);
+  saveData();
+  closeIdeaModal();
+  renderResources();
+}
+
+// 매출
+let currentRevenueMonth = (() => {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+})();
+
+function renderRevenues(container) {
+  const filter = getResChannelFilter();
+
+  // 월별 옵션
+  const months = new Set([currentRevenueMonth]);
+  data.revenues.forEach(r => { if (r.month) months.add(r.month); });
+  const sortedMonths = Array.from(months).sort().reverse();
+
+  let html = `<div class="resource-controls">
+    <label style="font-weight:600;">조회 월:</label>
+    <select id="revenue-month-select" onchange="onRevenueMonthChange()" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px;">`;
+  sortedMonths.forEach(m => {
+    html += `<option value="${m}" ${m === currentRevenueMonth ? 'selected' : ''}>${m.replace('-', '년 ')}월</option>`;
+  });
+  html += '</select></div>';
+
+  let channels = data.channels;
+  if (filter !== 'all') channels = channels.filter(c => c.id === filter);
+
+  if (channels.length === 0) {
+    html += '<div class="empty">채널이 없습니다.</div>';
+    container.innerHTML = html;
+    return;
+  }
+
+  html += `<table class="revenue-table">
+    <thead>
+      <tr>
+        <th>채널</th>
+        <th>${currentRevenueMonth.replace('-', '년 ')}월 매출 (원)</th>
+        <th>구분 (광고/상품/협찬)</th>
+        <th>메모</th>
+        <th>저장</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  let total = 0;
+  channels.forEach(c => {
+    const rev = data.revenues.find(r => r.channelId === c.id && r.month === currentRevenueMonth);
+    const amount = rev ? rev.amount : '';
+    const source = rev ? (rev.source || '') : '';
+    const memo = rev ? (rev.memo || '') : '';
+    total += Number(amount) || 0;
+    const platform = PLATFORMS[c.platform] || PLATFORMS.other;
+    html += `<tr>
+      <td><span class="content-platform ${platform.cls}">${platform.icon}</span> <strong>${escapeHtml(c.name)}</strong></td>
+      <td><input type="number" id="rev-amount-${c.id}" value="${amount}" placeholder="0" style="width:130px;" oninput="updateRevTotal()"></td>
+      <td><input type="text" id="rev-source-${c.id}" value="${escapeHtml(source)}" placeholder="예: 광고, 전자책, 협찬" style="width:160px;"></td>
+      <td><input type="text" id="rev-memo-${c.id}" value="${escapeHtml(memo)}" placeholder="메모" style="width:180px;"></td>
+      <td><button class="btn-primary btn-small" onclick="saveRevenueRow('${c.id}')">저장</button></td>
+    </tr>`;
+  });
+  html += `<tr style="background:#fff5e6; font-weight:700;">
+    <td>📊 ${currentRevenueMonth.replace('-', '년 ')}월 총 매출</td>
+    <td id="revenue-total">${formatMoney(total)}</td>
+    <td colspan="3"></td>
+  </tr></tbody></table>`;
+  container.innerHTML = html;
+}
+
+function onRevenueMonthChange() {
+  currentRevenueMonth = document.getElementById('revenue-month-select').value;
+  renderResources();
+}
+
+function updateRevTotal() {
+  let total = 0;
+  document.querySelectorAll('[id^="rev-amount-"]').forEach(inp => {
+    total += Number(inp.value) || 0;
+  });
+  const el = document.getElementById('revenue-total');
+  if (el) el.textContent = formatMoney(total);
+}
+
+function saveRevenueRow(channelId) {
+  const amount = Number(document.getElementById('rev-amount-' + channelId).value) || 0;
+  const source = document.getElementById('rev-source-' + channelId).value.trim();
+  const memo = document.getElementById('rev-memo-' + channelId).value.trim();
+
+  const idx = data.revenues.findIndex(r => r.channelId === channelId && r.month === currentRevenueMonth);
+  if (idx >= 0) {
+    data.revenues[idx].amount = amount;
+    data.revenues[idx].source = source;
+    data.revenues[idx].memo = memo;
+  } else {
+    data.revenues.push({
+      id: newId(), channelId, month: currentRevenueMonth, amount, source, memo
+    });
+  }
+  saveData();
+  showToast('매출 저장됨');
 }
 
 // ============================================
@@ -1632,12 +2373,16 @@ function importBackup(event) {
       data = {
         channels: imp.channels || [],
         contents: imp.contents || [],
-        workers: imp.workers || []
+        workers: imp.workers || [],
+        scripts: imp.scripts || [],
+        products: imp.products || [],
+        ideas: imp.ideas || [],
+        revenues: imp.revenues || []
       };
       ensureDataShape(data);
       saveData();
       renderAll();
-      alert(`불러오기 완료!\n채널 ${data.channels.length}개, 콘텐츠 ${data.contents.length}개, 작업자 ${data.workers.length}명`);
+      alert(`불러오기 완료!\n채널 ${data.channels.length}개, 콘텐츠 ${data.contents.length}개, 작업자 ${data.workers.length}명, 대본 ${data.scripts.length}개, 상품 ${data.products.length}개, 아이디어 ${data.ideas.length}개`);
     } catch (err) {
       alert('파일 읽기 오류.');
     }
@@ -1679,6 +2424,9 @@ document.addEventListener('keydown', (e) => {
     closeContentModal();
     closeChannelModal();
     closeWorkerModal();
+    closeScriptModal();
+    closeProductModal();
+    closeIdeaModal();
   }
   if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'login-password') {
     tryLogin();

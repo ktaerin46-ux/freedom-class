@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>강의 노트</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", sans-serif;
+    background: #f5f6f8;
+    color: #222;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 20px;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+
+  /* 로그인 */
+  #login-screen {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px;
+  }
+  .login-box {
+    background: white; border-radius: 16px; padding: 40px;
+    max-width: 400px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
+  }
+  .login-box .lock-icon { font-size: 48px; margin-bottom: 16px; }
+  .login-box h2 { margin-bottom: 8px; font-size: 22px; }
+  .login-subtitle { color: #888; font-size: 14px; margin-bottom: 28px; }
+  .login-box input {
+    width: 100%; padding: 14px 18px; border: 2px solid #e0e0e0;
+    border-radius: 10px; font-size: 16px; margin-bottom: 12px; font-family: inherit;
+  }
+  .login-box input:focus { outline: none; border-color: #11998e; }
+  .login-box button {
+    width: 100%; padding: 14px; background: #11998e; color: white;
+    border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer;
+  }
+  .login-error { color: #e74c3c; font-size: 13px; margin-bottom: 12px; display: none; }
+  #main-app { display: none; }
+
+  /* 상단 네비 */
+  .top-nav {
+    background: white; border-radius: 12px; padding: 10px 16px;
+    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex; gap: 6px;
+  }
+  .top-nav a {
+    padding: 10px 18px; border-radius: 8px; text-decoration: none;
+    color: #888; font-weight: 600; font-size: 14px;
+  }
+  .top-nav a:hover { background: #f5f6f8; }
+  .top-nav a.current { background: #11998e; color: white; }
+
+  /* 헤더 */
+  header {
+    background: white; padding: 24px; border-radius: 12px;
+    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  h1 { font-size: 24px; margin-bottom: 8px; }
+  .subtitle { color: #888; font-size: 14px; }
+
+  .summary {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin-top: 16px;
+  }
+  .summary-card {
+    background: #fafbfc; padding: 14px 16px; border-radius: 10px;
+    border: 1px solid #eef0f3;
+  }
+  .summary-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+  .summary-value { font-size: 22px; font-weight: 700; }
+  .summary-value.green { color: #11998e; }
+  .summary-value.blue { color: #2c7be5; }
+  .summary-value.orange { color: #e67e22; }
+  .summary-value.gray { color: #6c757d; }
+
+  /* 버튼 */
+  button {
+    padding: 10px 18px; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .btn-primary { background: #11998e; color: white; }
+  .btn-primary:hover { background: #0c7e75; }
+  .btn-success { background: #00a651; color: white; }
+  .btn-gray { background: #6c757d; color: white; }
+  .btn-danger { background: #fff; color: #e74c3c; border: 1px solid #e74c3c; }
+  .btn-small { padding: 6px 12px; font-size: 13px; }
+
+  .toolbar {
+    background: white; padding: 12px 16px; border-radius: 12px;
+    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  }
+  .toolbar select, .toolbar input {
+    padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px;
+    font-size: 14px; background: white; font-family: inherit;
+  }
+  .toolbar .spacer { flex: 1; }
+
+  .category-chips {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .category-chip {
+    background: white; border: 1px solid #e0e0e0; border-radius: 20px;
+    padding: 6px 14px; font-size: 13px; cursor: pointer;
+    font-weight: 600; color: #555;
+  }
+  .category-chip:hover { background: #f5f6f8; }
+  .category-chip.active { background: #11998e; color: white; border-color: #11998e; }
+  .category-chip.add { border-style: dashed; color: #888; }
+  .category-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chip-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.08);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: 4px;
+  }
+  .chip-edit:hover {
+    background: #fff;
+    transform: scale(1.1);
+  }
+  .category-chip.active .chip-edit {
+    background: rgba(255,255,255,0.3);
+  }
+  .category-chip.active .chip-edit:hover {
+    background: white;
+    color: #11998e;
+  }
+
+  .panel {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 16px;
+  }
+  .panel-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+  }
+  .panel-header h2 { font-size: 18px; }
+
+  /* 강의 카드 */
+  .courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+  }
+  .course-card {
+    background: #fafbfc; border: 1px solid #eef0f3; border-radius: 12px;
+    padding: 16px; cursor: pointer; transition: all 0.15s;
+    border-left: 4px solid #11998e;
+  }
+  .course-card:hover {
+    box-shadow: 0 4px 12px rgba(17, 153, 142, 0.1);
+    transform: translateY(-2px);
+  }
+  .course-card.status-completed { border-left-color: #6c757d; opacity: 0.85; }
+  .course-card.status-paused { border-left-color: #f1c40f; }
+  .course-title { font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+  .course-info {
+    font-size: 12px; color: #666; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .course-status {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 600;
+  }
+  .status-learning { background: #e6f7ee; color: #11998e; }
+  .status-completed { background: #f0f0f0; color: #6c757d; }
+  .status-paused { background: #fff5e6; color: #b8651a; }
+  .progress-bar {
+    background: #e0e0e0; border-radius: 4px; height: 6px;
+    margin-top: 10px; overflow: hidden;
+  }
+  .progress-fill {
+    background: linear-gradient(90deg, #11998e, #38ef7d);
+    height: 100%; transition: width 0.3s;
+  }
+  .course-category-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 600; color: white;
+  }
+  .note-preview {
+    font-size: 12px; color: #888; margin-top: 8px;
+    max-height: 40px; overflow: hidden;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  }
+  .chapter-count {
+    font-size: 11px; color: #11998e; font-weight: 600;
+    background: #e6f7ee; padding: 2px 8px; border-radius: 4px;
+    margin-left: 4px;
+  }
+
+  /* 강의 상세 (필기 화면) */
+  .course-detail { display: none; }
+  .course-detail.show { display: block; }
+  .course-detail-header {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: white; padding: 24px; border-radius: 12px;
+    margin-bottom: 16px;
+  }
+  .course-detail-back {
+    background: rgba(255,255,255,0.2); color: white;
+    padding: 6px 14px; border-radius: 6px; cursor: pointer;
+    margin-bottom: 12px; display: inline-block; font-size: 13px;
+    border: none; font-family: inherit;
+  }
+  .course-detail-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .course-detail-meta { font-size: 13px; opacity: 0.9; }
+  .course-detail-actions {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;
+  }
+  .course-detail-actions button {
+    background: rgba(255,255,255,0.2); color: white; border: none;
+    padding: 8px 14px; border-radius: 6px; font-size: 13px; cursor: pointer;
+  }
+  .course-detail-actions button:hover { background: rgba(255,255,255,0.3); }
+  .course-detail-actions .btn-export {
+    background: white; color: #11998e; font-weight: 700;
+  }
+  .course-detail-actions .btn-export:hover { background: #f0fff8; }
+
+  /* 챕터 레이아웃 */
+  .chapter-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .chapter-sidebar {
+    background: white; border-radius: 12px; padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    position: sticky; top: 16px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+  }
+  .chapter-sidebar h3 {
+    font-size: 14px; color: #555; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .chapter-list {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .chapter-item {
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    font-size: 13px; transition: all 0.15s;
+    border: 1px solid transparent;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .chapter-item:hover { background: #f5f6f8; }
+  .chapter-item.active {
+    background: #e6f7ee; color: #11998e; font-weight: 700;
+    border-color: #11998e;
+  }
+  .chapter-item-num {
+    background: #e0e0e0; color: #666; font-weight: 700;
+    padding: 1px 7px; border-radius: 4px; font-size: 11px;
+    min-width: 22px; text-align: center;
+  }
+  .chapter-item.active .chapter-item-num {
+    background: #11998e; color: white;
+  }
+  .chapter-actions {
+    display: flex; gap: 4px; margin-top: 12px;
+  }
+  .chapter-actions button {
+    flex: 1; padding: 6px; font-size: 12px;
+    background: #f5f6f8; color: #555; border: 1px solid #ddd;
+  }
+  .chapter-actions button:hover {
+    background: #11998e; color: white; border-color: #11998e;
+  }
+
+  /* 에디터 */
+  .editor-area {
+    background: white; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    overflow: hidden;
+  }
+  .editor-meta {
+    padding: 14px 20px;
+    border-bottom: 1px solid #eef0f3;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .chapter-title-input {
+    border: none; font-size: 20px; font-weight: 700;
+    flex: 1; padding: 4px 0; font-family: inherit;
+    background: transparent;
+  }
+  .chapter-title-input:focus { outline: none; }
+  .editor-meta-info { font-size: 12px; color: #888; }
+  .editor-meta-info .saved-mark { color: #00a651; font-weight: 600; }
+
+  .editor-toolbar {
+    padding: 8px 12px; background: #fafbfc;
+    border-bottom: 1px solid #eef0f3;
+    display: flex; gap: 4px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .editor-toolbar button {
+    padding: 6px 10px; background: white; color: #555;
+    border: 1px solid #e0e0e0; border-radius: 6px;
+    font-size: 13px; min-width: 32px;
+  }
+  .editor-toolbar button:hover {
+    background: #11998e; color: white; border-color: #11998e;
+  }
+  .editor-toolbar .separator {
+    width: 1px; background: #ddd; height: 24px; margin: 0 4px;
+  }
+  .color-btn {
+    position: relative; padding: 6px 8px;
+  }
+  .color-palette {
+    display: none;
+    position: absolute; top: 100%; left: 0;
+    background: white; border: 1px solid #e0e0e0;
+    border-radius: 8px; padding: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 10;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .color-palette.show { display: grid; }
+  .color-swatch {
+    width: 24px; height: 24px; border-radius: 4px;
+    cursor: pointer; border: 1px solid #ddd;
+  }
+
+  .editor-content {
+    min-height: 400px;
+    padding: 24px;
+    font-size: 16px;
+    line-height: 1.8;
+    outline: none;
+    color: #222;
+  }
+  .editor-content:empty:before {
+    content: attr(data-placeholder);
+    color: #aaa;
+  }
+  .editor-content p { margin: 0 0 12px; }
+  .editor-content h1 { font-size: 24px; font-weight: 700; margin: 16px 0 12px; }
+  .editor-content h2 { font-size: 20px; font-weight: 700; margin: 16px 0 10px; }
+  .editor-content h3 { font-size: 17px; font-weight: 700; margin: 14px 0 8px; }
+  .editor-content ul, .editor-content ol { margin: 0 0 12px 24px; }
+  .editor-content blockquote {
+    border-left: 4px solid #11998e;
+    padding: 8px 16px;
+    background: #f0fff8;
+    margin: 8px 0;
+    color: #555;
+  }
+  .editor-content code {
+    background: #f5f6f8;
+    padding: 2px 6px; border-radius: 4px;
+    font-family: 'Menlo', monospace;
+    font-size: 14px; color: #e67e22;
+  }
+  .editor-content a { color: #2c7be5; text-decoration: underline; }
+
+  /* 꼬리 메모 (개선점) */
+  .followup-area {
+    margin-top: 16px;
+    background: linear-gradient(135deg, #fff5e6, #ffe6cc);
+    border-radius: 12px;
+    border: 2px dashed #e67e22;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(230, 126, 34, 0.1);
+  }
+  .followup-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 10px;
+  }
+  .followup-title {
+    font-weight: 700; color: #b8651a; font-size: 15px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .followup-hint { font-size: 12px; color: #b8651a; opacity: 0.8; }
+  .followup-textarea {
+    width: 100%; min-height: 100px; border: 1px solid #ffd9a8;
+    border-radius: 8px; padding: 12px; background: white;
+    font-family: inherit; font-size: 14px; line-height: 1.6;
+    resize: vertical;
+  }
+  .followup-textarea:focus { outline: none; border-color: #e67e22; }
+
+  /* 모달 */
+  .modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 100;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: white; border-radius: 12px; padding: 28px;
+    max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;
+  }
+  .modal h2 { margin-bottom: 20px; font-size: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-size: 13px; color: #555;
+    margin-bottom: 6px; font-weight: 600;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px 14px; border: 1px solid #ddd;
+    border-radius: 8px; font-size: 14px; font-family: inherit;
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-actions {
+    display: flex; gap: 8px; justify-content: flex-end; margin-top: 24px;
+  }
+
+  /* 동기화 */
+  #sync-status {
+    position: fixed; top: 16px; right: 16px;
+    padding: 8px 14px; border-radius: 20px; font-size: 13px;
+    font-weight: 600; z-index: 99; display: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  #sync-status.loading { background: #fff5e6; color: #b8651a; }
+  #sync-status.saving { background: #e6f0ff; color: #2c7be5; }
+  #sync-status.saved { background: #e6f7ee; color: #00a651; }
+  #sync-status.error { background: #fde8e8; color: #e74c3c; }
+
+  .empty { text-align: center; padding: 40px 20px; color: #aaa; }
+  .empty-icon { font-size: 40px; margin-bottom: 10px; }
+
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: #1a1a1a; color: white; padding: 10px 20px;
+    border-radius: 24px; font-size: 14px; z-index: 1000;
+    opacity: 0; transition: opacity 0.2s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 900px) {
+    .chapter-layout { grid-template-columns: 1fr; }
+    .chapter-sidebar { position: static; max-height: none; }
+  }
+  @media (max-width: 768px) {
+    body { padding: 10px; font-size: 14px; }
+    .summary { grid-template-columns: 1fr 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  /* 인쇄용 */
+  @media print {
+    body * { visibility: hidden; }
+    .print-area, .print-area * { visibility: visible; }
+    .print-area { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; }
+    .editor-toolbar, .chapter-actions, .course-detail-actions,
+    .chapter-title-input { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="lock-icon">📚</div>
+    <h2>강의 노트</h2>
+    <p class="login-subtitle">비밀번호를 입력해주세요</p>
+    <div class="login-error" id="login-error">비밀번호가 올바르지 않습니다.</div>
+    <input type="password" id="login-password" placeholder="비밀번호" autocomplete="current-password">
+    <button onclick="tryLogin()">로그인</button>
+  </div>
+</div>
+
+<div id="sync-status"><span id="sync-text">동기화 중...</span></div>
+<div class="toast" id="toast"></div>
+
+<div class="container" id="main-app">
+
+  <nav class="top-nav">
+    <a href="콘텐츠관리.html">🎬 콘텐츠 관리</a>
+    <a href="강의노트.html" class="current">📚 강의 노트</a>
+  </nav>
+
+  <!-- 목록 화면 -->
+  <div id="view-list">
+    <header>
+      <h1>📚 강의 노트</h1>
+      <p class="subtitle">분야별로 강의를 정리하고 챕터별 필기 + 개선 메모를 남겨보세요.</p>
+      <div class="summary">
+        <div class="summary-card">
+          <div class="summary-label">전체 강의</div>
+          <div class="summary-value gray" id="sum-total">0개</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">학습 중</div>
+          <div class="summary-value green" id="sum-learning">0개</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">완료</div>
+          <div class="summary-value blue" id="sum-completed">0개</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">보류/일시중지</div>
+          <div class="summary-value orange" id="sum-paused">0개</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <input type="text" id="filter-search" placeholder="강의명/강사/내용 검색..." style="flex: 1; min-width: 200px;">
+      <select id="filter-status">
+        <option value="all">모든 상태</option>
+        <option value="learning">학습 중</option>
+        <option value="completed">완료</option>
+        <option value="paused">보류</option>
+      </select>
+      <button class="btn-primary" onclick="openCourseModal()">+ 새 강의 추가</button>
+      <div class="spacer"></div>
+      <button class="btn-success btn-small" onclick="exportBackup()">💾 백업</button>
+      <button class="btn-gray btn-small" onclick="document.getElementById('import-file').click()">📂 불러오기</button>
+      <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importBackup(event)">
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>📂 분야별 필터</h2>
+        <button class="btn-gray btn-small" onclick="openCategoryModal()">+ 분야 추가</button>
+      </div>
+      <div class="category-chips" id="category-chips"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>강의 목록</h2>
+      </div>
+      <div id="courses-content"></div>
+    </div>
+  </div>
+
+  <!-- 상세 (필기) 화면 -->
+  <div id="view-detail" class="course-detail">
+    <div class="course-detail-header">
+      <button class="course-detail-back" onclick="showList()">← 목록으로</button>
+      <div class="course-detail-title" id="detail-title">강의 제목</div>
+      <div class="course-detail-meta" id="detail-meta"></div>
+      <div class="course-detail-actions">
+        <button onclick="editCurrentCourse()">⚙️ 강의 정보 수정</button>
+        <button onclick="exportWord()" class="btn-export">📄 워드 내보내기</button>
+        <button onclick="exportPDF()" class="btn-export">📑 PDF 내보내기</button>
+        <button onclick="deleteCurrentCourse()" style="background: rgba(231, 76, 60, 0.3);">🗑️ 강의 삭제</button>
+      </div>
+    </div>
+
+    <div class="chapter-layout">
+      <!-- 사이드바: 챕터 목록 -->
+      <div class="chapter-sidebar">
+        <h3>
+          <span>📂 챕터</span>
+          <button class="btn-small btn-primary" onclick="addChapter()" style="padding: 4px 10px; font-size: 12px;">+ 추가</button>
+        </h3>
+        <div class="chapter-list" id="chapter-list"></div>
+        <div class="chapter-actions">
+          <button onclick="moveChapter(-1)" title="위로">▲ 위</button>
+          <button onclick="moveChapter(1)" title="아래로">▼ 아래</button>
+          <button onclick="renameChapter()" title="이름변경">✏️ 이름</button>
+          <button onclick="deleteChapter()" title="삭제" style="color: #e74c3c;">🗑️</button>
+        </div>
+      </div>
+
+      <!-- 에디터 영역 -->
+      <div>
+        <div class="editor-area" id="editor-area">
+          <div class="editor-meta">
+            <input type="text" id="chapter-title-input" class="chapter-title-input" placeholder="챕터 제목 (예: 1강 - 알고리즘 이해)" oninput="onChapterTitleChange()">
+            <div class="editor-meta-info">
+              <span id="chapter-dates"></span>
+              <span class="saved-mark" id="save-status"></span>
+            </div>
+          </div>
+
+          <div class="editor-toolbar">
+            <button onclick="execCmd('bold')" title="굵게 (Cmd+B)"><b>B</b></button>
+            <button onclick="execCmd('italic')" title="기울임 (Cmd+I)"><i>I</i></button>
+            <button onclick="execCmd('underline')" title="밑줄 (Cmd+U)"><u>U</u></button>
+            <button onclick="execCmd('strikeThrough')" title="취소선"><s>S</s></button>
+            <div class="separator"></div>
+            <button onclick="execCmd('formatBlock', 'h1')" title="제목 1">H1</button>
+            <button onclick="execCmd('formatBlock', 'h2')" title="제목 2">H2</button>
+            <button onclick="execCmd('formatBlock', 'h3')" title="제목 3">H3</button>
+            <button onclick="execCmd('formatBlock', 'p')" title="본문">¶</button>
+            <div class="separator"></div>
+            <button onclick="execCmd('insertUnorderedList')" title="목록">•</button>
+            <button onclick="execCmd('insertOrderedList')" title="번호목록">1.</button>
+            <button onclick="execCmd('formatBlock', 'blockquote')" title="인용">❝</button>
+            <div class="separator"></div>
+            <div class="color-btn" style="position: relative;">
+              <button onclick="toggleColorPalette('text')" title="글자색"><span style="color: #e74c3c; font-weight: 700;">A</span>▾</button>
+              <div class="color-palette" id="palette-text">
+                <div class="color-swatch" style="background: #000" onclick="applyColor('text', '#000')"></div>
+                <div class="color-swatch" style="background: #e74c3c" onclick="applyColor('text', '#e74c3c')"></div>
+                <div class="color-swatch" style="background: #e67e22" onclick="applyColor('text', '#e67e22')"></div>
+                <div class="color-swatch" style="background: #f1c40f" onclick="applyColor('text', '#f1c40f')"></div>
+                <div class="color-swatch" style="background: #00a651" onclick="applyColor('text', '#00a651')"></div>
+                <div class="color-swatch" style="background: #2c7be5" onclick="applyColor('text', '#2c7be5')"></div>
+                <div class="color-swatch" style="background: #9b59b6" onclick="applyColor('text', '#9b59b6')"></div>
+                <div class="color-swatch" style="background: #555" onclick="applyColor('text', '#555')"></div>
+                <div class="color-swatch" style="background: #11998e" onclick="applyColor('text', '#11998e')"></div>
+                <div class="color-swatch" style="background: #ff69b4" onclick="applyColor('text', '#ff69b4')"></div>
+                <div class="color-swatch" style="background: #00bcd4" onclick="applyColor('text', '#00bcd4')"></div>
+                <div class="color-swatch" style="background: #ff5722" onclick="applyColor('text', '#ff5722')"></div>
+                <div class="color-swatch" style="background: #607d8b" onclick="applyColor('text', '#607d8b')"></div>
+                <div class="color-swatch" style="background: #fff; border: 2px solid #999" onclick="applyColor('text', '#000')" title="기본"></div>
+              </div>
+            </div>
+            <div class="color-btn" style="position: relative;">
+              <button onclick="toggleColorPalette('bg')" title="배경색"><span style="background: #fff59d; padding: 0 4px;">A</span>▾</button>
+              <div class="color-palette" id="palette-bg">
+                <div class="color-swatch" style="background: #fff59d" onclick="applyColor('bg', '#fff59d')"></div>
+                <div class="color-swatch" style="background: #ffcdd2" onclick="applyColor('bg', '#ffcdd2')"></div>
+                <div class="color-swatch" style="background: #ffe0b2" onclick="applyColor('bg', '#ffe0b2')"></div>
+                <div class="color-swatch" style="background: #c8e6c9" onclick="applyColor('bg', '#c8e6c9')"></div>
+                <div class="color-swatch" style="background: #b3e5fc" onclick="applyColor('bg', '#b3e5fc')"></div>
+                <div class="color-swatch" style="background: #e1bee7" onclick="applyColor('bg', '#e1bee7')"></div>
+                <div class="color-swatch" style="background: #d7ccc8" onclick="applyColor('bg', '#d7ccc8')"></div>
+                <div class="color-swatch" style="background: #f5f5f5" onclick="applyColor('bg', '#f5f5f5')"></div>
+                <div class="color-swatch" style="background: #ffeb3b" onclick="applyColor('bg', '#ffeb3b')"></div>
+                <div class="color-swatch" style="background: #ff8a80" onclick="applyColor('bg', '#ff8a80')"></div>
+                <div class="color-swatch" style="background: #80d8ff" onclick="applyColor('bg', '#80d8ff')"></div>
+                <div class="color-swatch" style="background: #b9f6ca" onclick="applyColor('bg', '#b9f6ca')"></div>
+                <div class="color-swatch" style="background: #ff80ab" onclick="applyColor('bg', '#ff80ab')"></div>
+                <div class="color-swatch" style="background: transparent; border: 2px solid #999" onclick="applyColor('bg', 'transparent')" title="없음"></div>
+              </div>
+            </div>
+            <div class="separator"></div>
+            <button onclick="execCmd('justifyLeft')" title="왼쪽 정렬">⬅</button>
+            <button onclick="execCmd('justifyCenter')" title="가운데 정렬">⬌</button>
+            <button onclick="execCmd('justifyRight')" title="오른쪽 정렬">➡</button>
+            <div class="separator"></div>
+            <button onclick="insertLink()" title="링크">🔗</button>
+            <button onclick="execCmd('removeFormat')" title="서식 제거">🧹</button>
+          </div>
+
+          <div id="editor-content" class="editor-content" contenteditable="true"
+            data-placeholder="여기에 강의 내용을 자유롭게 필기하세요. 굵게, 색깔, 목록 등 서식을 자유롭게 적용할 수 있어요."></div>
+        </div>
+
+        <!-- 꼬리 메모 (개선점) -->
+        <div class="followup-area">
+          <div class="followup-header">
+            <div class="followup-title">📌 꼬리 메모 — 어떻게 개선할 수 있을까?</div>
+            <div class="followup-hint">강의를 보고 든 생각, 개선 아이디어, 적용 계획 등</div>
+          </div>
+          <textarea id="followup-textarea" class="followup-textarea"
+            placeholder="예: 강사가 말한 '클릭률(CTR)' 부분을 우리 채널에 적용하려면 → 썸네일 A/B 테스트 시작..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 분야 모달 -->
+<div class="modal-overlay" id="category-modal">
+  <div class="modal">
+    <h2 id="category-modal-title">분야 추가</h2>
+    <input type="hidden" id="category-id">
+    <div class="form-group">
+      <label>분야명 *</label>
+      <input type="text" id="category-name" placeholder="예: 유튜브, 사업, 부동산">
+    </div>
+    <div class="form-group">
+      <label>색깔</label>
+      <select id="category-color">
+        <option value="#FF0000">🔴 빨강</option>
+        <option value="#2c7be5">🔵 파랑</option>
+        <option value="#00a651">🟢 초록</option>
+        <option value="#e67e22">🟠 주황</option>
+        <option value="#9b59b6">🟣 보라</option>
+        <option value="#f1c40f">🟡 노랑</option>
+        <option value="#11998e">🌊 청록</option>
+        <option value="#ff69b4">💗 핑크</option>
+        <option value="#6c757d">⚪ 회색</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="category-delete-btn" onclick="deleteCategory()" style="margin-right:auto; display:none;">삭제</button>
+      <button class="btn-gray" onclick="closeCategoryModal()">취소</button>
+      <button class="btn-primary" onclick="saveCategory()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 강의 모달 -->
+<div class="modal-overlay" id="course-modal">
+  <div class="modal">
+    <h2 id="course-modal-title">새 강의 추가</h2>
+    <input type="hidden" id="course-id">
+    <div class="form-group">
+      <label>강의명 *</label>
+      <input type="text" id="course-title" placeholder="예: 유튜브 알고리즘 완전 정복">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>강사</label>
+        <input type="text" id="course-instructor" placeholder="강사 이름">
+      </div>
+      <div class="form-group">
+        <label>분야 *</label>
+        <select id="course-category"></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>플랫폼</label>
+        <input type="text" id="course-platform" placeholder="예: 클래스101, 인프런">
+      </div>
+      <div class="form-group">
+        <label>상태</label>
+        <select id="course-status">
+          <option value="learning">학습 중</option>
+          <option value="completed">완료</option>
+          <option value="paused">보류</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>시작일</label>
+        <input type="date" id="course-start">
+      </div>
+      <div class="form-group">
+        <label>진도 (%)</label>
+        <input type="number" id="course-progress" min="0" max="100">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>강의 URL</label>
+      <input type="text" id="course-url" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label>한줄 메모</label>
+      <input type="text" id="course-memo" placeholder="이 강의의 핵심, 추천 이유 등">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="course-delete-btn" onclick="deleteCourseFromModal()" style="margin-right:auto; display:none;">삭제</button>
+      <button class="btn-gray" onclick="closeCourseModal()">취소</button>
+      <button class="btn-primary" onclick="saveCourse()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// 비밀번호 (통합)
+// ============================================
+const PASSWORD_HASH = 'd6219f60a196671281be2043234c42d364d5e06accb778c0eeb36554ac434148';
+const AUTH_KEY = 'site_authed_v1';
+const STORAGE_KEY = 'lecture_data_v1';
+const PANTRY_ID = 'ff0aa9af-8ccd-428a-8622-9ef700325e9a';
+const PANTRY_BASKET = 'lecture-data';
+const PANTRY_URL = `https://getpantry.cloud/apiv1/pantry/${PANTRY_ID}/basket/${PANTRY_BASKET}`;
+
+let saveCloudTimer = null;
+let autoSaveTimer = null;
+let currentCategoryFilter = 'all';
+let currentCourseId = null;
+let currentChapterId = null;
+
+const DEFAULT_CATEGORIES = [
+  { id: 'cat-youtube', name: '유튜브', color: '#FF0000' },
+  { id: 'cat-business', name: '사업', color: '#2c7be5' },
+  { id: 'cat-realestate', name: '부동산', color: '#00a651' }
+];
+
+function updateSyncStatus(status) {
+  const el = document.getElementById('sync-status');
+  const text = document.getElementById('sync-text');
+  if (!el) return;
+  el.style.display = 'block';
+  el.className = status;
+  el.style.opacity = '1';
+  if (status === 'loading') text.textContent = '☁️ 불러오는 중...';
+  else if (status === 'saving') text.textContent = '☁️ 저장 중...';
+  else if (status === 'saved') {
+    text.textContent = '✓ 동기화 완료';
+    setTimeout(() => {
+      el.style.opacity = '0';
+      setTimeout(() => { el.style.display = 'none'; }, 300);
+    }, 1500);
+  }
+  else if (status === 'error') text.textContent = '⚠️ 동기화 실패';
+}
+
+async function sha256(text) {
+  const buf = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function tryLogin() {
+  const pw = document.getElementById('login-password').value;
+  if (!pw) return;
+  const hash = await sha256(pw);
+  if (hash === PASSWORD_HASH) {
+    sessionStorage.setItem(AUTH_KEY, 'true');
+    showApp();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-password').value = '';
+  }
+}
+
+async function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+
+  updateSyncStatus('loading');
+  const cloudData = await loadFromCloud();
+  if (cloudData) {
+    data = cloudData;
+    ensureDataShape(data);
+    migrateData();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    renderAll();
+    updateSyncStatus('saved');
+  } else {
+    if (hasAnyData()) {
+      const ok = await saveToCloud(data);
+      updateSyncStatus(ok ? 'saved' : 'error');
+    } else {
+      updateSyncStatus('saved');
+    }
+    renderAll();
+  }
+}
+
+function checkAuth() {
+  if (sessionStorage.getItem(AUTH_KEY) === 'true') showApp();
+  else setTimeout(() => {
+    const pw = document.getElementById('login-password');
+    if (pw) pw.focus();
+  }, 100);
+}
+
+async function loadFromCloud() {
+  try {
+    const res = await fetch(PANTRY_URL);
+    if (!res.ok) return null;
+    const d = await res.json();
+    if (!d || typeof d !== 'object') return null;
+    return d;
+  } catch (e) { return null; }
+}
+
+async function saveToCloud(payload) {
+  try {
+    const res = await fetch(PANTRY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.ok;
+  } catch (e) { return false; }
+}
+
+function scheduleCloudSave() {
+  if (saveCloudTimer) clearTimeout(saveCloudTimer);
+  saveCloudTimer = setTimeout(async () => {
+    updateSyncStatus('saving');
+    const ok = await saveToCloud(data);
+    updateSyncStatus(ok ? 'saved' : 'error');
+  }, 800);
+}
+
+// ============================================
+// 데이터
+// ============================================
+function ensureDataShape(d) {
+  if (!Array.isArray(d.categories)) d.categories = DEFAULT_CATEGORIES.slice();
+  if (!Array.isArray(d.courses)) d.courses = [];
+  d.courses.forEach(c => {
+    if (!Array.isArray(c.chapters)) c.chapters = [];
+  });
+}
+
+// 기존 데이터(notes 필드)를 챕터 구조로 마이그레이션
+function migrateData() {
+  data.courses.forEach(c => {
+    if ((!c.chapters || c.chapters.length === 0) && c.notes) {
+      c.chapters = [{
+        id: newId(),
+        title: '기본 노트',
+        content: c.notes.replace(/\n/g, '<br>'),
+        followUp: '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }];
+      delete c.notes;
+    }
+  });
+}
+
+function loadData() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return { categories: DEFAULT_CATEGORIES.slice(), courses: [] };
+  try {
+    const d = JSON.parse(raw);
+    ensureDataShape(d);
+    return d;
+  } catch(e) { return { categories: DEFAULT_CATEGORIES.slice(), courses: [] }; }
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  scheduleCloudSave();
+}
+
+let data = loadData();
+migrateData();
+
+function hasAnyData() {
+  return data.courses.length > 0;
+}
+
+function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function formatDateTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${y}-${m}-${day} ${hh}:${mm}`;
+}
+
+// ============================================
+// 요약 / 분야 칩
+// ============================================
+function renderSummary() {
+  document.getElementById('sum-total').textContent = data.courses.length + '개';
+  document.getElementById('sum-learning').textContent =
+    data.courses.filter(c => c.status === 'learning').length + '개';
+  document.getElementById('sum-completed').textContent =
+    data.courses.filter(c => c.status === 'completed').length + '개';
+  document.getElementById('sum-paused').textContent =
+    data.courses.filter(c => c.status === 'paused').length + '개';
+}
+
+function renderCategoryChips() {
+  const container = document.getElementById('category-chips');
+  let html = `<span class="category-chip ${currentCategoryFilter === 'all' ? 'active' : ''}"
+    onclick="setCategoryFilter('all')">📚 전체 (${data.courses.length})</span>`;
+  data.categories.forEach(cat => {
+    const count = data.courses.filter(c => c.categoryId === cat.id).length;
+    const active = currentCategoryFilter === cat.id ? 'active' : '';
+    html += `<span class="category-chip ${active}" style="${active ? `background: ${cat.color}; border-color: ${cat.color};` : `color: ${cat.color}; border-color: ${cat.color};`}"
+      onclick="setCategoryFilter('${cat.id}')">${escapeHtml(cat.name)} (${count})<span class="chip-edit" onclick="event.stopPropagation(); editCategory('${cat.id}')" title="수정/삭제">✏️</span></span>`;
+  });
+  html += `<span class="category-chip add" onclick="openCategoryModal()">+ 분야 추가</span>`;
+  container.innerHTML = html;
+}
+
+function setCategoryFilter(cat) {
+  currentCategoryFilter = cat;
+  renderCategoryChips();
+  renderCourses();
+}
+
+// ============================================
+// 강의 목록
+// ============================================
+function renderCourses() {
+  const container = document.getElementById('courses-content');
+  const search = document.getElementById('filter-search').value.trim().toLowerCase();
+  const status = document.getElementById('filter-status').value;
+
+  let list = data.courses.slice();
+  if (currentCategoryFilter !== 'all') {
+    list = list.filter(c => c.categoryId === currentCategoryFilter);
+  }
+  if (status !== 'all') {
+    list = list.filter(c => c.status === status);
+  }
+  if (search) {
+    list = list.filter(c => {
+      const inTitle = (c.title || '').toLowerCase().includes(search);
+      const inInst = (c.instructor || '').toLowerCase().includes(search);
+      const inMemo = (c.memo || '').toLowerCase().includes(search);
+      const inChapter = (c.chapters || []).some(ch =>
+        (ch.title || '').toLowerCase().includes(search) ||
+        (ch.content || '').toLowerCase().includes(search) ||
+        (ch.followUp || '').toLowerCase().includes(search)
+      );
+      return inTitle || inInst || inMemo || inChapter;
+    });
+  }
+
+  list.sort((a,b) => {
+    const order = { learning: 0, paused: 1, completed: 2 };
+    const diff = (order[a.status] || 9) - (order[b.status] || 9);
+    if (diff !== 0) return diff;
+    return (b.startDate || '').localeCompare(a.startDate || '');
+  });
+
+  if (list.length === 0) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">📚</div>등록된 강의가 없습니다.</div>';
+    return;
+  }
+
+  let html = '<div class="courses-grid">';
+  list.forEach(c => {
+    const cat = data.categories.find(x => x.id === c.categoryId);
+    const catColor = cat ? cat.color : '#888';
+    const catName = cat ? cat.name : '미분류';
+    const statusText = { learning: '🎯 학습 중', completed: '✅ 완료', paused: '⏸️ 보류' }[c.status] || '';
+    const progress = Number(c.progress) || 0;
+    const chapterCount = (c.chapters || []).length;
+
+    html += `<div class="course-card status-${c.status}" style="border-left-color: ${catColor};" onclick="openCourse('${c.id}')">
+      <div class="course-title">${escapeHtml(c.title)}</div>
+      <div class="course-info">
+        <span class="course-category-badge" style="background: ${catColor};">${escapeHtml(catName)}</span>
+        <span class="course-status status-${c.status}">${statusText}</span>
+        ${chapterCount > 0 ? `<span class="chapter-count">📂 ${chapterCount}챕터</span>` : ''}
+      </div>
+      ${c.instructor ? `<div class="course-info">👨‍🏫 ${escapeHtml(c.instructor)}</div>` : ''}
+      ${c.platform ? `<div class="course-info">🌐 ${escapeHtml(c.platform)}</div>` : ''}
+      ${c.startDate ? `<div class="course-info">📅 ${c.startDate} 시작</div>` : ''}
+      ${progress > 0 ? `<div class="progress-bar"><div class="progress-fill" style="width: ${progress}%;"></div></div>
+        <div style="font-size: 11px; color: #888; margin-top: 4px;">${progress}% 완료</div>` : ''}
+      ${c.memo ? `<div class="note-preview">💬 ${escapeHtml(c.memo)}</div>` : ''}
+    </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ============================================
+// 강의 모달
+// ============================================
+function fillCategorySelect(elId, currentVal) {
+  const sel = document.getElementById(elId);
+  sel.innerHTML = data.categories.map(cat =>
+    `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`
+  ).join('');
+  if (currentVal) sel.value = currentVal;
+}
+
+function openCourseModal(course) {
+  if (data.categories.length === 0) {
+    alert('먼저 분야를 추가해주세요.');
+    openCategoryModal();
+    return;
+  }
+  fillCategorySelect('course-category', course ? course.categoryId : null);
+
+  document.getElementById('course-modal-title').textContent = course ? '강의 수정' : '새 강의 추가';
+  document.getElementById('course-id').value = course ? course.id : '';
+  document.getElementById('course-title').value = course ? course.title : '';
+  document.getElementById('course-instructor').value = course ? (course.instructor || '') : '';
+  document.getElementById('course-platform').value = course ? (course.platform || '') : '';
+  document.getElementById('course-status').value = course ? course.status : 'learning';
+  document.getElementById('course-start').value = course ? (course.startDate || '') : '';
+  document.getElementById('course-progress').value = course ? (course.progress || '') : '';
+  document.getElementById('course-url').value = course ? (course.url || '') : '';
+  document.getElementById('course-memo').value = course ? (course.memo || '') : '';
+  document.getElementById('course-delete-btn').style.display = course ? 'block' : 'none';
+  document.getElementById('course-modal').classList.add('show');
+}
+function closeCourseModal() { document.getElementById('course-modal').classList.remove('show'); }
+
+function saveCourse() {
+  const id = document.getElementById('course-id').value;
+  const title = document.getElementById('course-title').value.trim();
+  if (!title) { alert('강의명을 입력해주세요.'); return; }
+
+  const existing = id ? data.courses.find(c => c.id === id) : null;
+  const course = {
+    id: id || newId(),
+    title,
+    instructor: document.getElementById('course-instructor').value.trim(),
+    categoryId: document.getElementById('course-category').value,
+    platform: document.getElementById('course-platform').value.trim(),
+    status: document.getElementById('course-status').value,
+    startDate: document.getElementById('course-start').value,
+    progress: Number(document.getElementById('course-progress').value) || 0,
+    url: document.getElementById('course-url').value.trim(),
+    memo: document.getElementById('course-memo').value.trim(),
+    chapters: existing ? existing.chapters : []
+  };
+  const isNew = !id;
+  if (id) {
+    const idx = data.courses.findIndex(c => c.id === id);
+    if (idx >= 0) data.courses[idx] = course;
+  } else {
+    data.courses.push(course);
+  }
+  saveData();
+  closeCourseModal();
+
+  // 새 강의 추가 시 필터를 그 강의 분야로 자동 변경 (안 보이는 문제 방지)
+  if (isNew) {
+    currentCategoryFilter = course.categoryId;
+    document.getElementById('filter-search').value = '';
+    document.getElementById('filter-status').value = 'all';
+    showToast('강의 추가됨: ' + course.title);
+  }
+
+  renderAll();
+
+  if (currentCourseId === course.id) {
+    showCourseDetail(course.id);
+  }
+}
+
+function editCurrentCourse() {
+  if (!currentCourseId) return;
+  const c = data.courses.find(x => x.id === currentCourseId);
+  if (c) openCourseModal(c);
+}
+
+function deleteCourseFromModal() {
+  const id = document.getElementById('course-id').value;
+  if (!id || !confirm('이 강의를 삭제할까요? 모든 챕터/필기가 함께 삭제됩니다.')) return;
+  data.courses = data.courses.filter(c => c.id !== id);
+  if (currentCourseId === id) {
+    currentCourseId = null;
+    showList();
+  }
+  saveData();
+  closeCourseModal();
+  renderAll();
+}
+
+function deleteCurrentCourse() {
+  if (!currentCourseId) return;
+  if (!confirm('이 강의를 삭제할까요? 모든 챕터/필기가 함께 삭제됩니다.')) return;
+  data.courses = data.courses.filter(c => c.id !== currentCourseId);
+  currentCourseId = null;
+  saveData();
+  showList();
+  renderAll();
+}
+
+// ============================================
+// 분야 모달
+// ============================================
+function openCategoryModal(cat) {
+  document.getElementById('category-modal-title').textContent = cat ? '분야 수정' : '새 분야 추가';
+  document.getElementById('category-id').value = cat ? cat.id : '';
+  document.getElementById('category-name').value = cat ? cat.name : '';
+  document.getElementById('category-color').value = cat ? cat.color : '#11998e';
+  document.getElementById('category-delete-btn').style.display = cat ? 'block' : 'none';
+  document.getElementById('category-modal').classList.add('show');
+}
+function closeCategoryModal() { document.getElementById('category-modal').classList.remove('show'); }
+
+function saveCategory() {
+  const id = document.getElementById('category-id').value;
+  const name = document.getElementById('category-name').value.trim();
+  if (!name) { alert('분야명을 입력해주세요.'); return; }
+  const cat = {
+    id: id || newId(),
+    name,
+    color: document.getElementById('category-color').value
+  };
+  if (id) {
+    const idx = data.categories.findIndex(c => c.id === id);
+    if (idx >= 0) data.categories[idx] = cat;
+  } else {
+    data.categories.push(cat);
+  }
+  saveData();
+  closeCategoryModal();
+  renderAll();
+}
+
+function editCategory(id) {
+  const cat = data.categories.find(c => c.id === id);
+  if (cat) openCategoryModal(cat);
+}
+
+function deleteCategory() {
+  const id = document.getElementById('category-id').value;
+  if (!id) return;
+  const linked = data.courses.filter(c => c.categoryId === id).length;
+  let msg = '이 분야를 삭제할까요?';
+  if (linked > 0) msg += `\n\n이 분야의 강의 ${linked}개도 함께 삭제됩니다.`;
+  if (!confirm(msg)) return;
+  data.categories = data.categories.filter(c => c.id !== id);
+  data.courses = data.courses.filter(c => c.categoryId !== id);
+  if (currentCategoryFilter === id) currentCategoryFilter = 'all';
+  saveData();
+  closeCategoryModal();
+  renderAll();
+}
+
+// ============================================
+// 강의 상세 (챕터 + 에디터)
+// ============================================
+function openCourse(id) {
+  showCourseDetail(id);
+}
+
+function showCourseDetail(id) {
+  const c = data.courses.find(x => x.id === id);
+  if (!c) return;
+  currentCourseId = id;
+  document.getElementById('view-list').style.display = 'none';
+  document.getElementById('view-detail').classList.add('show');
+
+  document.getElementById('detail-title').textContent = c.title;
+  const cat = data.categories.find(x => x.id === c.categoryId);
+  const catName = cat ? cat.name : '미분류';
+  const statusText = { learning: '학습 중', completed: '완료', paused: '보류' }[c.status] || '';
+
+  let meta = `📂 ${catName} · ${statusText}`;
+  if (c.instructor) meta += ` · 👨‍🏫 ${c.instructor}`;
+  if (c.platform) meta += ` · 🌐 ${c.platform}`;
+  document.getElementById('detail-meta').textContent = meta;
+
+  // 챕터 자동 추가 (없으면)
+  if (!c.chapters || c.chapters.length === 0) {
+    c.chapters = [{
+      id: newId(),
+      title: '1강 - 시작',
+      content: '',
+      followUp: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }];
+    saveData();
+  }
+
+  // 첫 챕터 선택
+  currentChapterId = c.chapters[0].id;
+  renderChapterList();
+  loadChapter(currentChapterId);
+}
+
+function showList() {
+  document.getElementById('view-list').style.display = 'block';
+  document.getElementById('view-detail').classList.remove('show');
+  currentCourseId = null;
+  currentChapterId = null;
+}
+
+function getCurrentCourse() {
+  return data.courses.find(c => c.id === currentCourseId);
+}
+
+function getCurrentChapter() {
+  const c = getCurrentCourse();
+  if (!c) return null;
+  return c.chapters.find(ch => ch.id === currentChapterId);
+}
+
+function renderChapterList() {
+  const c = getCurrentCourse();
+  if (!c) return;
+  let html = '';
+  c.chapters.forEach((ch, i) => {
+    const active = ch.id === currentChapterId ? 'active' : '';
+    html += `<div class="chapter-item ${active}" onclick="selectChapter('${ch.id}')">
+      <span class="chapter-item-num">${i + 1}</span>
+      <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(ch.title || '(제목 없음)')}</span>
+    </div>`;
+  });
+  document.getElementById('chapter-list').innerHTML = html;
+}
+
+function selectChapter(id) {
+  // 현재 변경사항 즉시 저장
+  flushCurrentChapter();
+  currentChapterId = id;
+  renderChapterList();
+  loadChapter(id);
+}
+
+function loadChapter(id) {
+  const c = getCurrentCourse();
+  if (!c) return;
+  const ch = c.chapters.find(x => x.id === id);
+  if (!ch) return;
+
+  document.getElementById('chapter-title-input').value = ch.title || '';
+  document.getElementById('editor-content').innerHTML = ch.content || '';
+  document.getElementById('followup-textarea').value = ch.followUp || '';
+
+  // 시간 표시
+  let dates = '';
+  if (ch.createdAt) dates += `📝 작성: ${formatDateTime(ch.createdAt)}`;
+  if (ch.updatedAt && ch.updatedAt !== ch.createdAt) {
+    dates += ` · 🕐 수정: ${formatDateTime(ch.updatedAt)}`;
+  }
+  document.getElementById('chapter-dates').textContent = dates;
+  document.getElementById('save-status').textContent = '';
+}
+
+function flushCurrentChapter() {
+  const ch = getCurrentChapter();
+  if (!ch) return;
+  ch.title = document.getElementById('chapter-title-input').value;
+  ch.content = document.getElementById('editor-content').innerHTML;
+  ch.followUp = document.getElementById('followup-textarea').value;
+}
+
+function addChapter() {
+  const c = getCurrentCourse();
+  if (!c) return;
+  flushCurrentChapter();
+  const ch = {
+    id: newId(),
+    title: `${c.chapters.length + 1}강 - 새 챕터`,
+    content: '',
+    followUp: '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  c.chapters.push(ch);
+  currentChapterId = ch.id;
+  saveData();
+  renderChapterList();
+  loadChapter(ch.id);
+  document.getElementById('chapter-title-input').focus();
+  document.getElementById('chapter-title-input').select();
+}
+
+function renameChapter() {
+  const ch = getCurrentChapter();
+  if (!ch) return;
+  document.getElementById('chapter-title-input').focus();
+  document.getElementById('chapter-title-input').select();
+}
+
+function deleteChapter() {
+  const c = getCurrentCourse();
+  if (!c) return;
+  if (c.chapters.length <= 1) {
+    alert('마지막 챕터는 삭제할 수 없습니다.');
+    return;
+  }
+  const ch = getCurrentChapter();
+  if (!ch || !confirm(`"${ch.title}" 챕터를 삭제할까요?`)) return;
+  c.chapters = c.chapters.filter(x => x.id !== ch.id);
+  currentChapterId = c.chapters[0].id;
+  saveData();
+  renderChapterList();
+  loadChapter(currentChapterId);
+}
+
+function moveChapter(dir) {
+  const c = getCurrentCourse();
+  if (!c) return;
+  const idx = c.chapters.findIndex(ch => ch.id === currentChapterId);
+  if (idx < 0) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= c.chapters.length) return;
+  flushCurrentChapter();
+  const [ch] = c.chapters.splice(idx, 1);
+  c.chapters.splice(newIdx, 0, ch);
+  saveData();
+  renderChapterList();
+}
+
+// ============================================
+// 에디터 (자동 저장)
+// ============================================
+function onChapterTitleChange() {
+  scheduleAutoSave();
+}
+
+function scheduleAutoSave() {
+  const statusEl = document.getElementById('save-status');
+  statusEl.textContent = '입력 중...';
+  statusEl.style.color = '#888';
+
+  if (autoSaveTimer) clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => {
+    const ch = getCurrentChapter();
+    if (!ch) return;
+    flushCurrentChapter();
+    ch.updatedAt = new Date().toISOString();
+    if (!ch.createdAt) ch.createdAt = ch.updatedAt;
+
+    saveData();
+    statusEl.textContent = '✓ 저장됨';
+    statusEl.style.color = '#00a651';
+
+    // 시간 표시 갱신
+    let dates = '';
+    if (ch.createdAt) dates += `📝 작성: ${formatDateTime(ch.createdAt)}`;
+    if (ch.updatedAt && ch.updatedAt !== ch.createdAt) {
+      dates += ` · 🕐 수정: ${formatDateTime(ch.updatedAt)}`;
+    }
+    document.getElementById('chapter-dates').textContent = dates;
+
+    renderChapterList(); // 챕터 제목 변경 반영
+
+    setTimeout(() => { statusEl.textContent = ''; }, 2000);
+  }, 800);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const editor = document.getElementById('editor-content');
+  if (editor) editor.addEventListener('input', scheduleAutoSave);
+  const followup = document.getElementById('followup-textarea');
+  if (followup) followup.addEventListener('input', scheduleAutoSave);
+});
+
+// 서식 명령
+function execCmd(cmd, value) {
+  document.execCommand(cmd, false, value);
+  document.getElementById('editor-content').focus();
+  scheduleAutoSave();
+}
+
+function insertLink() {
+  const url = prompt('링크 URL을 입력하세요:', 'https://');
+  if (url) {
+    document.execCommand('createLink', false, url);
+    scheduleAutoSave();
+  }
+}
+
+// 색깔 팔레트
+function toggleColorPalette(type) {
+  const id = 'palette-' + type;
+  const target = document.getElementById(id);
+  const other = document.getElementById(type === 'text' ? 'palette-bg' : 'palette-text');
+  if (other) other.classList.remove('show');
+  target.classList.toggle('show');
+  event.stopPropagation();
+}
+
+function applyColor(type, color) {
+  if (type === 'text') {
+    document.execCommand('foreColor', false, color);
+  } else {
+    document.execCommand('hiliteColor', false, color);
+    if (!document.queryCommandSupported('hiliteColor')) {
+      document.execCommand('backColor', false, color);
+    }
+  }
+  document.querySelectorAll('.color-palette').forEach(p => p.classList.remove('show'));
+  document.getElementById('editor-content').focus();
+  scheduleAutoSave();
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.color-btn')) {
+    document.querySelectorAll('.color-palette').forEach(p => p.classList.remove('show'));
+  }
+});
+
+// 키보드 단축키
+document.addEventListener('keydown', (e) => {
+  const meta = e.metaKey || e.ctrlKey;
+  if (meta && document.getElementById('editor-content').contains(document.activeElement)) {
+    // Default browser handles bold/italic/underline
+  }
+  if (e.key === 'Escape') {
+    closeCategoryModal();
+    closeCourseModal();
+  }
+  if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'login-password') {
+    tryLogin();
+  }
+});
+
+// ============================================
+// 내보내기 (워드, PDF)
+// ============================================
+function buildExportHTML() {
+  const c = getCurrentCourse();
+  if (!c) return '';
+  flushCurrentChapter();
+
+  const cat = data.categories.find(x => x.id === c.categoryId);
+  const catName = cat ? cat.name : '미분류';
+  const catColor = cat ? cat.color : '#888';
+
+  let html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>${escapeHtml(c.title)}</title>
+<style>
+  body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; padding: 40px; line-height: 1.7; color: #222; }
+  .header { border-bottom: 4px solid ${catColor}; padding-bottom: 20px; margin-bottom: 30px; }
+  .title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .meta { color: #666; font-size: 14px; }
+  .category { display: inline-block; background: ${catColor}; color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+  .chapter { margin-bottom: 50px; page-break-inside: avoid; }
+  .chapter-header { background: #f5f6f8; padding: 14px 20px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid ${catColor}; }
+  .chapter-title { font-size: 20px; font-weight: 700; }
+  .chapter-date { font-size: 12px; color: #888; margin-top: 4px; }
+  .chapter-content { padding: 0 8px; font-size: 15px; }
+  .chapter-content h1 { font-size: 22px; margin: 16px 0 12px; }
+  .chapter-content h2 { font-size: 18px; margin: 14px 0 10px; }
+  .chapter-content h3 { font-size: 16px; margin: 12px 0 8px; }
+  .chapter-content blockquote { border-left: 4px solid ${catColor}; padding: 8px 16px; background: #f9f9f9; margin: 10px 0; }
+  .followup { margin-top: 16px; background: #fff5e6; border: 2px dashed #e67e22; border-radius: 8px; padding: 14px; }
+  .followup-title { font-weight: 700; color: #b8651a; margin-bottom: 8px; }
+  .followup-content { white-space: pre-wrap; font-size: 14px; color: #555; }
+</style>
+</head><body>
+<div class="header">
+  <div class="title">${escapeHtml(c.title)}</div>
+  <div class="meta">
+    <span class="category">${escapeHtml(catName)}</span>
+    ${c.instructor ? ' · 👨‍🏫 ' + escapeHtml(c.instructor) : ''}
+    ${c.platform ? ' · 🌐 ' + escapeHtml(c.platform) : ''}
+    ${c.startDate ? ' · 📅 ' + c.startDate : ''}
+    ${c.progress ? ' · 진도 ' + c.progress + '%' : ''}
+  </div>
+  ${c.memo ? `<div style="margin-top: 8px; color: #555;">💬 ${escapeHtml(c.memo)}</div>` : ''}
+</div>`;
+
+  c.chapters.forEach((ch, i) => {
+    let dates = '';
+    if (ch.createdAt) dates += `작성: ${formatDateTime(ch.createdAt)}`;
+    if (ch.updatedAt && ch.updatedAt !== ch.createdAt) dates += ` · 수정: ${formatDateTime(ch.updatedAt)}`;
+
+    html += `<div class="chapter">
+      <div class="chapter-header">
+        <div class="chapter-title">${i + 1}. ${escapeHtml(ch.title || '(제목 없음)')}</div>
+        ${dates ? `<div class="chapter-date">${dates}</div>` : ''}
+      </div>
+      <div class="chapter-content">${ch.content || '<p style="color:#aaa;">(내용 없음)</p>'}</div>
+      ${ch.followUp ? `<div class="followup">
+        <div class="followup-title">📌 꼬리 메모 - 개선점</div>
+        <div class="followup-content">${escapeHtml(ch.followUp)}</div>
+      </div>` : ''}
+    </div>`;
+  });
+
+  html += '</body></html>';
+  return html;
+}
+
+function exportWord() {
+  const c = getCurrentCourse();
+  if (!c) return;
+  const html = buildExportHTML();
+  // Word는 HTML을 .doc 확장자로 인식
+  const blob = new Blob(['﻿' + html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${c.title}.doc`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('워드 파일 다운로드 완료');
+}
+
+function exportPDF() {
+  const c = getCurrentCourse();
+  if (!c) return;
+  const html = buildExportHTML();
+  // 임시 div 만들어서 html2pdf로 변환
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+  const body = temp.querySelector('body') || temp;
+  document.body.appendChild(body);
+  body.style.position = 'absolute';
+  body.style.left = '-9999px';
+  body.style.width = '800px';
+  showToast('PDF 생성 중...');
+  html2pdf().set({
+    margin: 10,
+    filename: `${c.title}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  }).from(body).save().then(() => {
+    body.remove();
+    showToast('PDF 다운로드 완료');
+  }).catch(err => {
+    body.remove();
+    alert('PDF 생성 중 오류: ' + err.message);
+  });
+}
+
+// ============================================
+// 백업 / 불러오기
+// ============================================
+function exportBackup() {
+  if (!hasAnyData()) { alert('백업할 데이터가 없습니다.'); return; }
+  const backup = { version: 2, exportedAt: new Date().toISOString(), ...data };
+  const json = JSON.stringify(backup, null, 2);
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const today = new Date().toISOString().slice(0,10);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `강의노트_백업_${today}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('백업 파일 저장됨');
+}
+
+function importBackup(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imp = JSON.parse(e.target.result);
+      if (hasAnyData() && !confirm('현재 데이터를 백업으로 덮어쓸까요?')) {
+        event.target.value = ''; return;
+      }
+      data = {
+        categories: imp.categories || DEFAULT_CATEGORIES.slice(),
+        courses: imp.courses || []
+      };
+      ensureDataShape(data);
+      migrateData();
+      saveData();
+      renderAll();
+      alert(`불러오기 완료!\n분야 ${data.categories.length}개, 강의 ${data.courses.length}개`);
+    } catch (err) {
+      alert('파일 읽기 오류.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ============================================
+// 전체 렌더
+// ============================================
+function renderAll() {
+  renderSummary();
+  renderCategoryChips();
+  renderCourses();
+}
+
+document.getElementById('filter-search').addEventListener('input', renderCourses);
+document.getElementById('filter-status').addEventListener('change', renderCourses);
+
+checkAuth();
+renderAll();
+</script>
+</body>
+</html>
