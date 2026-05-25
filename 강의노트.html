@@ -1474,16 +1474,59 @@ function toggleColorPalette(type) {
 }
 
 function applyColor(type, color) {
+  const editor = document.getElementById('editor-content');
+  editor.focus();
+
   // 저장된 선택 영역 복원
-  restoreSelection();
-  try { document.execCommand('styleWithCSS', false, true); } catch(e) {}
-  if (type === 'text') {
-    document.execCommand('foreColor', false, color);
-  } else {
-    // hiliteColor가 표준이지만 일부 브라우저는 backColor를 씀
-    const ok = document.execCommand('hiliteColor', false, color);
-    if (!ok) document.execCommand('backColor', false, color);
+  if (savedRange) {
+    const s = window.getSelection();
+    s.removeAllRanges();
+    s.addRange(savedRange);
   }
+
+  const sel = window.getSelection();
+  if (sel.rangeCount === 0 || sel.isCollapsed) {
+    showToast('먼저 색을 입힐 글자를 드래그해서 선택해주세요');
+    document.querySelectorAll('.color-palette').forEach(p => p.classList.remove('show'));
+    return;
+  }
+
+  const range = sel.getRangeAt(0);
+  // 에디터 안의 선택만 처리
+  if (!editor.contains(range.commonAncestorContainer)) {
+    document.querySelectorAll('.color-palette').forEach(p => p.classList.remove('show'));
+    return;
+  }
+
+  try {
+    const contents = range.extractContents();
+    const span = document.createElement('span');
+    if (type === 'text') {
+      span.style.color = color;
+    } else {
+      // 배경색 적용
+      if (color === 'transparent') {
+        span.style.backgroundColor = '';
+      } else {
+        span.style.backgroundColor = color;
+        span.style.padding = '0 3px';
+        span.style.borderRadius = '3px';
+      }
+    }
+    span.appendChild(contents);
+    range.insertNode(span);
+
+    // 선택 영역 새로 설정
+    sel.removeAllRanges();
+    const newRange = document.createRange();
+    newRange.selectNodeContents(span);
+    sel.addRange(newRange);
+    savedRange = newRange.cloneRange();
+  } catch (e) {
+    console.error('Color apply error:', e);
+    showToast('색 적용 중 오류 발생');
+  }
+
   document.querySelectorAll('.color-palette').forEach(p => p.classList.remove('show'));
   scheduleAutoSave();
 }
@@ -1535,77 +1578,59 @@ document.addEventListener('keydown', (e) => {
 // ============================================
 // 내보내기 (워드, PDF)
 // ============================================
-function buildExportHTML() {
-  const c = getCurrentCourse();
-  if (!c) return '';
-  flushCurrentChapter();
-
+// 인라인 스타일로 body 내용만 생성 (PDF/Word 모두 사용)
+function buildExportBody(c) {
   const cat = data.categories.find(x => x.id === c.categoryId);
   const catName = cat ? cat.name : '미분류';
   const catColor = cat ? cat.color : '#888';
 
-  let html = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>${escapeHtml(c.title)}</title>
-<style>
-  body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; padding: 40px; line-height: 1.7; color: #222; }
-  .header { border-bottom: 4px solid ${catColor}; padding-bottom: 20px; margin-bottom: 30px; }
-  .title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-  .meta { color: #666; font-size: 14px; }
-  .category { display: inline-block; background: ${catColor}; color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-  .chapter { margin-bottom: 50px; page-break-inside: avoid; }
-  .chapter-header { background: #f5f6f8; padding: 14px 20px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid ${catColor}; }
-  .chapter-title { font-size: 20px; font-weight: 700; }
-  .chapter-date { font-size: 12px; color: #888; margin-top: 4px; }
-  .chapter-content { padding: 0 8px; font-size: 15px; }
-  .chapter-content h1 { font-size: 22px; margin: 16px 0 12px; }
-  .chapter-content h2 { font-size: 18px; margin: 14px 0 10px; }
-  .chapter-content h3 { font-size: 16px; margin: 12px 0 8px; }
-  .chapter-content blockquote { border-left: 4px solid ${catColor}; padding: 8px 16px; background: #f9f9f9; margin: 10px 0; }
-  .followup { margin-top: 16px; background: #fff5e6; border: 2px dashed #e67e22; border-radius: 8px; padding: 14px; }
-  .followup-title { font-weight: 700; color: #b8651a; margin-bottom: 8px; }
-  .followup-content { white-space: pre-wrap; font-size: 14px; color: #555; }
-</style>
-</head><body>
-<div class="header">
-  <div class="title">${escapeHtml(c.title)}</div>
-  <div class="meta">
-    <span class="category">${escapeHtml(catName)}</span>
-    ${c.instructor ? ' · 👨‍🏫 ' + escapeHtml(c.instructor) : ''}
-    ${c.platform ? ' · 🌐 ' + escapeHtml(c.platform) : ''}
-    ${c.startDate ? ' · 📅 ' + c.startDate : ''}
-    ${c.progress ? ' · 진도 ' + c.progress + '%' : ''}
-  </div>
-  ${c.memo ? `<div style="margin-top: 8px; color: #555;">💬 ${escapeHtml(c.memo)}</div>` : ''}
-</div>`;
+  let html = `<div style="border-bottom: 4px solid ${catColor}; padding-bottom: 16px; margin-bottom: 24px;">
+    <div style="font-size: 26px; font-weight: 700; margin-bottom: 8px; color: #1a1a1a;">${escapeHtml(c.title)}</div>
+    <div style="color: #666; font-size: 13px;">
+      <span style="display: inline-block; background: ${catColor}; color: white; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 600;">${escapeHtml(catName)}</span>
+      ${c.instructor ? ' &nbsp;·&nbsp; 👨‍🏫 ' + escapeHtml(c.instructor) : ''}
+      ${c.platform ? ' &nbsp;·&nbsp; 🌐 ' + escapeHtml(c.platform) : ''}
+      ${c.startDate ? ' &nbsp;·&nbsp; 📅 ' + c.startDate : ''}
+      ${c.progress ? ' &nbsp;·&nbsp; 진도 ' + c.progress + '%' : ''}
+    </div>
+    ${c.memo ? `<div style="margin-top: 8px; color: #555; font-size: 13px;">💬 ${escapeHtml(c.memo)}</div>` : ''}
+  </div>`;
 
   c.chapters.forEach((ch, i) => {
     let dates = '';
     if (ch.createdAt) dates += `작성: ${formatDateTime(ch.createdAt)}`;
     if (ch.updatedAt && ch.updatedAt !== ch.createdAt) dates += ` · 수정: ${formatDateTime(ch.updatedAt)}`;
 
-    html += `<div class="chapter">
-      <div class="chapter-header">
-        <div class="chapter-title">${i + 1}. ${escapeHtml(ch.title || '(제목 없음)')}</div>
-        ${dates ? `<div class="chapter-date">${dates}</div>` : ''}
+    html += `<div style="margin-bottom: 36px; page-break-inside: avoid;">
+      <div style="background: #f5f6f8; padding: 12px 18px; border-radius: 8px; margin-bottom: 14px; border-left: 4px solid ${catColor};">
+        <div style="font-size: 18px; font-weight: 700; color: #1a1a1a;">${i + 1}. ${escapeHtml(ch.title || '(제목 없음)')}</div>
+        ${dates ? `<div style="font-size: 11px; color: #888; margin-top: 4px;">${dates}</div>` : ''}
       </div>
-      <div class="chapter-content">${ch.content || '<p style="color:#aaa;">(내용 없음)</p>'}</div>
-      ${ch.followUp ? `<div class="followup">
-        <div class="followup-title">📌 꼬리 메모 - 개선점</div>
-        <div class="followup-content">${escapeHtml(ch.followUp)}</div>
+      <div style="padding: 0 8px; font-size: 14px; line-height: 1.75; color: #222;">${ch.content || '<p style="color:#aaa;">(내용 없음)</p>'}</div>
+      ${ch.followUp ? `<div style="margin-top: 14px; background: #fff5e6; border: 2px dashed #e67e22; border-radius: 8px; padding: 12px;">
+        <div style="font-weight: 700; color: #b8651a; margin-bottom: 6px; font-size: 13px;">📌 꼬리 메모 — 개선점</div>
+        <div style="white-space: pre-wrap; font-size: 13px; color: #555; line-height: 1.6;">${escapeHtml(ch.followUp)}</div>
       </div>` : ''}
     </div>`;
   });
 
-  html += '</body></html>';
   return html;
 }
 
 function exportWord() {
   const c = getCurrentCourse();
   if (!c) return;
-  const html = buildExportHTML();
-  // Word는 HTML을 .doc 확장자로 인식
-  const blob = new Blob(['﻿' + html], { type: 'application/msword' });
+  flushCurrentChapter();
+
+  const bodyHtml = buildExportBody(c);
+  const fullHtml = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8"><title>${escapeHtml(c.title)}</title></head>
+<body style="font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; padding: 40px; line-height: 1.7; color: #222;">
+${bodyHtml}
+</body></html>`;
+
+  const blob = new Blob(['﻿' + fullHtml], { type: 'application/msword' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -1618,30 +1643,58 @@ function exportWord() {
 function exportPDF() {
   const c = getCurrentCourse();
   if (!c) return;
-  const html = buildExportHTML();
-  // 임시 div 만들어서 html2pdf로 변환
-  const temp = document.createElement('div');
-  temp.innerHTML = html;
-  const body = temp.querySelector('body') || temp;
-  document.body.appendChild(body);
-  body.style.position = 'absolute';
-  body.style.left = '-9999px';
-  body.style.width = '800px';
-  showToast('PDF 생성 중...');
-  html2pdf().set({
-    margin: 10,
-    filename: `${c.title}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-  }).from(body).save().then(() => {
-    body.remove();
-    showToast('PDF 다운로드 완료');
-  }).catch(err => {
-    body.remove();
-    alert('PDF 생성 중 오류: ' + err.message);
-  });
+  flushCurrentChapter();
+
+  showToast('PDF 생성 중... 잠시만요');
+
+  // 화면 안에 정상적으로 렌더링되는 임시 컨테이너 생성
+  // (화면 밖이면 html2canvas가 빈 화면을 캡처할 수 있음)
+  const wrapper = document.createElement('div');
+  wrapper.id = 'pdf-export-temp';
+  wrapper.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 794px;
+    padding: 40px;
+    background: white;
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    color: #222;
+    line-height: 1.7;
+    z-index: -1;
+    visibility: hidden;
+  `;
+  wrapper.innerHTML = buildExportBody(c);
+  document.body.appendChild(wrapper);
+
+  // 렌더링 완료를 위해 약간 대기
+  setTimeout(() => {
+    // 캡처 시점에만 visible로 (실제로 화면에는 안 보이지만 캡처 가능)
+    wrapper.style.visibility = 'visible';
+    wrapper.style.zIndex = '-1';
+
+    html2pdf().set({
+      margin: [10, 10, 10, 10],
+      filename: `${c.title}.pdf`,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        windowWidth: 794
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] }
+    }).from(wrapper).save().then(() => {
+      wrapper.remove();
+      showToast('PDF 다운로드 완료');
+    }).catch(err => {
+      wrapper.remove();
+      console.error('PDF error:', err);
+      alert('PDF 생성 오류가 발생했습니다.\n\n대신 "워드 내보내기"를 사용하시거나, 브라우저 인쇄 기능(Cmd+P → PDF로 저장)을 이용해주세요.');
+    });
+  }, 200);
 }
 
 // ============================================
