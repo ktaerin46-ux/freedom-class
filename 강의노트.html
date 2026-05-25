@@ -1578,13 +1578,16 @@ function applyColor(type, color) {
     if (type === 'text') {
       span.style.color = color;
     } else {
-      // 배경색 적용
+      // 배경색 적용 (위아래 잘림 방지)
       if (color === 'transparent') {
         span.style.backgroundColor = '';
       } else {
         span.style.backgroundColor = color;
-        span.style.padding = '0 3px';
-        span.style.borderRadius = '3px';
+        span.style.padding = '3px 6px';
+        span.style.borderRadius = '4px';
+        span.style.boxDecorationBreak = 'clone';
+        span.style.webkitBoxDecorationBreak = 'clone';
+        span.style.lineHeight = '2';
       }
     }
     span.appendChild(contents);
