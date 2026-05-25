@@ -147,6 +147,58 @@
   .amount { font-weight: 600; text-align: right; }
   .amount.before { color: #1a1a1a; }
   .amount.after { color: #00a651; }
+
+  /* 이체 정보 (계좌번호 + 이체액) */
+  .worker-cell { display: flex; flex-direction: column; gap: 4px; }
+  .worker-name-row { font-weight: 700; color: #1a1a1a; font-size: 15px; }
+  .account-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #555;
+    background: #f0f7ff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    width: fit-content;
+  }
+  .copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 4px;
+    font-size: 13px;
+    color: #2c7be5;
+    border-radius: 4px;
+  }
+  .copy-btn:hover { background: #d6e8ff; }
+  .copy-btn.copied { color: #00a651; }
+  .transfer-amount {
+    background: linear-gradient(135deg, #fff5e6, #ffe8cc);
+    color: #d35400;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    display: inline-block;
+    border: 1px solid #ffd9a8;
+  }
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 24px;
+    font-size: 14px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
   .actions { white-space: nowrap; }
   .actions button { margin-right: 4px; }
   .file-link { color: #2c7be5; text-decoration: none; font-size: 13px; word-break: break-all; }
@@ -618,6 +670,9 @@
   <img id="image-viewer-img" src="">
 </div>
 
+<!-- 토스트 메시지 -->
+<div class="toast" id="toast"></div>
+
 <script>
 // ============================================
 // 비밀번호 보호 / 클라우드 동기화
@@ -937,11 +992,11 @@ function renderRecords() {
     <thead>
       <tr>
         <th>지급일</th>
-        <th>작업자</th>
+        <th>작업자 / 계좌</th>
         <th>업무</th>
         <th class="hide-mobile">작업기간</th>
         <th>세전</th>
-        <th>세후</th>
+        <th>💰 이체액 (세후)</th>
         <th class="hide-mobile">파일/링크</th>
         <th class="hide-mobile">메모</th>
         <th>동작</th>
@@ -973,13 +1028,23 @@ function renderRecords() {
       periodCell = `<div class="date-range">${r.startDate || '?'} ~ ${r.endDate || '?'}</div>`;
     }
 
+    const accountStr = worker && worker.account ? worker.account : '';
+    const accountCell = accountStr
+      ? `<div class="account-row"><span>${escapeHtml(accountStr)}</span><button class="copy-btn" onclick="copyToClipboard(this, ${JSON.stringify(accountStr).replace(/"/g,'&quot;')})" title="계좌번호 복사">📋</button></div>`
+      : '<div style="font-size:12px;color:#aaa;">계좌 미등록</div>';
+
     html += `<tr>
       <td><span class="pay-badge">${payDate || '-'}</span></td>
-      <td><strong>${escapeHtml(workerName)}</strong></td>
+      <td>
+        <div class="worker-cell">
+          <div class="worker-name-row">${escapeHtml(workerName)}</div>
+          ${accountCell}
+        </div>
+      </td>
       <td>${escapeHtml(r.task || '')}</td>
       <td class="hide-mobile">${periodCell}</td>
       <td class="amount before">${formatMoney(r.amount)}</td>
-      <td class="amount after">${formatMoney(afterTax)}</td>
+      <td><span class="transfer-amount">${formatMoney(afterTax)}</span></td>
       <td class="hide-mobile">${fileCell}</td>
       <td class="hide-mobile">${escapeHtml(r.memo || '')}</td>
       <td class="actions">
@@ -996,6 +1061,43 @@ function renderRecords() {
 function escapeHtml(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// 클립보드 복사 + 토스트
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function copyToClipboard(btn, text) {
+  const doFallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).catch(doFallback);
+  } else {
+    doFallback();
+  }
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = '✓';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.classList.remove('copied');
+    }, 1500);
+  }
+  showToast('계좌번호 복사됨: ' + text);
 }
 
 // ============================================
