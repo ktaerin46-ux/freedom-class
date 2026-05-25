@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인건비 관리</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", sans-serif;
+    background: #f5f6f8;
+    color: #222;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 20px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* 헤더 */
+  header {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  h1 { font-size: 24px; margin-bottom: 8px; color: #1a1a1a; }
+  .subtitle { color: #888; font-size: 14px; }
+  .cycle-info {
+    background: #fff5e6;
+    border: 1px solid #ffd9a8;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #b8651a;
+  }
+  .cycle-info strong { color: #e67e22; }
+
+  /* 요약 카드 */
+  .summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .summary-card {
+    background: #fafbfc;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid #eef0f3;
+  }
+  .summary-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+  .summary-value { font-size: 20px; font-weight: 700; color: #1a1a1a; }
+  .summary-value.green { color: #00a651; }
+  .summary-value.red { color: #e74c3c; }
+  .summary-value.blue { color: #2c7be5; }
+
+  /* 필터 + 액션 */
+  .toolbar {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .toolbar select, .toolbar input {
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+  }
+  .toolbar .spacer { flex: 1; }
+
+  button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: #2c7be5; color: white; }
+  .btn-primary:hover { background: #1a68d0; }
+  .btn-success { background: #00a651; color: white; }
+  .btn-success:hover { background: #008f45; }
+  .btn-gray { background: #6c757d; color: white; }
+  .btn-gray:hover { background: #5a6268; }
+  .btn-danger { background: #fff; color: #e74c3c; border: 1px solid #e74c3c; }
+  .btn-danger:hover { background: #e74c3c; color: white; }
+  .btn-small { padding: 6px 12px; font-size: 13px; }
+
+  /* 탭 */
+  .tabs {
+    display: flex;
+    background: white;
+    border-radius: 12px;
+    padding: 6px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    width: fit-content;
+  }
+  .tab {
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #888;
+    transition: all 0.15s;
+  }
+  .tab.active { background: #2c7be5; color: white; }
+
+  /* 표 */
+  .panel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th {
+    text-align: left;
+    padding: 12px 10px;
+    background: #f8f9fa;
+    font-weight: 600;
+    font-size: 13px;
+    color: #555;
+    border-bottom: 2px solid #eef0f3;
+  }
+  td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #f0f1f3;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+  tr:hover td { background: #fafbfc; }
+  .amount { font-weight: 600; text-align: right; }
+  .amount.before { color: #1a1a1a; }
+  .amount.after { color: #00a651; }
+  .actions { white-space: nowrap; }
+  .actions button { margin-right: 4px; }
+  .file-link { color: #2c7be5; text-decoration: none; font-size: 13px; word-break: break-all; }
+  .file-link:hover { text-decoration: underline; }
+  .date-range { font-size: 13px; color: #555; white-space: nowrap; }
+  .pay-badge {
+    display: inline-block;
+    background: #fff5e6;
+    color: #e67e22;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* 작업자 카드 */
+  .workers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .worker-card {
+    border: 1px solid #eef0f3;
+    border-radius: 10px;
+    padding: 18px;
+    background: #fafbfc;
+  }
+  .worker-card h3 { font-size: 18px; margin-bottom: 10px; color: #1a1a1a; }
+  .worker-info { font-size: 13px; color: #555; margin-bottom: 6px; }
+  .worker-info strong { color: #888; font-weight: 500; margin-right: 6px; }
+  .worker-docs {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .doc-thumb {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 11px;
+    color: #888;
+    text-align: center;
+    background: white;
+    overflow: hidden;
+    position: relative;
+  }
+  .doc-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .doc-thumb.has-img { border-style: solid; border-color: #00a651; }
+  .doc-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 10px;
+    padding: 2px;
+  }
+  .worker-actions { margin-top: 12px; display: flex; gap: 6px; }
+
+  /* 모달 */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 { margin-bottom: 20px; font-size: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-hint { font-size: 12px; color: #888; margin-top: 4px; }
+  .amount-preview {
+    background: #f0f7ff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-top: 8px;
+    color: #2c7be5;
+  }
+  .pay-preview {
+    background: #fff5e6;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-top: 8px;
+    color: #b8651a;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+
+  /* 이미지 미리보기 모달 */
+  .image-viewer {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .image-viewer.show { display: flex; }
+  .image-viewer img { max-width: 90%; max-height: 90%; }
+  .image-viewer .close-btn {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: white;
+    color: black;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* 빈 상태 */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-text { font-size: 16px; }
+
+  /* 모바일 */
+  @media (max-width: 768px) {
+    body { padding: 10px; font-size: 14px; }
+    .summary { grid-template-columns: 1fr 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    table { font-size: 12px; }
+    th, td { padding: 8px 6px; }
+    .hide-mobile { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>💰 인건비 관리</h1>
+    <p class="subtitle">매달 인건비를 기록하고, 세후 금액 자동 계산 + 엑셀로 내보낼 수 있습니다.</p>
+    <div class="cycle-info">
+      💡 <strong>정산 사이클</strong>: 매달 <strong>26일 ~ 다음달 25일</strong> 작업분을 <strong>25일에 지급</strong> (작업 완료일 기준으로 자동 분류)
+    </div>
+    <div class="summary">
+      <div class="summary-card">
+        <div class="summary-label">선택한 지급월 기록 건수</div>
+        <div class="summary-value blue" id="sum-count">0건</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">세전 합계</div>
+        <div class="summary-value" id="sum-before">0원</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">세후 합계 (3.3% 공제)</div>
+        <div class="summary-value green" id="sum-after">0원</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">공제 세금</div>
+        <div class="summary-value red" id="sum-tax">0원</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <label style="font-weight:600;">지급월:</label>
+    <select id="filter-month"></select>
+    <input type="text" id="search-input" placeholder="작업자명 또는 업무명 검색...">
+    <div class="spacer"></div>
+    <button class="btn-gray btn-small" onclick="exportFull()">📋 전체 엑셀</button>
+    <button class="btn-gray btn-small" onclick="exportForTax()">📄 세무사용 엑셀</button>
+    <button class="btn-success btn-small" onclick="exportBackup()" title="모든 데이터를 백업 파일로 저장">💾 백업</button>
+    <button class="btn-primary btn-small" onclick="document.getElementById('import-file').click()" title="백업 파일에서 데이터 복원">📂 불러오기</button>
+    <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importBackup(event)">
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="records" onclick="switchTab('records')">📊 인건비 기록</div>
+    <div class="tab" data-tab="workers" onclick="switchTab('workers')">👥 작업자 관리</div>
+  </div>
+
+  <!-- 인건비 기록 탭 -->
+  <div class="panel" id="panel-records">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="font-size:18px;">인건비 기록</h2>
+      <button class="btn-primary" onclick="openRecordModal()">+ 새 기록 추가</button>
+    </div>
+    <div id="records-content"></div>
+  </div>
+
+  <!-- 작업자 관리 탭 -->
+  <div class="panel" id="panel-workers" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="font-size:18px;">작업자 관리</h2>
+      <button class="btn-success" onclick="openWorkerModal()">+ 새 작업자 추가</button>
+    </div>
+    <div id="workers-content"></div>
+  </div>
+
+</div>
+
+<!-- 인건비 기록 모달 -->
+<div class="modal-overlay" id="record-modal">
+  <div class="modal">
+    <h2 id="record-modal-title">새 인건비 기록</h2>
+    <input type="hidden" id="record-id">
+
+    <div class="form-group">
+      <label>작업자 *</label>
+      <select id="record-worker"></select>
+      <div class="form-hint">작업자가 없으면 "작업자 관리" 탭에서 먼저 등록해주세요.</div>
+    </div>
+
+    <div class="form-group">
+      <label>업무명 *</label>
+      <input type="text" id="record-task" placeholder="예: 상세페이지 디자인">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>작업 시작일 *</label>
+        <input type="date" id="record-start-date" onchange="updatePayPreview()">
+      </div>
+      <div class="form-group">
+        <label>작업 완료일 *</label>
+        <input type="date" id="record-end-date" onchange="updatePayPreview()">
+      </div>
+    </div>
+    <div class="pay-preview" id="pay-preview">완료일을 입력하면 지급일이 자동 계산됩니다.</div>
+
+    <div class="form-group" style="margin-top:16px;">
+      <label>세전 금액 (원) *</label>
+      <input type="number" id="record-amount" placeholder="1000000" oninput="updateAmountPreview()">
+      <div class="amount-preview" id="amount-preview">세후: 0원 (공제 세금: 0원)</div>
+    </div>
+
+    <div class="form-group">
+      <label>작업 파일 (선택)</label>
+      <input type="text" id="record-file-link" placeholder="예: /Users/.../디자인.psd">
+      <div class="form-hint">내 컴퓨터 파일 경로 (클릭하면 파일이 열림)</div>
+    </div>
+
+    <div class="form-group">
+      <label>작업 링크 (선택)</label>
+      <input type="text" id="record-work-link" placeholder="예: https://drive.google.com/... 또는 https://notion.so/...">
+      <div class="form-hint">구글드라이브, 노션, 피그마 등 인터넷 링크</div>
+    </div>
+
+    <div class="form-group">
+      <label>메모</label>
+      <textarea id="record-memo" placeholder="작업 내용 상세, 특이사항 등"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-gray" onclick="closeRecordModal()">취소</button>
+      <button class="btn-primary" onclick="saveRecord()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 작업자 등록 모달 -->
+<div class="modal-overlay" id="worker-modal">
+  <div class="modal">
+    <h2 id="worker-modal-title">새 작업자 등록</h2>
+    <input type="hidden" id="worker-id">
+
+    <div class="form-group">
+      <label>작업자명 *</label>
+      <input type="text" id="worker-name" placeholder="예: 홍길동">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>연락처</label>
+        <input type="text" id="worker-phone" placeholder="010-1234-5678">
+      </div>
+      <div class="form-group">
+        <label>주민등록번호</label>
+        <input type="text" id="worker-ssn" placeholder="900101-1234567">
+        <div class="form-hint">세무사 신고용 (안전하게 보관됨)</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>계좌번호</label>
+      <input type="text" id="worker-account" placeholder="예: 농협 123-456-7890 (홍길동)">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>신분증 사본</label>
+        <input type="file" id="worker-id-card" accept="image/*">
+        <div class="form-hint">사진/스캔본 (jpg, png)</div>
+      </div>
+      <div class="form-group">
+        <label>통장 사본</label>
+        <input type="file" id="worker-bankbook" accept="image/*">
+        <div class="form-hint">사진/스캔본 (jpg, png)</div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-gray" onclick="closeWorkerModal()">취소</button>
+      <button class="btn-success" onclick="saveWorker()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 이미지 뷰어 -->
+<div class="image-viewer" id="image-viewer" onclick="closeImageViewer()">
+  <button class="close-btn" onclick="closeImageViewer()">✕</button>
+  <img id="image-viewer-img" src="">
+</div>
+
+<script>
+// ============================================
+// 데이터 관리
+// ============================================
+const STORAGE_KEY = 'payroll_data_v1';
+
+function loadData() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return { workers: [], records: [] };
+  try {
+    const d = JSON.parse(raw);
+    // 기존 데이터 마이그레이션 (payDate → endDate)
+    (d.records || []).forEach(r => {
+      if (!r.endDate && r.payDate) r.endDate = r.payDate;
+      if (!r.startDate) r.startDate = r.endDate || '';
+      if (!r.workLink) r.workLink = '';
+    });
+    return d;
+  }
+  catch(e) { return { workers: [], records: [] }; }
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+let data = loadData();
+
+function newId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+}
+
+function formatMoney(n) {
+  if (!n) return '0원';
+  return n.toLocaleString('ko-KR') + '원';
+}
+
+function calcAfterTax(beforeTax) {
+  return Math.floor(beforeTax * (1 - 0.033));
+}
+
+// ============================================
+// 정산 사이클: 매달 26일 ~ 다음달 25일 → 다음달 25일 지급
+// 입력: 작업 완료일 (YYYY-MM-DD)
+// 출력: 지급일 (YYYY-MM-DD), 항상 25일
+// ============================================
+function getPaymentDate(endDate) {
+  if (!endDate) return '';
+  const d = new Date(endDate + 'T00:00:00');
+  const day = d.getDate();
+  if (day >= 26) {
+    // 다음 달 25일
+    d.setMonth(d.getMonth() + 1);
+  }
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}-25`;
+}
+
+// 지급일에 해당하는 정산 기간 (시작일 ~ 종료일)
+function getCycleRange(paymentDate) {
+  // paymentDate: YYYY-MM-25
+  const d = new Date(paymentDate + 'T00:00:00');
+  const endY = d.getFullYear();
+  const endM = d.getMonth();
+  const endDay = 25;
+  const startDate = new Date(endY, endM - 1, 26);
+  const startStr = `${startDate.getFullYear()}-${String(startDate.getMonth()+1).padStart(2,'0')}-26`;
+  const endStr = `${endY}-${String(endM+1).padStart(2,'0')}-25`;
+  return { start: startStr, end: endStr };
+}
+
+function formatPaymentLabel(paymentDate) {
+  if (!paymentDate) return '';
+  const d = new Date(paymentDate + 'T00:00:00');
+  const range = getCycleRange(paymentDate);
+  return `${d.getFullYear()}년 ${d.getMonth()+1}월 지급분 (${range.start.slice(5).replace('-','/')}~${range.end.slice(5).replace('-','/')})`;
+}
+
+// ============================================
+// 탭 전환
+// ============================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('panel-records').style.display = tab === 'records' ? 'block' : 'none';
+  document.getElementById('panel-workers').style.display = tab === 'workers' ? 'block' : 'none';
+}
+
+// ============================================
+// 지급월 필터 채우기
+// ============================================
+function fillMonthFilter() {
+  const select = document.getElementById('filter-month');
+  const payDates = new Set();
+  data.records.forEach(r => {
+    const pd = getPaymentDate(r.endDate);
+    if (pd) payDates.add(pd);
+  });
+  // 이번 달 / 다음 달 지급일도 옵션에 추가
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0,10);
+  payDates.add(getPaymentDate(todayStr));
+
+  const sortedDates = Array.from(payDates).sort().reverse();
+  const prev = select.value;
+  select.innerHTML = '<option value="all">전체 보기</option>';
+  sortedDates.forEach(pd => {
+    const opt = document.createElement('option');
+    opt.value = pd;
+    opt.textContent = formatPaymentLabel(pd);
+    select.appendChild(opt);
+  });
+  // 기본값: 오늘 기준 정산 사이클
+  select.value = prev || getPaymentDate(todayStr);
+}
+
+// ============================================
+// 인건비 기록 렌더링
+// ============================================
+function renderRecords() {
+  const payMonth = document.getElementById('filter-month').value;
+  const search = document.getElementById('search-input').value.trim().toLowerCase();
+  const container = document.getElementById('records-content');
+
+  let filtered = data.records.slice();
+  if (payMonth && payMonth !== 'all') {
+    filtered = filtered.filter(r => getPaymentDate(r.endDate) === payMonth);
+  }
+  if (search) {
+    filtered = filtered.filter(r => {
+      const worker = data.workers.find(w => w.id === r.workerId);
+      const workerName = worker ? worker.name : '';
+      return workerName.toLowerCase().includes(search) || (r.task || '').toLowerCase().includes(search);
+    });
+  }
+
+  filtered.sort((a,b) => (b.endDate || '').localeCompare(a.endDate || ''));
+
+  // 합계 업데이트
+  const totalBefore = filtered.reduce((s,r) => s + (r.amount || 0), 0);
+  const totalAfter = filtered.reduce((s,r) => s + calcAfterTax(r.amount || 0), 0);
+  document.getElementById('sum-count').textContent = filtered.length + '건';
+  document.getElementById('sum-before').textContent = formatMoney(totalBefore);
+  document.getElementById('sum-after').textContent = formatMoney(totalAfter);
+  document.getElementById('sum-tax').textContent = formatMoney(totalBefore - totalAfter);
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📝</div>
+        <div class="empty-text">아직 기록이 없습니다. "새 기록 추가" 버튼을 눌러주세요.</div>
+      </div>`;
+    return;
+  }
+
+  let html = `<table>
+    <thead>
+      <tr>
+        <th>지급일</th>
+        <th>작업자</th>
+        <th>업무</th>
+        <th class="hide-mobile">작업기간</th>
+        <th>세전</th>
+        <th>세후</th>
+        <th class="hide-mobile">파일/링크</th>
+        <th class="hide-mobile">메모</th>
+        <th>동작</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  filtered.forEach(r => {
+    const worker = data.workers.find(w => w.id === r.workerId);
+    const workerName = worker ? worker.name : '(삭제됨)';
+    const afterTax = calcAfterTax(r.amount || 0);
+    const payDate = getPaymentDate(r.endDate);
+
+    // 파일 / 링크
+    let fileCell = '';
+    if (r.fileLink) {
+      const isUrl = /^https?:\/\//i.test(r.fileLink);
+      const href = isUrl ? r.fileLink : 'file://' + r.fileLink;
+      fileCell += `<div>📁 <a class="file-link" href="${href}" target="_blank" title="${escapeHtml(r.fileLink)}">파일 열기</a></div>`;
+    }
+    if (r.workLink) {
+      fileCell += `<div>🔗 <a class="file-link" href="${escapeHtml(r.workLink)}" target="_blank" title="${escapeHtml(r.workLink)}">링크 열기</a></div>`;
+    }
+    if (!fileCell) fileCell = '-';
+
+    // 작업 기간
+    let periodCell = '-';
+    if (r.startDate || r.endDate) {
+      periodCell = `<div class="date-range">${r.startDate || '?'} ~ ${r.endDate || '?'}</div>`;
+    }
+
+    html += `<tr>
+      <td><span class="pay-badge">${payDate || '-'}</span></td>
+      <td><strong>${escapeHtml(workerName)}</strong></td>
+      <td>${escapeHtml(r.task || '')}</td>
+      <td class="hide-mobile">${periodCell}</td>
+      <td class="amount before">${formatMoney(r.amount)}</td>
+      <td class="amount after">${formatMoney(afterTax)}</td>
+      <td class="hide-mobile">${fileCell}</td>
+      <td class="hide-mobile">${escapeHtml(r.memo || '')}</td>
+      <td class="actions">
+        <button class="btn-gray btn-small" onclick="editRecord('${r.id}')">수정</button>
+        <button class="btn-danger btn-small" onclick="deleteRecord('${r.id}')">삭제</button>
+      </td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ============================================
+// 작업자 카드 렌더링
+// ============================================
+function renderWorkers() {
+  const container = document.getElementById('workers-content');
+  if (data.workers.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">👤</div>
+        <div class="empty-text">아직 등록된 작업자가 없습니다. "새 작업자 추가" 버튼을 눌러주세요.</div>
+      </div>`;
+    return;
+  }
+
+  let html = '<div class="workers-grid">';
+  data.workers.forEach(w => {
+    html += `<div class="worker-card">
+      <h3>${escapeHtml(w.name)}</h3>
+      <div class="worker-info"><strong>연락처:</strong> ${escapeHtml(w.phone || '-')}</div>
+      <div class="worker-info"><strong>계좌:</strong> ${escapeHtml(w.account || '-')}</div>
+      <div class="worker-info"><strong>주민번호:</strong> ${escapeHtml(maskSSN(w.ssn))}</div>
+      <div class="worker-docs">
+        <div class="doc-thumb ${w.idCard ? 'has-img' : ''}" onclick="viewImage('${w.idCard || ''}', '신분증 사본 없음')">
+          ${w.idCard ? `<img src="${w.idCard}">` : '신분증<br>없음'}
+          <div class="doc-label">신분증</div>
+        </div>
+        <div class="doc-thumb ${w.bankBook ? 'has-img' : ''}" onclick="viewImage('${w.bankBook || ''}', '통장 사본 없음')">
+          ${w.bankBook ? `<img src="${w.bankBook}">` : '통장<br>없음'}
+          <div class="doc-label">통장</div>
+        </div>
+      </div>
+      <div class="worker-actions">
+        <button class="btn-gray btn-small" onclick="editWorker('${w.id}')">수정</button>
+        <button class="btn-danger btn-small" onclick="deleteWorker('${w.id}')">삭제</button>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function maskSSN(ssn) {
+  if (!ssn) return '-';
+  const parts = ssn.split('-');
+  if (parts.length !== 2) return ssn;
+  return parts[0] + '-' + parts[1].slice(0,1) + '******';
+}
+
+function viewImage(src, emptyMsg) {
+  if (!src) { alert(emptyMsg); return; }
+  document.getElementById('image-viewer-img').src = src;
+  document.getElementById('image-viewer').classList.add('show');
+}
+function closeImageViewer() {
+  document.getElementById('image-viewer').classList.remove('show');
+}
+
+// ============================================
+// 기록 모달
+// ============================================
+function openRecordModal(record) {
+  if (data.workers.length === 0) {
+    alert('먼저 "작업자 관리" 탭에서 작업자를 등록해주세요.');
+    switchTab('workers');
+    return;
+  }
+  const select = document.getElementById('record-worker');
+  select.innerHTML = data.workers.map(w => `<option value="${w.id}">${escapeHtml(w.name)}</option>`).join('');
+
+  document.getElementById('record-modal-title').textContent = record ? '인건비 기록 수정' : '새 인건비 기록';
+  document.getElementById('record-id').value = record ? record.id : '';
+  document.getElementById('record-worker').value = record ? record.workerId : data.workers[0].id;
+  document.getElementById('record-task').value = record ? (record.task || '') : '';
+  document.getElementById('record-start-date').value = record ? (record.startDate || '') : '';
+  document.getElementById('record-end-date').value = record ? (record.endDate || '') : new Date().toISOString().slice(0,10);
+  document.getElementById('record-amount').value = record ? (record.amount || '') : '';
+  document.getElementById('record-file-link').value = record ? (record.fileLink || '') : '';
+  document.getElementById('record-work-link').value = record ? (record.workLink || '') : '';
+  document.getElementById('record-memo').value = record ? (record.memo || '') : '';
+  updateAmountPreview();
+  updatePayPreview();
+  document.getElementById('record-modal').classList.add('show');
+}
+
+function closeRecordModal() {
+  document.getElementById('record-modal').classList.remove('show');
+}
+
+function updateAmountPreview() {
+  const amount = parseInt(document.getElementById('record-amount').value) || 0;
+  const afterTax = calcAfterTax(amount);
+  document.getElementById('amount-preview').textContent =
+    `세후: ${formatMoney(afterTax)} (공제 세금: ${formatMoney(amount - afterTax)})`;
+}
+
+function updatePayPreview() {
+  const endDate = document.getElementById('record-end-date').value;
+  const preview = document.getElementById('pay-preview');
+  if (!endDate) {
+    preview.textContent = '완료일을 입력하면 지급일이 자동 계산됩니다.';
+    return;
+  }
+  const payDate = getPaymentDate(endDate);
+  preview.textContent = `📅 지급일: ${payDate} → ${formatPaymentLabel(payDate)}`;
+}
+
+function saveRecord() {
+  const id = document.getElementById('record-id').value;
+  const workerId = document.getElementById('record-worker').value;
+  const task = document.getElementById('record-task').value.trim();
+  const startDate = document.getElementById('record-start-date').value;
+  const endDate = document.getElementById('record-end-date').value;
+  const amount = parseInt(document.getElementById('record-amount').value) || 0;
+  const fileLink = document.getElementById('record-file-link').value.trim();
+  const workLink = document.getElementById('record-work-link').value.trim();
+  const memo = document.getElementById('record-memo').value.trim();
+
+  if (!workerId) { alert('작업자를 선택해주세요.'); return; }
+  if (!task) { alert('업무명을 입력해주세요.'); return; }
+  if (!startDate) { alert('작업 시작일을 입력해주세요.'); return; }
+  if (!endDate) { alert('작업 완료일을 입력해주세요.'); return; }
+  if (startDate > endDate) { alert('작업 시작일이 완료일보다 늦을 수 없습니다.'); return; }
+  if (!amount) { alert('세전 금액을 입력해주세요.'); return; }
+
+  const record = { id: id || newId(), workerId, task, startDate, endDate, amount, fileLink, workLink, memo };
+
+  if (id) {
+    const idx = data.records.findIndex(r => r.id === id);
+    if (idx >= 0) data.records[idx] = record;
+  } else {
+    data.records.push(record);
+  }
+  saveData(data);
+  closeRecordModal();
+  fillMonthFilter();
+  renderRecords();
+}
+
+function editRecord(id) {
+  const r = data.records.find(x => x.id === id);
+  if (r) openRecordModal(r);
+}
+
+function deleteRecord(id) {
+  if (!confirm('이 기록을 삭제할까요?')) return;
+  data.records = data.records.filter(r => r.id !== id);
+  saveData(data);
+  fillMonthFilter();
+  renderRecords();
+}
+
+// ============================================
+// 작업자 모달
+// ============================================
+function openWorkerModal(worker) {
+  document.getElementById('worker-modal-title').textContent = worker ? '작업자 정보 수정' : '새 작업자 등록';
+  document.getElementById('worker-id').value = worker ? worker.id : '';
+  document.getElementById('worker-name').value = worker ? worker.name : '';
+  document.getElementById('worker-phone').value = worker ? (worker.phone || '') : '';
+  document.getElementById('worker-ssn').value = worker ? (worker.ssn || '') : '';
+  document.getElementById('worker-account').value = worker ? (worker.account || '') : '';
+  document.getElementById('worker-id-card').value = '';
+  document.getElementById('worker-bankbook').value = '';
+  document.getElementById('worker-modal').classList.add('show');
+}
+
+function closeWorkerModal() {
+  document.getElementById('worker-modal').classList.remove('show');
+}
+
+async function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function saveWorker() {
+  const id = document.getElementById('worker-id').value;
+  const name = document.getElementById('worker-name').value.trim();
+  const phone = document.getElementById('worker-phone').value.trim();
+  const ssn = document.getElementById('worker-ssn').value.trim();
+  const account = document.getElementById('worker-account').value.trim();
+  const idCardFile = document.getElementById('worker-id-card').files[0];
+  const bankBookFile = document.getElementById('worker-bankbook').files[0];
+
+  if (!name) { alert('작업자명을 입력해주세요.'); return; }
+
+  const existing = id ? data.workers.find(w => w.id === id) : null;
+  const worker = {
+    id: id || newId(),
+    name, phone, ssn, account,
+    idCard: existing ? existing.idCard : '',
+    bankBook: existing ? existing.bankBook : ''
+  };
+
+  try {
+    if (idCardFile) worker.idCard = await fileToBase64(idCardFile);
+    if (bankBookFile) worker.bankBook = await fileToBase64(bankBookFile);
+  } catch(e) {
+    alert('파일 업로드 중 오류가 발생했습니다.');
+    return;
+  }
+
+  if (id) {
+    const idx = data.workers.findIndex(w => w.id === id);
+    if (idx >= 0) data.workers[idx] = worker;
+  } else {
+    data.workers.push(worker);
+  }
+  saveData(data);
+  closeWorkerModal();
+  renderWorkers();
+}
+
+function editWorker(id) {
+  const w = data.workers.find(x => x.id === id);
+  if (w) openWorkerModal(w);
+}
+
+function deleteWorker(id) {
+  const hasRecords = data.records.some(r => r.workerId === id);
+  let msg = '이 작업자를 삭제할까요?';
+  if (hasRecords) msg += '\n\n⚠️ 이 작업자의 인건비 기록도 함께 삭제됩니다.';
+  if (!confirm(msg)) return;
+  data.workers = data.workers.filter(w => w.id !== id);
+  data.records = data.records.filter(r => r.workerId !== id);
+  saveData(data);
+  renderWorkers();
+  renderRecords();
+}
+
+// ============================================
+// 엑셀 내보내기 (CSV with BOM)
+// ============================================
+function downloadCSV(filename, rows) {
+  const csv = rows.map(row => row.map(cell => {
+    if (cell === null || cell === undefined) return '';
+    const s = String(cell);
+    if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+      return '"' + s.replace(/"/g, '""') + '"';
+    }
+    return s;
+  }).join(',')).join('\r\n');
+
+  const BOM = '﻿';
+  const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function getFilteredRecords() {
+  const payMonth = document.getElementById('filter-month').value;
+  let filtered = data.records.slice();
+  if (payMonth && payMonth !== 'all') {
+    filtered = filtered.filter(r => getPaymentDate(r.endDate) === payMonth);
+  }
+  filtered.sort((a,b) => (a.endDate || '').localeCompare(b.endDate || ''));
+  return { filtered, payMonth };
+}
+
+function exportFull() {
+  const { filtered, payMonth } = getFilteredRecords();
+  if (filtered.length === 0) { alert('내보낼 기록이 없습니다.'); return; }
+
+  const rows = [['지급일', '작업자명', '업무명', '작업시작일', '작업완료일', '세전금액', '세후금액', '공제세금', '연락처', '계좌번호', '작업파일', '작업링크', '메모']];
+  filtered.forEach(r => {
+    const w = data.workers.find(x => x.id === r.workerId) || {};
+    const afterTax = calcAfterTax(r.amount || 0);
+    rows.push([
+      getPaymentDate(r.endDate),
+      w.name || '',
+      r.task || '',
+      r.startDate || '',
+      r.endDate || '',
+      r.amount || 0,
+      afterTax,
+      (r.amount || 0) - afterTax,
+      w.phone || '',
+      w.account || '',
+      r.fileLink || '',
+      r.workLink || '',
+      r.memo || ''
+    ]);
+  });
+  const totalBefore = filtered.reduce((s,r) => s + (r.amount || 0), 0);
+  const totalAfter = filtered.reduce((s,r) => s + calcAfterTax(r.amount || 0), 0);
+  rows.push([]);
+  rows.push(['합계', '', '', '', '', totalBefore, totalAfter, totalBefore - totalAfter, '', '', '', '', '']);
+
+  const label = payMonth === 'all' ? '전체' : payMonth.slice(0,7);
+  const filename = `인건비_전체_${label}.csv`;
+  downloadCSV(filename, rows);
+}
+
+function exportForTax() {
+  const { filtered, payMonth } = getFilteredRecords();
+  if (filtered.length === 0) { alert('내보낼 기록이 없습니다.'); return; }
+
+  const rows = [['지급일', '작업자명', '주민등록번호', '세전금액', '세후금액']];
+  filtered.forEach(r => {
+    const w = data.workers.find(x => x.id === r.workerId) || {};
+    const afterTax = calcAfterTax(r.amount || 0);
+    rows.push([
+      getPaymentDate(r.endDate),
+      w.name || '',
+      w.ssn || '',
+      r.amount || 0,
+      afterTax
+    ]);
+  });
+  const totalBefore = filtered.reduce((s,r) => s + (r.amount || 0), 0);
+  const totalAfter = filtered.reduce((s,r) => s + calcAfterTax(r.amount || 0), 0);
+  rows.push([]);
+  rows.push(['합계', '', '', totalBefore, totalAfter]);
+
+  const label = payMonth === 'all' ? '전체' : payMonth.slice(0,7);
+  const filename = `인건비_세무사용_${label}.csv`;
+  downloadCSV(filename, rows);
+}
+
+// ============================================
+// 백업 / 불러오기
+// ============================================
+function exportBackup() {
+  if (data.workers.length === 0 && data.records.length === 0) {
+    alert('백업할 데이터가 없습니다.');
+    return;
+  }
+  const backupData = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    workers: data.workers,
+    records: data.records
+  };
+  const json = JSON.stringify(backupData, null, 2);
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const today = new Date().toISOString().slice(0,10);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `인건비_백업_${today}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert(`백업 완료!\n\n작업자 ${data.workers.length}명, 기록 ${data.records.length}건이 저장되었습니다.\n\n이 파일을 구글드라이브/카톡 등에 보관해두세요.`);
+}
+
+function importBackup(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported.workers || !imported.records || !Array.isArray(imported.workers) || !Array.isArray(imported.records) ) {
+        alert('올바른 백업 파일이 아닙니다.');
+        return;
+      }
+
+      const currentCount = data.workers.length + data.records.length;
+      const newCount = imported.workers.length + imported.records.length;
+
+      let mode = 'replace';
+      if (currentCount > 0) {
+        const choice = confirm(
+          `📂 백업 파일 불러오기\n\n` +
+          `현재 데이터: 작업자 ${data.workers.length}명, 기록 ${data.records.length}건\n` +
+          `백업 파일: 작업자 ${imported.workers.length}명, 기록 ${imported.records.length}건\n\n` +
+          `[확인] = 현재 데이터를 모두 삭제하고 백업 파일로 덮어쓰기\n` +
+          `[취소] = 불러오기 취소\n\n` +
+          `※ 백업 파일과 합치고 싶으면 취소 후 다시 알려주세요.`
+        );
+        if (!choice) {
+          event.target.value = '';
+          return;
+        }
+      }
+
+      data = {
+        workers: imported.workers,
+        records: imported.records
+      };
+      // 마이그레이션 적용
+      data.records.forEach(r => {
+        if (!r.endDate && r.payDate) r.endDate = r.payDate;
+        if (!r.startDate) r.startDate = r.endDate || '';
+        if (!r.workLink) r.workLink = '';
+      });
+      saveData(data);
+      fillMonthFilter();
+      renderRecords();
+      renderWorkers();
+      alert(`불러오기 완료!\n\n작업자 ${data.workers.length}명, 기록 ${data.records.length}건이 복원되었습니다.`);
+    } catch (err) {
+      alert('파일을 읽는 중 오류가 발생했습니다.\n올바른 백업 파일인지 확인해주세요.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ============================================
+// 이벤트
+// ============================================
+document.getElementById('filter-month').addEventListener('change', renderRecords);
+document.getElementById('search-input').addEventListener('input', renderRecords);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeRecordModal();
+    closeWorkerModal();
+    closeImageViewer();
+  }
+});
+
+// ============================================
+// 초기화
+// ============================================
+fillMonthFilter();
+renderRecords();
+renderWorkers();
+</script>
+</body>
+</html>
