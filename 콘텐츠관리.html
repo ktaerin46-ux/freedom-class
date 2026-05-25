@@ -531,6 +531,141 @@
     color: #888;
     margin-top: 2px;
   }
+  .cal-todo-badge {
+    display: inline-block;
+    margin-top: 3px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #e6f7ee;
+    color: #00a651;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .cal-todo-badge.has-pending {
+    background: #fff5e6;
+    color: #b8651a;
+  }
+  .cal-todo-badge.all-done {
+    background: #00a651;
+    color: white;
+  }
+
+  /* 할 일 모달 */
+  .todo-list {
+    margin-bottom: 16px;
+  }
+  .todo-category {
+    background: #fafbfc;
+    border: 1px solid #eef0f3;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .todo-category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #555;
+    font-size: 14px;
+  }
+  .todo-cat-actions {
+    display: flex;
+    gap: 4px;
+  }
+  .todo-cat-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 12px;
+    color: #888;
+    border-radius: 4px;
+  }
+  .todo-cat-actions button:hover { background: #eee; color: #333; }
+  .todo-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px dashed #eef0f3;
+  }
+  .todo-item:last-child { border-bottom: none; }
+  .todo-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #00a651;
+  }
+  .todo-text {
+    flex: 1;
+    font-size: 14px;
+    color: #222;
+    word-break: break-all;
+  }
+  .todo-item.done .todo-text {
+    text-decoration: line-through;
+    color: #aaa;
+  }
+  .todo-rollover-tag {
+    background: #ffe6cc;
+    color: #b8651a;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+  .todo-delete-btn {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 14px;
+    opacity: 0.5;
+  }
+  .todo-delete-btn:hover { opacity: 1; }
+  .todo-add-form {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .todo-add-form input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .todo-add-form button {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+  .todo-progress {
+    background: #f5f6f8;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #555;
+    font-weight: 600;
+  }
+  .todo-progress-bar {
+    background: #e0e0e0;
+    height: 6px;
+    border-radius: 3px;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .todo-progress-fill {
+    background: linear-gradient(90deg, #11998e, #38ef7d);
+    height: 100%;
+    transition: width 0.3s;
+  }
 
   /* 채널별 뷰 */
   .channels-view {
@@ -933,6 +1068,27 @@
   </div>
 </div>
 
+<!-- 할 일 모달 -->
+<div class="modal-overlay" id="todo-modal">
+  <div class="modal" style="max-width: 720px;">
+    <h2 id="todo-modal-title">📋 일일 할 일</h2>
+    <div class="todo-progress" id="todo-progress">진행률 0/0 (0%)</div>
+    <div id="todo-list-container"></div>
+
+    <div style="border-top: 1px solid #eef0f3; padding-top: 16px; margin-top: 16px;">
+      <label style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 8px;">+ 새 카테고리 추가</label>
+      <div class="todo-add-form">
+        <input type="text" id="new-category-input" placeholder="예: 웨비나 준비, 영상 편집, 미팅">
+        <button class="btn-primary" onclick="addTodoCategory()">카테고리 추가</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-gray" onclick="closeTodoModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
 <!-- 채널 모달 -->
 <div class="modal-overlay" id="channel-modal">
   <div class="modal">
@@ -1183,6 +1339,7 @@ async function showApp() {
     data = cloudData;
     ensureDataShape(data);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    rolloverPendingTodos(); // 자동 이월
     renderAll();
     updateSyncStatus('saved');
   } else {
@@ -1192,6 +1349,7 @@ async function showApp() {
     } else {
       updateSyncStatus('saved');
     }
+    rolloverPendingTodos(); // 자동 이월
     renderAll();
   }
 }
@@ -1245,10 +1403,11 @@ function ensureDataShape(d) {
   if (!Array.isArray(d.products)) d.products = [];
   if (!Array.isArray(d.ideas)) d.ideas = [];
   if (!Array.isArray(d.revenues)) d.revenues = [];
+  if (!Array.isArray(d.todos)) d.todos = [];
 }
 
 function loadData() {
-  const empty = { channels: [], contents: [], workers: [], scripts: [], products: [], ideas: [], revenues: [] };
+  const empty = { channels: [], contents: [], workers: [], scripts: [], products: [], ideas: [], revenues: [], todos: [] };
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return empty;
   try {
@@ -2027,9 +2186,24 @@ function renderCalendar() {
       pillsHtml += `<div class="cal-more">+${items.length - maxPills}개 더</div>`;
     }
 
+    // 할 일 정보
+    const dayTodos = data.todos.filter(t => t.date === dateStr);
+    const totalTodos = dayTodos.length;
+    const doneTodos = dayTodos.filter(t => t.done).length;
+    let todoBadge = '';
+    if (totalTodos > 0) {
+      let badgeClass = 'cal-todo-badge';
+      if (doneTodos === totalTodos) badgeClass += ' all-done';
+      else if (doneTodos < totalTodos) badgeClass += ' has-pending';
+      todoBadge = `<span class="${badgeClass}" onclick="event.stopPropagation(); openTodoModal('${dateStr}')">✓ ${doneTodos}/${totalTodos}</span>`;
+    } else {
+      todoBadge = `<span class="cal-todo-badge" style="background:#f0f0f0; color:#888;" onclick="event.stopPropagation(); openTodoModal('${dateStr}')">📋 할 일</span>`;
+    }
+
     html += `<div class="cal-day ${isToday}" onclick="openContentModalForDate('${dateStr}')">
       <div class="cal-day-num ${cls}">${day}</div>
       ${pillsHtml}
+      ${todoBadge}
     </div>`;
   }
 
@@ -2038,6 +2212,177 @@ function renderCalendar() {
 
 function openContentModalForDate(dateStr) {
   openContentModal(null, dateStr);
+}
+
+// ============================================
+// 할 일 (체크리스트) + 자동 이월
+// ============================================
+let currentTodoDate = null;
+
+function todayStr() {
+  return new Date().toISOString().slice(0,10);
+}
+
+// 페이지 로드 시 어제까지 미완료 항목을 오늘로 자동 이월
+function rolloverPendingTodos() {
+  const today = todayStr();
+  let rolled = 0;
+  data.todos.forEach(t => {
+    if (!t.done && t.date < today) {
+      if (!t.originalDate) t.originalDate = t.date;
+      t.date = today;
+      t.rolledOver = true;
+      rolled++;
+    }
+  });
+  if (rolled > 0) {
+    saveData();
+    setTimeout(() => showToast(`📋 미완료 항목 ${rolled}개를 오늘로 이월했습니다`), 800);
+  }
+}
+
+function openTodoModal(dateStr) {
+  currentTodoDate = dateStr;
+  const d = new Date(dateStr + 'T00:00:00');
+  const dateLabel = `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+  const isToday = dateStr === todayStr() ? ' (오늘)' : '';
+  document.getElementById('todo-modal-title').textContent = `📋 ${dateLabel}${isToday} 할 일`;
+  renderTodoList();
+  document.getElementById('todo-modal').classList.add('show');
+}
+
+function closeTodoModal() {
+  document.getElementById('todo-modal').classList.remove('show');
+  currentTodoDate = null;
+  renderCalendar(); // 캘린더 갱신
+}
+
+function renderTodoList() {
+  if (!currentTodoDate) return;
+  const todos = data.todos.filter(t => t.date === currentTodoDate);
+
+  // 진행률
+  const total = todos.length;
+  const done = todos.filter(t => t.done).length;
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  const progressEl = document.getElementById('todo-progress');
+  progressEl.innerHTML = `진행률: <strong>${done}/${total}</strong> (${pct}%)
+    <div class="todo-progress-bar"><div class="todo-progress-fill" style="width:${pct}%"></div></div>`;
+
+  // 카테고리별 그룹화
+  const categories = {};
+  todos.forEach(t => {
+    const cat = t.category || '기타';
+    if (!categories[cat]) categories[cat] = [];
+    categories[cat].push(t);
+  });
+
+  const container = document.getElementById('todo-list-container');
+  if (Object.keys(categories).length === 0) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">📋</div>아직 할 일이 없습니다. 아래 "+ 새 카테고리 추가"로 시작하세요.</div>';
+    return;
+  }
+
+  let html = '';
+  Object.keys(categories).forEach(catName => {
+    const items = categories[catName];
+    const catDone = items.filter(t => t.done).length;
+    html += `<div class="todo-category">
+      <div class="todo-category-header">
+        <span>${escapeHtml(catName)} <span style="color:#888; font-weight:500; font-size:12px;">(${catDone}/${items.length})</span></span>
+        <div class="todo-cat-actions">
+          <button onclick="renameTodoCategory('${escapeAttr(catName)}')" title="이름 변경">✏️</button>
+          <button onclick="deleteTodoCategory('${escapeAttr(catName)}')" title="카테고리 삭제">🗑️</button>
+        </div>
+      </div>`;
+    items.forEach(t => {
+      const rolledTag = t.rolledOver && t.originalDate ? `<span class="todo-rollover-tag" title="${t.originalDate}부터 이월됨">↻ 이월</span>` : '';
+      html += `<div class="todo-item ${t.done ? 'done' : ''}">
+        <input type="checkbox" class="todo-checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodo('${t.id}')">
+        <span class="todo-text">${escapeHtml(t.text)}${rolledTag}</span>
+        <button class="todo-delete-btn" onclick="deleteTodo('${t.id}')" title="삭제">✕</button>
+      </div>`;
+    });
+    html += `<div class="todo-add-form">
+      <input type="text" placeholder="새 할 일..." onkeydown="if(event.key==='Enter') addTodoItem('${escapeAttr(catName)}', this)">
+      <button class="btn-primary btn-small" onclick="addTodoItem('${escapeAttr(catName)}', this.previousElementSibling)">+ 추가</button>
+    </div>`;
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function escapeAttr(s) {
+  return String(s).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function addTodoCategory() {
+  const input = document.getElementById('new-category-input');
+  const name = input.value.trim();
+  if (!name) { input.focus(); return; }
+  // 카테고리 자체를 별도 저장 안 해도, 항목 추가 시 카테고리 따라옴
+  // 빈 카테고리 표시 위해 placeholder 항목 하나 추가
+  data.todos.push({
+    id: newId(),
+    date: currentTodoDate,
+    category: name,
+    text: '(여기에 할 일을 추가하세요)',
+    done: false,
+    originalDate: currentTodoDate
+  });
+  input.value = '';
+  saveData();
+  renderTodoList();
+}
+
+function addTodoItem(category, inputEl) {
+  const text = inputEl.value.trim();
+  if (!text) { inputEl.focus(); return; }
+  data.todos.push({
+    id: newId(),
+    date: currentTodoDate,
+    category: category,
+    text: text,
+    done: false,
+    originalDate: currentTodoDate
+  });
+  inputEl.value = '';
+  saveData();
+  renderTodoList();
+}
+
+function toggleTodo(id) {
+  const t = data.todos.find(x => x.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  t.completedAt = t.done ? new Date().toISOString() : null;
+  saveData();
+  renderTodoList();
+}
+
+function deleteTodo(id) {
+  data.todos = data.todos.filter(t => t.id !== id);
+  saveData();
+  renderTodoList();
+}
+
+function renameTodoCategory(oldName) {
+  const newName = prompt('카테고리 이름을 바꾸시겠어요?', oldName);
+  if (!newName || newName === oldName) return;
+  data.todos.forEach(t => {
+    if (t.date === currentTodoDate && t.category === oldName) {
+      t.category = newName;
+    }
+  });
+  saveData();
+  renderTodoList();
+}
+
+function deleteTodoCategory(catName) {
+  if (!confirm(`"${catName}" 카테고리의 모든 할 일을 삭제할까요?`)) return;
+  data.todos = data.todos.filter(t => !(t.date === currentTodoDate && t.category === catName));
+  saveData();
+  renderTodoList();
 }
 
 // ============================================
@@ -2377,7 +2722,8 @@ function importBackup(event) {
         scripts: imp.scripts || [],
         products: imp.products || [],
         ideas: imp.ideas || [],
-        revenues: imp.revenues || []
+        revenues: imp.revenues || [],
+        todos: imp.todos || []
       };
       ensureDataShape(data);
       saveData();
@@ -2427,6 +2773,7 @@ document.addEventListener('keydown', (e) => {
     closeScriptModal();
     closeProductModal();
     closeIdeaModal();
+    closeTodoModal();
   }
   if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'login-password') {
     tryLogin();
