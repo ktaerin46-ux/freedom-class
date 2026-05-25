@@ -199,6 +199,79 @@
     pointer-events: none;
   }
   .toast.show { opacity: 1; }
+
+  /* 회고 섹션 */
+  .reflection-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .reflection-header {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .reflection-subtitle {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  .reflection-status {
+    font-size: 13px;
+    color: #00a651;
+    font-weight: 500;
+  }
+  .reflection-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .reflection-item {
+    background: #fafbfc;
+    border: 1px solid #eef0f3;
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .reflection-item label {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 10px;
+    display: block;
+    color: #333;
+  }
+  .reflection-item textarea {
+    width: 100%;
+    min-height: 110px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    background: white;
+    transition: border-color 0.15s;
+  }
+  .reflection-item textarea:focus {
+    outline: none;
+    border-color: #2c7be5;
+  }
+  .reflection-item textarea:disabled {
+    background: #f5f5f5;
+    color: #aaa;
+  }
+  .reflection-good { border-left: 4px solid #00a651; }
+  .reflection-bad { border-left: 4px solid #e74c3c; }
+  .reflection-improvement { border-left: 4px solid #2c7be5; }
+  .reflection-memo { border-left: 4px solid #888; }
+
+  @media (max-width: 768px) {
+    .reflection-grid { grid-template-columns: 1fr; }
+  }
   .actions { white-space: nowrap; }
   .actions button { margin-right: 4px; }
   .file-link { color: #2c7be5; text-decoration: none; font-size: 13px; word-break: break-all; }
@@ -555,6 +628,33 @@
     <div id="workers-content"></div>
   </div>
 
+  <!-- 회고 섹션 -->
+  <div class="reflection-section" id="reflection-section">
+    <div class="reflection-header">
+      <span>📝 <span id="reflection-month-label">이번 달</span> 회고</span>
+      <span class="reflection-status" id="reflection-status"></span>
+    </div>
+    <p class="reflection-subtitle">이번 달 인건비 지출을 돌아보고 다음 달에 반영하세요. 자동 저장됩니다.</p>
+    <div class="reflection-grid">
+      <div class="reflection-item reflection-good">
+        <label>👍 잘 쓴 곳 / 잘된 점</label>
+        <textarea id="reflection-good" placeholder="예: 디자이너 정신애님 결과물 만족도 높음, 단가 대비 퀄리티 좋았음"></textarea>
+      </div>
+      <div class="reflection-item reflection-bad">
+        <label>👎 잘못 쓴 곳 / 아쉬운 점</label>
+        <textarea id="reflection-bad" placeholder="예: 영상편집 비용이 예산 초과, 작업 지연으로 발주 일정 꼬임"></textarea>
+      </div>
+      <div class="reflection-item reflection-improvement">
+        <label>💡 다음 달 개선점</label>
+        <textarea id="reflection-improvement" placeholder="예: 견적 미리 받기, 작업 범위 명확히 정의, 마감 일정 여유 있게"></textarea>
+      </div>
+      <div class="reflection-item reflection-memo">
+        <label>📌 기타 메모</label>
+        <textarea id="reflection-memo" placeholder="자유롭게 기록하세요"></textarea>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- 인건비 기록 모달 -->
@@ -801,10 +901,12 @@ async function showApp() {
   if (cloudData) {
     data = cloudData;
     migrateRecords(data.records);
+    if (!data.reflections) data.reflections = {};
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     fillMonthFilter();
     renderRecords();
     renderWorkers();
+    renderReflection();
     updateSyncStatus('saved');
   } else {
     if (data.workers.length > 0 || data.records.length > 0) {
@@ -844,13 +946,14 @@ const STORAGE_KEY = 'payroll_data_v1';
 
 function loadData() {
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return { workers: [], records: [] };
+  if (!raw) return { workers: [], records: [], reflections: {} };
   try {
     const d = JSON.parse(raw);
     migrateRecords(d.records || []);
+    if (!d.reflections) d.reflections = {};
     return d;
   }
-  catch(e) { return { workers: [], records: [] }; }
+  catch(e) { return { workers: [], records: [], reflections: {} }; }
 }
 
 function saveData(data) {
@@ -919,6 +1022,7 @@ function switchTab(tab) {
   document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
   document.getElementById('panel-records').style.display = tab === 'records' ? 'block' : 'none';
   document.getElementById('panel-workers').style.display = tab === 'workers' ? 'block' : 'none';
+  document.getElementById('reflection-section').style.display = tab === 'records' ? 'block' : 'none';
 }
 
 // ============================================
@@ -1485,6 +1589,69 @@ function exportForTax() {
 }
 
 // ============================================
+// 회고
+// ============================================
+const REFLECTION_FIELDS = ['good', 'bad', 'improvement', 'memo'];
+let reflectionSaveTimer = null;
+
+function getCurrentReflectionKey() {
+  const month = document.getElementById('filter-month').value;
+  if (!month || month === 'all') return null;
+  return month;
+}
+
+function renderReflection() {
+  const key = getCurrentReflectionKey();
+  const label = document.getElementById('reflection-month-label');
+  if (!data.reflections) data.reflections = {};
+
+  if (!key) {
+    label.textContent = '월 선택';
+    REFLECTION_FIELDS.forEach(f => {
+      const el = document.getElementById('reflection-' + f);
+      el.value = '';
+      el.disabled = true;
+    });
+    return;
+  }
+
+  const d = new Date(key + 'T00:00:00');
+  label.textContent = `${d.getFullYear()}년 ${d.getMonth()+1}월`;
+
+  const r = data.reflections[key] || {};
+  REFLECTION_FIELDS.forEach(f => {
+    const el = document.getElementById('reflection-' + f);
+    el.value = r[f] || '';
+    el.disabled = false;
+  });
+}
+
+function onReflectionInput() {
+  const key = getCurrentReflectionKey();
+  if (!key) return;
+
+  if (!data.reflections) data.reflections = {};
+  data.reflections[key] = {
+    good: document.getElementById('reflection-good').value,
+    bad: document.getElementById('reflection-bad').value,
+    improvement: document.getElementById('reflection-improvement').value,
+    memo: document.getElementById('reflection-memo').value
+  };
+
+  const status = document.getElementById('reflection-status');
+  status.style.color = '#888';
+  status.textContent = '입력 중...';
+
+  if (reflectionSaveTimer) clearTimeout(reflectionSaveTimer);
+  reflectionSaveTimer = setTimeout(() => {
+    saveData(data);
+    status.style.color = '#00a651';
+    status.textContent = '✓ 저장됨';
+    setTimeout(() => { status.textContent = ''; }, 2000);
+  }, 700);
+}
+
+// ============================================
 // 백업 / 불러오기
 // ============================================
 function exportBackup() {
@@ -1568,8 +1735,14 @@ function importBackup(event) {
 // ============================================
 // 이벤트
 // ============================================
-document.getElementById('filter-month').addEventListener('change', renderRecords);
+document.getElementById('filter-month').addEventListener('change', () => {
+  renderRecords();
+  renderReflection();
+});
 document.getElementById('search-input').addEventListener('input', renderRecords);
+REFLECTION_FIELDS.forEach(f => {
+  document.getElementById('reflection-' + f).addEventListener('input', onReflectionInput);
+});
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeRecordModal();
@@ -1585,6 +1758,7 @@ checkAuth();
 fillMonthFilter();
 renderRecords();
 renderWorkers();
+renderReflection();
 </script>
 </body>
 </html>
