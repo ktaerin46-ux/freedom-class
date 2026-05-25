@@ -356,7 +356,7 @@
 
   .editor-content {
     min-height: 400px;
-    padding: 24px;
+    padding: 24px 24px 320px;
     font-size: 16px;
     line-height: 1.8;
     outline: none;
@@ -386,35 +386,50 @@
   }
   .editor-content a { color: #2c7be5; text-decoration: underline; }
 
-  /* 꼬리 메모 (개선점) - 화면 하단에 sticky */
+  /* 꼬리 메모 (개선점) - 화면 하단에 항상 고정 */
   .followup-area {
-    position: sticky;
+    position: fixed;
     bottom: 16px;
+    left: 272px;  /* 사이드바(240px) + 여백 32px */
+    right: 16px;
     z-index: 40;
-    margin-top: 16px;
     background: linear-gradient(135deg, #fff5e6, #ffe6cc);
     border-radius: 12px;
     border: 2px dashed #e67e22;
     padding: 16px;
-    box-shadow: 0 -4px 20px rgba(230, 126, 34, 0.2);
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
+    max-height: 280px;
+    overflow-y: auto;
   }
-  .followup-area.collapsed .followup-textarea {
+  .followup-area.collapsed .followup-textarea,
+  .followup-area.collapsed .followup-hint {
     display: none;
   }
   .followup-area.collapsed {
-    padding: 10px 16px;
+    padding: 8px 16px;
+    max-height: 50px;
   }
   .followup-toggle-btn {
-    background: rgba(230, 126, 34, 0.15);
+    background: rgba(230, 126, 34, 0.2);
     border: none;
     color: #b8651a;
     padding: 4px 10px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
   }
-  .followup-toggle-btn:hover { background: rgba(230, 126, 34, 0.3); }
+  .followup-toggle-btn:hover { background: rgba(230, 126, 34, 0.4); }
+  .followup-area .followup-textarea {
+    min-height: 80px;
+    max-height: 180px;
+  }
+
+  @media (max-width: 900px) {
+    .followup-area {
+      left: 16px;
+    }
+  }
   .followup-header {
     display: flex; justify-content: space-between;
     align-items: center; margin-bottom: 10px;
@@ -622,6 +637,9 @@
           </div>
 
           <div class="editor-toolbar">
+            <button onclick="undoEdit()" title="실행 취소 (Cmd+Z)" style="font-size: 16px;">↶</button>
+            <button onclick="redoEdit()" title="다시 실행 (Cmd+Shift+Z)" style="font-size: 16px;">↷</button>
+            <div class="separator"></div>
             <button onclick="execCmd('bold')" title="굵게 (Cmd+B)"><b>B</b></button>
             <button onclick="execCmd('italic')" title="기울임 (Cmd+I)"><i>I</i></button>
             <button onclick="execCmd('underline')" title="밑줄 (Cmd+U)"><u>U</u></button>
@@ -1494,6 +1512,18 @@ function insertLink() {
     document.execCommand('createLink', false, url);
     scheduleAutoSave();
   }
+}
+
+function undoEdit() {
+  document.getElementById('editor-content').focus();
+  document.execCommand('undo');
+  scheduleAutoSave();
+}
+
+function redoEdit() {
+  document.getElementById('editor-content').focus();
+  document.execCommand('redo');
+  scheduleAutoSave();
 }
 
 function toggleFollowup() {
