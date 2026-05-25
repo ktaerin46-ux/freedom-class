@@ -531,6 +531,7 @@
     color: #888;
     margin-top: 2px;
   }
+  .cal-day { position: relative; }
   .cal-todo-badge {
     display: inline-block;
     margin-top: 3px;
@@ -548,6 +549,24 @@
   }
   .cal-todo-badge.all-done {
     background: #00a651;
+    color: white;
+  }
+  .cal-day-add-todo {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 11px;
+    color: #aaa;
+    cursor: pointer;
+    padding: 1px 5px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    background: #f5f6f8;
+  }
+  .cal-day:hover .cal-day-add-todo { opacity: 1; }
+  .cal-day-add-todo:hover {
+    background: #11998e;
     color: white;
   }
 
@@ -2191,19 +2210,20 @@ function renderCalendar() {
     const totalTodos = dayTodos.length;
     const doneTodos = dayTodos.filter(t => t.done).length;
     let todoBadge = '';
+    let addTodoBtn = `<span class="cal-day-add-todo" onclick="event.stopPropagation(); openTodoModal('${dateStr}')" title="할 일 추가">📋+</span>`;
     if (totalTodos > 0) {
       let badgeClass = 'cal-todo-badge';
       if (doneTodos === totalTodos) badgeClass += ' all-done';
       else if (doneTodos < totalTodos) badgeClass += ' has-pending';
       todoBadge = `<span class="${badgeClass}" onclick="event.stopPropagation(); openTodoModal('${dateStr}')">✓ ${doneTodos}/${totalTodos}</span>`;
-    } else {
-      todoBadge = `<span class="cal-todo-badge" style="background:#f0f0f0; color:#888;" onclick="event.stopPropagation(); openTodoModal('${dateStr}')">📋 할 일</span>`;
+      addTodoBtn = '';
     }
 
     html += `<div class="cal-day ${isToday}" onclick="openContentModalForDate('${dateStr}')">
       <div class="cal-day-num ${cls}">${day}</div>
       ${pillsHtml}
       ${todoBadge}
+      ${addTodoBtn}
     </div>`;
   }
 

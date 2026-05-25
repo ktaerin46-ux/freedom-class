@@ -200,6 +200,81 @@
     max-height: 40px; overflow: hidden;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
   }
+
+  /* 검색 결과 */
+  .search-result-section {
+    background: #f0fff8;
+    border: 2px solid #11998e;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .search-result-title {
+    font-weight: 700;
+    color: #11998e;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .search-match-item {
+    background: white;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    border-left: 4px solid #11998e;
+    transition: all 0.15s;
+  }
+  .search-match-item:hover {
+    box-shadow: 0 4px 12px rgba(17,153,142,0.15);
+    transform: translateX(2px);
+  }
+  .search-match-course {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .search-match-chapter {
+    font-size: 12px;
+    color: #11998e;
+    margin-bottom: 6px;
+  }
+  .search-match-preview {
+    font-size: 14px;
+    color: #222;
+    line-height: 1.6;
+    word-break: break-word;
+  }
+  .search-match-preview mark {
+    background: #ffeb3b;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  .search-match-item {
+    background: white;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-left: 4px solid #11998e;
+    transition: all 0.15s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .search-match-item:hover {
+    box-shadow: 0 4px 16px rgba(17,153,142,0.18);
+    transform: translateX(3px);
+  }
+  .search-match-score {
+    display: inline-block;
+    background: #11998e;
+    color: white;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    margin-left: 6px;
+    font-weight: 700;
+  }
   .chapter-count {
     font-size: 11px; color: #11998e; font-weight: 600;
     background: #e6f7ee; padding: 2px 8px; border-radius: 4px;
@@ -586,6 +661,9 @@
       </div>
       <div class="category-chips" id="category-chips"></div>
     </div>
+
+    <!-- 검색 결과 (키워드 입력 시만 표시) -->
+    <div id="search-results-panel" style="display: none;"></div>
 
     <div class="panel">
       <div class="panel-header">
@@ -1043,6 +1121,202 @@ function setCategoryFilter(cat) {
   currentCategoryFilter = cat;
   renderCategoryChips();
   renderCourses();
+}
+
+// ============================================
+// 검색 (강의 + 챕터 내용 + 맥락 매칭)
+// ============================================
+function stripHtml(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html || '';
+  return div.textContent || '';
+}
+
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// 매칭 점수 계산 (단어 단위, 부분 매칭 허용)
+function getSearchScore(text, queryWords) {
+  if (!queryWords.length) return 0;
+  const lowerText = (text || '').toLowerCase();
+  let score = 0;
+  queryWords.forEach(w => {
+    if (!w) return;
+    // 정확 매칭 +3, 부분 매칭 +1
+    if (lowerText.includes(w)) score += 3;
+    else {
+      // 글자 단위 부분 매칭 (한국어 맥락)
+      for (let i = 0; i < w.length - 1; i++) {
+        const sub = w.slice(i, i + 2);
+        if (sub.length >= 2 && lowerText.includes(sub)) {
+          score += 0.3;
+          break;
+        }
+      }
+    }
+  });
+  return score;
+}
+
+// 매칭 부분 미리보기 + 하이라이트
+function getMatchPreview(text, queryWords, maxLen) {
+  maxLen = maxLen || 180;
+  if (!queryWords.length || !text) return '';
+  const lowerText = text.toLowerCase();
+
+  // 첫 매칭 위치 찾기
+  let firstPos = -1;
+  for (let w of queryWords) {
+    if (!w) continue;
+    const pos = lowerText.indexOf(w);
+    if (pos >= 0 && (firstPos < 0 || pos < firstPos)) firstPos = pos;
+  }
+  if (firstPos < 0) {
+    return escapeHtml(text.slice(0, maxLen)) + (text.length > maxLen ? '...' : '');
+  }
+
+  const start = Math.max(0, firstPos - 40);
+  const end = Math.min(text.length, firstPos + maxLen);
+  let preview = text.slice(start, end);
+  if (start > 0) preview = '...' + preview;
+  if (end < text.length) preview = preview + '...';
+
+  // escape 후 하이라이트
+  preview = escapeHtml(preview);
+  queryWords.forEach(w => {
+    if (w) {
+      const regex = new RegExp(`(${escapeRegex(w)})`, 'gi');
+      preview = preview.replace(regex, '<mark>$1</mark>');
+    }
+  });
+  return preview;
+}
+
+// 챕터 단위 검색
+function searchInChapters(query) {
+  if (!query.trim()) return [];
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const results = [];
+
+  data.courses.forEach(course => {
+    (course.chapters || []).forEach((ch, idx) => {
+      const chTitle = ch.title || '';
+      const chContent = stripHtml(ch.content || '');
+      const chFollow = ch.followUp || '';
+      const fullText = `${chTitle} ${chContent} ${chFollow}`;
+
+      const score = getSearchScore(fullText, words);
+      if (score > 0) {
+        // 어디서 매칭됐는지 우선순위: 본문 > 제목 > 꼬리메모
+        let matchedIn, sourceText;
+        if (getSearchScore(chContent, words) > 0) {
+          matchedIn = '본문';
+          sourceText = chContent;
+        } else if (getSearchScore(chTitle, words) > 0) {
+          matchedIn = '챕터 제목';
+          sourceText = chTitle;
+        } else {
+          matchedIn = '꼬리 메모';
+          sourceText = chFollow;
+        }
+
+        results.push({
+          course,
+          chapter: ch,
+          chapterIdx: idx,
+          score,
+          matchedIn,
+          preview: getMatchPreview(sourceText, words)
+        });
+      }
+    });
+  });
+
+  // 점수 높은 순
+  results.sort((a, b) => b.score - a.score);
+  return results;
+}
+
+function renderSearchResults(query) {
+  const panel = document.getElementById('search-results-panel');
+  const coursesContent = document.getElementById('courses-content');
+  const coursesPanel = coursesContent ? coursesContent.closest('.panel') : null;
+
+  if (!query.trim()) {
+    panel.style.display = 'none';
+    panel.innerHTML = '';
+    if (coursesPanel) coursesPanel.style.display = 'block';
+    return;
+  }
+
+  // 검색어가 있으면 강의 카드 패널 숨김
+  if (coursesPanel) coursesPanel.style.display = 'none';
+  panel.style.display = 'block';
+
+  const results = searchInChapters(query);
+
+  if (results.length === 0) {
+    panel.innerHTML = `<div class="search-result-section">
+      <div class="search-result-title">🔍 "${escapeHtml(query)}" 검색 결과 0개</div>
+      <div style="text-align:center; padding: 30px 20px; color: #888;">
+        매칭되는 문장이 없습니다.<br>
+        <span style="font-size: 12px;">강의 챕터의 본문/제목/꼬리메모를 검색합니다. 다른 키워드를 시도해보세요.</span>
+      </div>
+    </div>`;
+    return;
+  }
+
+  let html = `<div class="search-result-section">
+    <div class="search-result-title">🔍 "${escapeHtml(query)}" — 매칭 문장 ${results.length}개 (관련도 높은 순)</div>
+    <div style="font-size: 12px; color: #888; margin-bottom: 12px;">📌 문장을 클릭하면 해당 챕터로 바로 이동합니다</div>`;
+  results.slice(0, 30).forEach(r => {
+    const cat = data.categories.find(x => x.id === r.course.categoryId);
+    const catName = cat ? cat.name : '미분류';
+    const catColor = cat ? cat.color : '#888';
+    html += `<div class="search-match-item" style="border-left-color: ${catColor};" onclick="openCourseAndChapter('${r.course.id}','${r.chapter.id}')">
+      <div class="search-match-preview" style="font-size: 14px; color: #222; margin-bottom: 8px; line-height: 1.6;">${r.preview}</div>
+      <div class="search-match-chapter" style="font-size: 11px; color: #888; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+        <span style="background: ${catColor}; color: white; padding: 1px 6px; border-radius: 3px; font-weight: 600;">${escapeHtml(catName)}</span>
+        <span>📚 ${escapeHtml(r.course.title)}</span>
+        <span>·</span>
+        <span>📂 ${r.chapterIdx + 1}. ${escapeHtml(r.chapter.title || '(제목 없음)')}</span>
+        <span style="background:#eef0f3; color:#555; padding:1px 5px; border-radius:3px; font-size:10px;">${r.matchedIn}</span>
+      </div>
+    </div>`;
+  });
+  if (results.length > 30) {
+    html += `<div style="text-align:center; color:#888; font-size:12px; margin-top:8px;">+ ${results.length - 30}개 더... (검색어를 더 구체적으로 입력해주세요)</div>`;
+  }
+  html += '</div>';
+  panel.innerHTML = html;
+}
+
+function openCourseAndChapter(courseId, chapterId) {
+  const c = data.courses.find(x => x.id === courseId);
+  if (!c) return;
+  currentCourseId = courseId;
+  document.getElementById('view-list').style.display = 'none';
+  document.getElementById('view-detail').classList.add('show');
+
+  document.getElementById('detail-title').textContent = c.title;
+  const cat = data.categories.find(x => x.id === c.categoryId);
+  const catName = cat ? cat.name : '미분류';
+  const statusText = { learning: '학습 중', completed: '완료', paused: '보류' }[c.status] || '';
+  let meta = `📂 ${catName} · ${statusText}`;
+  if (c.instructor) meta += ` · 👨‍🏫 ${c.instructor}`;
+  if (c.platform) meta += ` · 🌐 ${c.platform}`;
+  document.getElementById('detail-meta').textContent = meta;
+
+  // 챕터 자동 추가 (없으면)
+  if (!c.chapters || c.chapters.length === 0) {
+    c.chapters = [{ id: newId(), title: '1강 - 시작', content: '', followUp: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }];
+    saveData();
+  }
+
+  currentChapterId = chapterId;
+  renderChapterList();
+  loadChapter(chapterId);
 }
 
 // ============================================
@@ -1953,7 +2227,10 @@ function renderAll() {
   renderCourses();
 }
 
-document.getElementById('filter-search').addEventListener('input', renderCourses);
+document.getElementById('filter-search').addEventListener('input', (e) => {
+  renderSearchResults(e.target.value);
+  renderCourses();
+});
 document.getElementById('filter-status').addEventListener('change', renderCourses);
 
 checkAuth();
