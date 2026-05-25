@@ -390,6 +390,37 @@
     display: none;
   }
   #main-app { display: none; }
+
+  /* 동기화 상태 표시 */
+  #sync-status {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 99;
+    display: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: opacity 0.3s;
+  }
+  #sync-status.loading {
+    background: #fff5e6;
+    color: #b8651a;
+  }
+  #sync-status.saving {
+    background: #e6f0ff;
+    color: #2c7be5;
+  }
+  #sync-status.saved {
+    background: #e6f7ee;
+    color: #00a651;
+  }
+  #sync-status.error {
+    background: #fde8e8;
+    color: #e74c3c;
+  }
 </style>
 </head>
 <body>
@@ -405,6 +436,9 @@
     <button onclick="tryLogin()">로그인</button>
   </div>
 </div>
+
+<!-- 동기화 상태 -->
+<div id="sync-status"><span id="sync-text">동기화 중...</span></div>
 
 <div class="container" id="main-app">
 
@@ -586,10 +620,78 @@
 
 <script>
 // ============================================
-// 비밀번호 보호
+// 비밀번호 보호 / 클라우드 동기화
 // ============================================
 const PASSWORD_HASH = 'd6219f60a196671281be2043234c42d364d5e06accb778c0eeb36554ac434148';
 const AUTH_KEY = 'payroll_authed_v1';
+const PANTRY_ID = 'ff0aa9af-8ccd-428a-8622-9ef700325e9a';
+const PANTRY_BASKET = 'payroll-data';
+const PANTRY_URL = `https://getpantry.cloud/apiv1/pantry/${PANTRY_ID}/basket/${PANTRY_BASKET}`;
+
+let saveCloudTimer = null;
+
+function updateSyncStatus(status) {
+  const el = document.getElementById('sync-status');
+  const text = document.getElementById('sync-text');
+  if (!el || !text) return;
+  el.style.display = 'block';
+  el.className = status;
+  el.style.opacity = '1';
+  if (status === 'loading') text.textContent = '☁️ 데이터 불러오는 중...';
+  else if (status === 'saving') text.textContent = '☁️ 저장 중...';
+  else if (status === 'saved') {
+    text.textContent = '✓ 클라우드 동기화 완료';
+    setTimeout(() => {
+      el.style.opacity = '0';
+      setTimeout(() => { el.style.display = 'none'; }, 300);
+    }, 1500);
+  }
+  else if (status === 'error') text.textContent = '⚠️ 동기화 실패 (인터넷 확인)';
+}
+
+async function loadFromCloud() {
+  try {
+    const res = await fetch(PANTRY_URL);
+    if (!res.ok) return null;
+    const cloudData = await res.json();
+    if (!cloudData || !Array.isArray(cloudData.workers) || !Array.isArray(cloudData.records)) return null;
+    return cloudData;
+  } catch (e) {
+    console.error('Cloud load error:', e);
+    return null;
+  }
+}
+
+async function saveToCloud(payload) {
+  try {
+    const res = await fetch(PANTRY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.ok;
+  } catch (e) {
+    console.error('Cloud save error:', e);
+    return false;
+  }
+}
+
+function scheduleCloudSave() {
+  if (saveCloudTimer) clearTimeout(saveCloudTimer);
+  saveCloudTimer = setTimeout(async () => {
+    updateSyncStatus('saving');
+    const ok = await saveToCloud(data);
+    updateSyncStatus(ok ? 'saved' : 'error');
+  }, 600);
+}
+
+function migrateRecords(records) {
+  records.forEach(r => {
+    if (!r.endDate && r.payDate) r.endDate = r.payDate;
+    if (!r.startDate) r.startDate = r.endDate || '';
+    if (!r.workLink) r.workLink = '';
+  });
+}
 
 async function sha256(text) {
   const buf = new TextEncoder().encode(text);
@@ -611,9 +713,29 @@ async function tryLogin() {
   }
 }
 
-function showApp() {
+async function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('main-app').style.display = 'block';
+
+  updateSyncStatus('loading');
+  const cloudData = await loadFromCloud();
+  if (cloudData) {
+    data = cloudData;
+    migrateRecords(data.records);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    fillMonthFilter();
+    renderRecords();
+    renderWorkers();
+    updateSyncStatus('saved');
+  } else {
+    if (data.workers.length > 0 || data.records.length > 0) {
+      updateSyncStatus('saving');
+      const ok = await saveToCloud(data);
+      updateSyncStatus(ok ? 'saved' : 'error');
+    } else {
+      updateSyncStatus('saved');
+    }
+  }
 }
 
 function checkAuth() {
@@ -644,12 +766,7 @@ function loadData() {
   if (!raw) return { workers: [], records: [] };
   try {
     const d = JSON.parse(raw);
-    // 기존 데이터 마이그레이션 (payDate → endDate)
-    (d.records || []).forEach(r => {
-      if (!r.endDate && r.payDate) r.endDate = r.payDate;
-      if (!r.startDate) r.startDate = r.endDate || '';
-      if (!r.workLink) r.workLink = '';
-    });
+    migrateRecords(d.records || []);
     return d;
   }
   catch(e) { return { workers: [], records: [] }; }
@@ -657,6 +774,7 @@ function loadData() {
 
 function saveData(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  scheduleCloudSave();
 }
 
 let data = loadData();
