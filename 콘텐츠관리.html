@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>콘텐츠 관리 대시보드</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "맑은 고딕", sans-serif;
+    background: #f5f6f8;
+    color: #222;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 20px;
+  }
+  .container { max-width: 1500px; margin: 0 auto; }
+
+  /* 로그인 */
+  #login-screen {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px;
+  }
+  .login-box {
+    background: white; border-radius: 16px; padding: 40px;
+    max-width: 400px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
+  }
+  .login-box .lock-icon { font-size: 48px; margin-bottom: 16px; }
+  .login-box h2 { margin-bottom: 8px; font-size: 22px; }
+  .login-subtitle { color: #888; font-size: 14px; margin-bottom: 28px; }
+  .login-box input {
+    width: 100%; padding: 14px 18px; border: 2px solid #e0e0e0;
+    border-radius: 10px; font-size: 16px; margin-bottom: 12px; font-family: inherit;
+  }
+  .login-box input:focus { outline: none; border-color: #667eea; }
+  .login-box button {
+    width: 100%; padding: 14px; background: #667eea; color: white;
+    border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer;
+  }
+  .login-box button:hover { background: #5568d3; }
+  .login-error { color: #e74c3c; font-size: 13px; margin-bottom: 12px; display: none; }
+  #main-app { display: none; }
+
+  /* 헤더 */
+  header {
+    background: white; padding: 24px; border-radius: 12px;
+    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  h1 { font-size: 24px; margin-bottom: 8px; }
+  .subtitle { color: #888; font-size: 14px; }
+
+  /* 알림 카드 */
+  .alerts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .alert-card {
+    padding: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.15s;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .alert-card:hover { transform: translateY(-2px); }
+  .alert-card.urgent { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+  .alert-card.warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
+  .alert-card.info { background: linear-gradient(135deg, #3498db, #2c7be5); }
+  .alert-card.success { background: linear-gradient(135deg, #27ae60, #00a651); }
+  .alert-label {
+    font-size: 12px;
+    opacity: 0.9;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .alert-count {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .alert-desc {
+    font-size: 11px;
+    opacity: 0.85;
+  }
+
+  /* 탭 */
+  .tabs {
+    display: flex;
+    background: white;
+    border-radius: 12px;
+    padding: 6px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    width: fit-content;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .tab {
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #888;
+    transition: all 0.15s;
+    font-size: 14px;
+  }
+  .tab.active { background: #667eea; color: white; }
+
+  /* 버튼 */
+  button {
+    padding: 10px 18px; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: all 0.15s; font-family: inherit;
+  }
+  .btn-primary { background: #667eea; color: white; }
+  .btn-primary:hover { background: #5568d3; }
+  .btn-success { background: #00a651; color: white; }
+  .btn-success:hover { background: #008f45; }
+  .btn-gray { background: #6c757d; color: white; }
+  .btn-gray:hover { background: #5a6268; }
+  .btn-danger { background: #fff; color: #e74c3c; border: 1px solid #e74c3c; }
+  .btn-danger:hover { background: #e74c3c; color: white; }
+  .btn-small { padding: 6px 12px; font-size: 13px; }
+
+  .panel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 16px;
+  }
+  .panel-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+  }
+  .panel-header h2 { font-size: 18px; }
+
+  /* 도구 바 */
+  .toolbar {
+    background: white; padding: 12px 16px; border-radius: 12px;
+    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .toolbar select, .toolbar input {
+    padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px;
+    font-size: 14px; background: white; font-family: inherit;
+  }
+  .toolbar .spacer { flex: 1; }
+
+  /* 칸반 */
+  .kanban {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(180px, 1fr));
+    gap: 10px;
+    overflow-x: auto;
+  }
+  .kanban-column {
+    background: #fafbfc;
+    border-radius: 10px;
+    padding: 10px;
+    min-height: 400px;
+    min-width: 180px;
+  }
+  .kanban-header {
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+  }
+  .stage-plan { background: #95a5a6; }
+  .stage-request { background: #e67e22; }
+  .stage-received { background: #2c7be5; }
+  .stage-review { background: #9b59b6; }
+  .stage-scheduled { background: #f1c40f; color: #5a4500; }
+  .stage-uploaded { background: #00a651; }
+
+  .kanban-count {
+    background: rgba(255,255,255,0.3);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+  }
+
+  .content-card {
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    border: 1px solid #eef0f3;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left-width: 4px;
+  }
+  .content-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+  }
+  .content-card.urgent { background: #fff5f5; }
+  .content-card.overdue {
+    background: #fde8e8;
+    border-color: #e74c3c;
+  }
+  .content-title {
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #1a1a1a;
+    line-height: 1.35;
+  }
+  .content-meta {
+    font-size: 11px;
+    color: #888;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .content-platform {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    color: white;
+    font-size: 10px;
+    width: fit-content;
+  }
+  .content-date {
+    color: #555;
+  }
+  .content-date.urgent { color: #e67e22; font-weight: 600; }
+  .content-date.overdue { color: #e74c3c; font-weight: 700; }
+  .content-worker {
+    color: #2c7be5;
+    font-size: 11px;
+  }
+  .stage-buttons {
+    display: flex;
+    gap: 3px;
+    margin-top: 6px;
+  }
+  .stage-btn {
+    flex: 1;
+    padding: 3px;
+    font-size: 10px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #666;
+    border-radius: 4px;
+  }
+  .stage-btn:hover { background: #667eea; color: white; border-color: #667eea; }
+
+  /* 드래그앤드롭 */
+  .content-card { user-select: none; }
+  .content-card.dragging {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+  .kanban-column.drag-over {
+    background: #f0f3ff;
+    outline: 2px dashed #667eea;
+    outline-offset: -4px;
+  }
+  .drag-handle {
+    color: #ccc;
+    font-size: 14px;
+    cursor: grab;
+    margin-right: 4px;
+  }
+  .drag-handle:active { cursor: grabbing; }
+
+  /* 캘린더 */
+  .calendar-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .calendar-controls h3 {
+    font-size: 20px;
+    min-width: 180px;
+    text-align: center;
+  }
+  .calendar-controls button {
+    background: #fafbfc;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    color: #333;
+  }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .cal-weekday {
+    text-align: center;
+    font-weight: 700;
+    padding: 8px 0;
+    color: #555;
+    font-size: 13px;
+  }
+  .cal-weekday.sun { color: #e74c3c; }
+  .cal-weekday.sat { color: #2c7be5; }
+  .cal-day {
+    background: #fafbfc;
+    border-radius: 8px;
+    padding: 6px;
+    min-height: 95px;
+    border: 1px solid #f0f1f3;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .cal-day.other-month { opacity: 0.3; }
+  .cal-day.today { border-color: #667eea; background: #f0f3ff; }
+  .cal-day-num {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 4px;
+  }
+  .cal-day-num.sun { color: #e74c3c; }
+  .cal-day-num.sat { color: #2c7be5; }
+  .cal-pill {
+    display: block;
+    font-size: 10px;
+    padding: 2px 6px;
+    margin-bottom: 2px;
+    border-radius: 4px;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .cal-pill:hover { opacity: 0.85; }
+  .cal-more {
+    font-size: 10px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  /* 채널별 뷰 */
+  .channels-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .channel-block {
+    background: #fafbfc;
+    border-radius: 10px;
+    padding: 16px;
+    border-top: 4px solid #667eea;
+  }
+  .channel-block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .channel-block-name {
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .channel-block-count {
+    background: white;
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 12px;
+    color: #555;
+  }
+
+  /* 채널 관리 카드 */
+  .channels-mgmt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .channel-mgmt-card {
+    background: #fafbfc;
+    border: 1px solid #eef0f3;
+    border-radius: 10px;
+    padding: 16px;
+    border-left-width: 4px;
+  }
+  .channel-mgmt-name {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .channel-mgmt-info {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+  }
+  .channel-mgmt-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  /* 외주 작업자 */
+  .workers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .worker-card {
+    background: #fafbfc;
+    border: 1px solid #eef0f3;
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .worker-name {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .worker-info {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+  }
+
+  /* 모달 */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    max-width: 680px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 { margin-bottom: 20px; font-size: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-size: 13px; color: #555;
+    margin-bottom: 6px; font-weight: 600;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px 14px; border: 1px solid #ddd;
+    border-radius: 8px; font-size: 14px; font-family: inherit;
+  }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .form-hint { font-size: 12px; color: #888; margin-top: 4px; }
+  .modal-actions {
+    display: flex; gap: 8px; justify-content: flex-end; margin-top: 24px;
+  }
+  .form-section-title {
+    font-weight: 700;
+    margin: 20px 0 12px;
+    color: #555;
+    border-bottom: 1px solid #eef0f3;
+    padding-bottom: 6px;
+  }
+
+  /* 동기화 */
+  #sync-status {
+    position: fixed; top: 16px; right: 16px;
+    padding: 8px 14px; border-radius: 20px; font-size: 13px;
+    font-weight: 600; z-index: 99; display: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: opacity 0.3s;
+  }
+  #sync-status.loading { background: #fff5e6; color: #b8651a; }
+  #sync-status.saving { background: #e6f0ff; color: #2c7be5; }
+  #sync-status.saved { background: #e6f7ee; color: #00a651; }
+  #sync-status.error { background: #fde8e8; color: #e74c3c; }
+
+  /* 빈 상태 */
+  .empty {
+    text-align: center; padding: 30px 10px; color: #aaa; font-size: 13px;
+  }
+  /* 토스트 */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: #1a1a1a; color: white; padding: 10px 20px;
+    border-radius: 24px; font-size: 14px; z-index: 1000;
+    opacity: 0; transition: opacity 0.2s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  /* 플랫폼 색깔 */
+  .platform-youtube { background: #FF0000; }
+  .platform-instagram { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); }
+  .platform-threads { background: #000; }
+  .platform-x { background: #000; }
+  .platform-tiktok { background: linear-gradient(135deg, #ff0050, #00f2ea); }
+  .platform-other { background: #888; }
+
+  @media (max-width: 1200px) {
+    .alerts-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 768px) {
+    body { padding: 10px; font-size: 14px; }
+    .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    .cal-day { min-height: 70px; padding: 4px; }
+    .cal-day-num { font-size: 11px; }
+    .cal-pill { font-size: 9px; padding: 1px 4px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="lock-icon">🎬</div>
+    <h2>콘텐츠 관리 대시보드</h2>
+    <p class="login-subtitle">비밀번호를 입력해주세요</p>
+    <div class="login-error" id="login-error">비밀번호가 올바르지 않습니다.</div>
+    <input type="password" id="login-password" placeholder="비밀번호" autocomplete="current-password">
+    <button onclick="tryLogin()">로그인</button>
+  </div>
+</div>
+
+<div id="sync-status"><span id="sync-text">동기화 중...</span></div>
+<div class="toast" id="toast"></div>
+
+<div class="container" id="main-app">
+
+  <header>
+    <h1>🎬 콘텐츠 관리 대시보드</h1>
+    <p class="subtitle">여러 SNS 채널의 콘텐츠 일정과 외주 진행 상황을 한눈에 확인하세요.</p>
+    <div class="alerts-grid">
+      <div class="alert-card urgent" onclick="filterAlert('overdue_outsource')">
+        <div class="alert-label">🚨 연체된 외주</div>
+        <div class="alert-count" id="alert-overdue">0</div>
+        <div class="alert-desc">외주 의뢰일 지났는데 미수령</div>
+      </div>
+      <div class="alert-card warning" onclick="filterAlert('received_not_uploaded')">
+        <div class="alert-label">⚠️ 외주 받음 / 미업로드</div>
+        <div class="alert-count" id="alert-received">0</div>
+        <div class="alert-desc">받았는데 7일 이상 업로드 X</div>
+      </div>
+      <div class="alert-card info" onclick="filterAlert('upload_this_week')">
+        <div class="alert-label">📅 이번 주 업로드</div>
+        <div class="alert-count" id="alert-thisweek">0</div>
+        <div class="alert-desc">예정일이 7일 이내</div>
+      </div>
+      <div class="alert-card success" onclick="filterAlert('uploaded_this_month')">
+        <div class="alert-label">✅ 이번 달 업로드 완료</div>
+        <div class="alert-count" id="alert-month">0</div>
+        <div class="alert-desc">실제 업로드된 콘텐츠</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <select id="filter-channel">
+      <option value="all">📺 모든 채널</option>
+    </select>
+    <select id="filter-platform">
+      <option value="all">🌐 모든 플랫폼</option>
+      <option value="youtube">유튜브</option>
+      <option value="instagram">인스타그램</option>
+      <option value="threads">스레드</option>
+      <option value="x">X (트위터)</option>
+      <option value="tiktok">틱톡</option>
+      <option value="other">기타</option>
+    </select>
+    <input type="text" id="filter-search" placeholder="제목/메모 검색...">
+    <div class="spacer"></div>
+    <button class="btn-primary btn-small" onclick="openContentModal()">+ 새 콘텐츠</button>
+    <button class="btn-success btn-small" onclick="exportBackup()">💾 백업</button>
+    <button class="btn-gray btn-small" onclick="document.getElementById('import-file').click()">📂 불러오기</button>
+    <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importBackup(event)">
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="kanban" onclick="switchTab('kanban')">📋 진행 상황 (칸반)</div>
+    <div class="tab" data-tab="calendar" onclick="switchTab('calendar')">📅 캘린더</div>
+    <div class="tab" data-tab="bychannel" onclick="switchTab('bychannel')">📺 채널별</div>
+    <div class="tab" data-tab="channels" onclick="switchTab('channels')">⚙️ 채널 관리</div>
+    <div class="tab" data-tab="workers" onclick="switchTab('workers')">👥 외주 작업자</div>
+  </div>
+
+  <!-- 칸반 -->
+  <div class="panel" id="panel-kanban">
+    <div class="kanban" id="kanban-board"></div>
+  </div>
+
+  <!-- 캘린더 -->
+  <div class="panel" id="panel-calendar" style="display:none;">
+    <div class="calendar-controls">
+      <button onclick="changeMonth(-1)">‹ 이전</button>
+      <h3 id="cal-month-label"></h3>
+      <button onclick="changeMonth(1)">다음 ›</button>
+      <button onclick="goToday()" style="margin-left: 12px;">오늘</button>
+    </div>
+    <div class="calendar-grid" id="calendar-grid"></div>
+    <p style="text-align:center; color:#888; font-size:12px; margin-top:12px;">
+      날짜 칸 클릭 시 새 콘텐츠 추가 · 칩 클릭 시 콘텐츠 수정
+    </p>
+  </div>
+
+  <!-- 채널별 뷰 -->
+  <div class="panel" id="panel-bychannel" style="display:none;">
+    <div id="bychannel-content"></div>
+  </div>
+
+  <!-- 채널 관리 -->
+  <div class="panel" id="panel-channels" style="display:none;">
+    <div class="panel-header">
+      <h2>채널 관리</h2>
+      <button class="btn-primary" onclick="openChannelModal()">+ 새 채널 추가</button>
+    </div>
+    <div id="channels-content"></div>
+  </div>
+
+  <!-- 외주 작업자 -->
+  <div class="panel" id="panel-workers" style="display:none;">
+    <div class="panel-header">
+      <h2>외주 작업자</h2>
+      <button class="btn-primary" onclick="openWorkerModal()">+ 새 작업자 추가</button>
+    </div>
+    <div id="workers-content"></div>
+  </div>
+
+</div>
+
+<!-- 콘텐츠 모달 -->
+<div class="modal-overlay" id="content-modal">
+  <div class="modal">
+    <h2 id="content-modal-title">새 콘텐츠</h2>
+    <input type="hidden" id="content-id">
+
+    <div class="form-group">
+      <label>제목 *</label>
+      <input type="text" id="content-title" placeholder="예: 5월 마지막 브이로그 / 신상품 리뷰 영상">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>채널 *</label>
+        <select id="content-channel"></select>
+      </div>
+      <div class="form-group">
+        <label>현재 단계 *</label>
+        <select id="content-stage">
+          <option value="plan">💡 기획</option>
+          <option value="request">📤 외주 의뢰</option>
+          <option value="received">📦 외주 받음 / 제작중</option>
+          <option value="review">🔍 검토 / 수정</option>
+          <option value="scheduled">📅 업로드 예정</option>
+          <option value="uploaded">✅ 업로드 완료</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section-title">📤 외주 정보 (외주가 아니면 비워두세요)</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>외주 작업자</label>
+        <select id="content-worker">
+          <option value="">없음 (자체 제작)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>외주 비용 (원)</label>
+        <input type="number" id="content-cost" placeholder="0">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>외주 의뢰일</label>
+        <input type="date" id="content-request-date">
+      </div>
+      <div class="form-group">
+        <label>외주 받기로 한 / 받은 일</label>
+        <input type="date" id="content-received-date">
+        <div class="form-hint">받기로 약속한 일자 (또는 실제 받은 일자)</div>
+      </div>
+    </div>
+
+    <div class="form-section-title">📅 업로드 정보</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>업로드 예정일</label>
+        <input type="date" id="content-scheduled-date">
+      </div>
+      <div class="form-group">
+        <label>실제 업로드 일자</label>
+        <input type="date" id="content-uploaded-date">
+        <div class="form-hint">업로드 완료 시 입력</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>업로드된 URL</label>
+      <input type="text" id="content-url" placeholder="https://youtube.com/watch?v=... 또는 https://instagram.com/p/...">
+    </div>
+
+    <div class="form-section-title">📝 기타</div>
+    <div class="form-group">
+      <label>메모</label>
+      <textarea id="content-memo" placeholder="기획안, 컨셉, 특이사항 등"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-danger" id="content-delete-btn" onclick="deleteContent()" style="margin-right:auto; display:none;">삭제</button>
+      <button class="btn-gray" onclick="closeContentModal()">취소</button>
+      <button class="btn-primary" onclick="saveContent()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 채널 모달 -->
+<div class="modal-overlay" id="channel-modal">
+  <div class="modal">
+    <h2 id="channel-modal-title">새 채널 추가</h2>
+    <input type="hidden" id="channel-id">
+    <div class="form-group">
+      <label>채널명 *</label>
+      <input type="text" id="channel-name" placeholder="예: 일상 브이로그">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>플랫폼 *</label>
+        <select id="channel-platform">
+          <option value="youtube">유튜브</option>
+          <option value="instagram">인스타그램</option>
+          <option value="threads">스레드</option>
+          <option value="x">X (트위터)</option>
+          <option value="tiktok">틱톡</option>
+          <option value="other">기타</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>구독자/팔로워</label>
+        <input type="text" id="channel-followers" placeholder="예: 12,000명">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>채널 URL</label>
+      <input type="text" id="channel-url" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label>메모</label>
+      <textarea id="channel-memo" placeholder="채널 컨셉, 타겟, 특이사항 등"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="channel-delete-btn" onclick="deleteChannel()" style="margin-right:auto; display:none;">삭제</button>
+      <button class="btn-gray" onclick="closeChannelModal()">취소</button>
+      <button class="btn-primary" onclick="saveChannel()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 작업자 모달 -->
+<div class="modal-overlay" id="worker-modal">
+  <div class="modal">
+    <h2 id="worker-modal-title">새 외주 작업자</h2>
+    <input type="hidden" id="worker-id">
+    <div class="form-group">
+      <label>이름 *</label>
+      <input type="text" id="worker-name" placeholder="예: 홍길동">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>역할</label>
+        <input type="text" id="worker-role" placeholder="예: 영상편집, 썸네일, 디자인">
+      </div>
+      <div class="form-group">
+        <label>연락처</label>
+        <input type="text" id="worker-contact" placeholder="010-... / 카카오톡 ID">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>메모</label>
+      <textarea id="worker-memo" placeholder="단가, 작업 스타일, 특이사항 등"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="worker-delete-btn" onclick="deleteWorker()" style="margin-right:auto; display:none;">삭제</button>
+      <button class="btn-gray" onclick="closeWorkerModal()">취소</button>
+      <button class="btn-primary" onclick="saveWorker()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// 비밀번호 + 클라우드
+// ============================================
+const PASSWORD_HASH = 'd6219f60a196671281be2043234c42d364d5e06accb778c0eeb36554ac434148';
+const AUTH_KEY = 'content_authed_v1';
+const STORAGE_KEY = 'content_data_v1';
+const PANTRY_ID = 'ff0aa9af-8ccd-428a-8622-9ef700325e9a';
+const PANTRY_BASKET = 'content-data';
+const PANTRY_URL = `https://getpantry.cloud/apiv1/pantry/${PANTRY_ID}/basket/${PANTRY_BASKET}`;
+
+let saveCloudTimer = null;
+let currentFilter = null;
+let calendarMonth = new Date();
+
+function updateSyncStatus(status) {
+  const el = document.getElementById('sync-status');
+  const text = document.getElementById('sync-text');
+  if (!el) return;
+  el.style.display = 'block';
+  el.className = status;
+  el.style.opacity = '1';
+  if (status === 'loading') text.textContent = '☁️ 데이터 불러오는 중...';
+  else if (status === 'saving') text.textContent = '☁️ 저장 중...';
+  else if (status === 'saved') {
+    text.textContent = '✓ 동기화 완료';
+    setTimeout(() => {
+      el.style.opacity = '0';
+      setTimeout(() => { el.style.display = 'none'; }, 300);
+    }, 1500);
+  }
+  else if (status === 'error') text.textContent = '⚠️ 동기화 실패';
+}
+
+async function sha256(text) {
+  const buf = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function tryLogin() {
+  const pw = document.getElementById('login-password').value;
+  if (!pw) return;
+  const hash = await sha256(pw);
+  if (hash === PASSWORD_HASH) {
+    sessionStorage.setItem(AUTH_KEY, 'true');
+    showApp();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-password').value = '';
+  }
+}
+
+async function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+
+  updateSyncStatus('loading');
+  const cloudData = await loadFromCloud();
+  if (cloudData) {
+    data = cloudData;
+    ensureDataShape(data);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    renderAll();
+    updateSyncStatus('saved');
+  } else {
+    if (hasAnyData()) {
+      const ok = await saveToCloud(data);
+      updateSyncStatus(ok ? 'saved' : 'error');
+    } else {
+      updateSyncStatus('saved');
+    }
+    renderAll();
+  }
+}
+
+function checkAuth() {
+  if (sessionStorage.getItem(AUTH_KEY) === 'true') showApp();
+  else setTimeout(() => {
+    const pw = document.getElementById('login-password');
+    if (pw) pw.focus();
+  }, 100);
+}
+
+async function loadFromCloud() {
+  try {
+    const res = await fetch(PANTRY_URL);
+    if (!res.ok) return null;
+    const d = await res.json();
+    if (!d || typeof d !== 'object') return null;
+    return d;
+  } catch (e) { return null; }
+}
+
+async function saveToCloud(payload) {
+  try {
+    const res = await fetch(PANTRY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.ok;
+  } catch (e) { return false; }
+}
+
+function scheduleCloudSave() {
+  if (saveCloudTimer) clearTimeout(saveCloudTimer);
+  saveCloudTimer = setTimeout(async () => {
+    updateSyncStatus('saving');
+    const ok = await saveToCloud(data);
+    updateSyncStatus(ok ? 'saved' : 'error');
+  }, 600);
+}
+
+// ============================================
+// 데이터
+// ============================================
+function ensureDataShape(d) {
+  if (!Array.isArray(d.channels)) d.channels = [];
+  if (!Array.isArray(d.contents)) d.contents = [];
+  if (!Array.isArray(d.workers)) d.workers = [];
+}
+
+function loadData() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return { channels: [], contents: [], workers: [] };
+  try {
+    const d = JSON.parse(raw);
+    ensureDataShape(d);
+    return d;
+  } catch(e) { return { channels: [], contents: [], workers: [] }; }
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  scheduleCloudSave();
+}
+
+let data = loadData();
+
+function hasAnyData() {
+  return data.channels.length || data.contents.length || data.workers.length;
+}
+
+function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatMoney(n) {
+  if (!n) return '0원';
+  return Number(n).toLocaleString('ko-KR') + '원';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function today() { return new Date().toISOString().slice(0,10); }
+function daysDiff(a, b) {
+  if (!a || !b) return 0;
+  return Math.round((new Date(b) - new Date(a)) / 86400000);
+}
+
+const PLATFORMS = {
+  youtube: { label: '유튜브', icon: '▶️', cls: 'platform-youtube' },
+  instagram: { label: '인스타', icon: '📷', cls: 'platform-instagram' },
+  threads: { label: '스레드', icon: '@', cls: 'platform-threads' },
+  x: { label: 'X', icon: '✖', cls: 'platform-x' },
+  tiktok: { label: '틱톡', icon: '🎵', cls: 'platform-tiktok' },
+  other: { label: '기타', icon: '🌐', cls: 'platform-other' }
+};
+
+const STAGES = [
+  { key: 'plan', label: '💡 기획', cls: 'stage-plan', color: '#95a5a6' },
+  { key: 'request', label: '📤 외주 의뢰', cls: 'stage-request', color: '#e67e22' },
+  { key: 'received', label: '📦 외주 받음/제작', cls: 'stage-received', color: '#2c7be5' },
+  { key: 'review', label: '🔍 검토', cls: 'stage-review', color: '#9b59b6' },
+  { key: 'scheduled', label: '📅 업로드 예정', cls: 'stage-scheduled', color: '#f1c40f' },
+  { key: 'uploaded', label: '✅ 업로드 완료', cls: 'stage-uploaded', color: '#00a651' }
+];
+
+// ============================================
+// 탭 전환
+// ============================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+  ['kanban', 'calendar', 'bychannel', 'channels', 'workers'].forEach(t => {
+    document.getElementById('panel-' + t).style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+// ============================================
+// 알림 + 필터
+// ============================================
+function getAlerts() {
+  const t = today();
+  const week = new Date(); week.setDate(week.getDate() + 7);
+  const weekStr = week.toISOString().slice(0,10);
+  const monthStart = t.slice(0,7) + '-01';
+
+  return {
+    overdue_outsource: data.contents.filter(c =>
+      c.stage === 'request' && c.receivedDate && c.receivedDate < t
+    ),
+    received_not_uploaded: data.contents.filter(c =>
+      (c.stage === 'received' || c.stage === 'review') &&
+      c.receivedDate && daysDiff(c.receivedDate, t) >= 7
+    ),
+    upload_this_week: data.contents.filter(c =>
+      c.stage !== 'uploaded' && c.scheduledDate &&
+      c.scheduledDate >= t && c.scheduledDate <= weekStr
+    ),
+    uploaded_this_month: data.contents.filter(c =>
+      c.stage === 'uploaded' && c.uploadedDate && c.uploadedDate >= monthStart
+    )
+  };
+}
+
+function renderAlerts() {
+  const a = getAlerts();
+  document.getElementById('alert-overdue').textContent = a.overdue_outsource.length;
+  document.getElementById('alert-received').textContent = a.received_not_uploaded.length;
+  document.getElementById('alert-thisweek').textContent = a.upload_this_week.length;
+  document.getElementById('alert-month').textContent = a.uploaded_this_month.length;
+}
+
+function filterAlert(type) {
+  currentFilter = currentFilter === type ? null : type;
+  showToast(currentFilter ? '필터 적용됨 (해제하려면 다시 클릭)' : '필터 해제');
+  renderAll();
+}
+
+function filterContents(list) {
+  let result = list;
+
+  // 알림 필터
+  if (currentFilter) {
+    const ids = new Set(getAlerts()[currentFilter].map(c => c.id));
+    result = result.filter(c => ids.has(c.id));
+  }
+
+  // 채널 필터
+  const channelF = document.getElementById('filter-channel').value;
+  if (channelF && channelF !== 'all') {
+    result = result.filter(c => c.channelId === channelF);
+  }
+
+  // 플랫폼 필터
+  const platformF = document.getElementById('filter-platform').value;
+  if (platformF && platformF !== 'all') {
+    const channelIds = new Set(data.channels.filter(ch => ch.platform === platformF).map(ch => ch.id));
+    result = result.filter(c => channelIds.has(c.channelId));
+  }
+
+  // 검색
+  const search = document.getElementById('filter-search').value.trim().toLowerCase();
+  if (search) {
+    result = result.filter(c =>
+      (c.title || '').toLowerCase().includes(search) ||
+      (c.memo || '').toLowerCase().includes(search)
+    );
+  }
+
+  return result;
+}
+
+// ============================================
+// 칸반 렌더링
+// ============================================
+function renderKanban() {
+  const board = document.getElementById('kanban-board');
+  const filtered = filterContents(data.contents);
+  let html = '';
+
+  STAGES.forEach(stage => {
+    const items = filtered.filter(c => c.stage === stage.key);
+    html += `<div class="kanban-column" data-stage="${stage.key}"
+      ondragover="onColDragOver(event)"
+      ondragleave="onColDragLeave(event)"
+      ondrop="onColDrop(event, '${stage.key}')">
+      <div class="kanban-header ${stage.cls}">
+        <span>${stage.label}</span>
+        <span class="kanban-count">${items.length}</span>
+      </div>`;
+
+    if (items.length === 0) {
+      html += '<div class="empty">없음</div>';
+    } else {
+      items.sort((a,b) => {
+        const da = a.scheduledDate || a.receivedDate || a.requestDate || 'z';
+        const db = b.scheduledDate || b.receivedDate || b.requestDate || 'z';
+        return da.localeCompare(db);
+      });
+      html += items.map(c => renderContentCard(c)).join('');
+    }
+    html += '</div>';
+  });
+  board.innerHTML = html;
+}
+
+function renderContentCard(c) {
+  const ch = data.channels.find(x => x.id === c.channelId);
+  const platform = ch ? PLATFORMS[ch.platform] || PLATFORMS.other : PLATFORMS.other;
+  const channelName = ch ? ch.name : '(채널 없음)';
+  const worker = c.workerId ? data.workers.find(w => w.id === c.workerId) : null;
+  const stage = STAGES.find(s => s.key === c.stage);
+
+  const t = today();
+  let urgentClass = '';
+  let dateHtml = '';
+
+  // 단계별로 보여줄 핵심 날짜
+  if (c.stage === 'request' && c.receivedDate) {
+    const diff = daysDiff(t, c.receivedDate);
+    if (diff < 0) { urgentClass = 'overdue'; dateHtml = `<div class="content-date overdue">⏰ 외주 ${-diff}일 연체</div>`; }
+    else if (diff <= 3) dateHtml = `<div class="content-date urgent">📦 ${diff}일 후 받음</div>`;
+    else dateHtml = `<div class="content-date">📦 ${c.receivedDate} 받기로 함</div>`;
+  } else if ((c.stage === 'received' || c.stage === 'review') && c.receivedDate) {
+    const since = daysDiff(c.receivedDate, t);
+    if (since >= 7) { urgentClass = 'urgent'; dateHtml = `<div class="content-date urgent">⚠️ 받은 지 ${since}일</div>`; }
+    else dateHtml = `<div class="content-date">📦 받은 지 ${since}일</div>`;
+  } else if (c.stage === 'scheduled' && c.scheduledDate) {
+    const diff = daysDiff(t, c.scheduledDate);
+    if (diff < 0) { urgentClass = 'overdue'; dateHtml = `<div class="content-date overdue">⏰ ${-diff}일 지남</div>`; }
+    else if (diff <= 3) { urgentClass = 'urgent'; dateHtml = `<div class="content-date urgent">📅 ${diff}일 후 업로드</div>`; }
+    else dateHtml = `<div class="content-date">📅 ${c.scheduledDate} 업로드</div>`;
+  } else if (c.stage === 'uploaded' && c.uploadedDate) {
+    dateHtml = `<div class="content-date" style="color:#00a651;">✅ ${c.uploadedDate} 업로드됨</div>`;
+  } else if (c.stage === 'plan' && c.requestDate) {
+    dateHtml = `<div class="content-date">📝 ${c.requestDate}</div>`;
+  }
+
+  return `<div class="content-card ${urgentClass}" style="border-left-color: ${stage.color};"
+    draggable="true"
+    ondragstart="onCardDragStart(event, '${c.id}')"
+    ondragend="onCardDragEnd(event)"
+    onclick="editContent('${c.id}')">
+    <div class="content-title"><span class="drag-handle" title="드래그해서 단계 이동">⋮⋮</span>${escapeHtml(c.title)}</div>
+    <div class="content-meta">
+      <span class="content-platform ${platform.cls}">${platform.icon} ${escapeHtml(channelName)}</span>
+      ${dateHtml}
+      ${worker ? `<div class="content-worker">👤 ${escapeHtml(worker.name)}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function moveStage(id, newStage) {
+  const c = data.contents.find(x => x.id === id);
+  if (!c) return;
+  c.stage = newStage;
+  // 업로드 완료 자동 처리
+  if (newStage === 'uploaded' && !c.uploadedDate) {
+    c.uploadedDate = today();
+  }
+  saveData();
+  renderAll();
+  showToast('단계 이동: ' + STAGES.find(s => s.key === newStage).label);
+}
+
+// ============================================
+// 드래그앤드롭
+// ============================================
+let draggedContentId = null;
+
+function onCardDragStart(e, id) {
+  draggedContentId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', id);
+  // 카드 전체에 dragging 클래스 (currentTarget = .content-card)
+  e.currentTarget.classList.add('dragging');
+}
+
+function onCardDragEnd(e) {
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.kanban-column.drag-over').forEach(col => col.classList.remove('drag-over'));
+}
+
+function onColDragOver(e) {
+  if (!draggedContentId) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+
+function onColDragLeave(e) {
+  // 컬럼 영역을 진짜로 벗어났을 때만 클래스 제거 (자식 위에 있을 때 leave 발생 방지)
+  if (e.currentTarget.contains(e.relatedTarget)) return;
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function onColDrop(e, newStage) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!draggedContentId) return;
+  const c = data.contents.find(x => x.id === draggedContentId);
+  if (c && c.stage !== newStage) {
+    c.stage = newStage;
+    if (newStage === 'uploaded' && !c.uploadedDate) {
+      c.uploadedDate = today();
+    }
+    saveData();
+    renderAll();
+    showToast('이동 → ' + STAGES.find(s => s.key === newStage).label);
+  }
+  draggedContentId = null;
+}
+
+// ============================================
+// 캘린더 렌더링
+// ============================================
+function changeMonth(diff) {
+  calendarMonth.setMonth(calendarMonth.getMonth() + diff);
+  renderCalendar();
+}
+function goToday() {
+  calendarMonth = new Date();
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const year = calendarMonth.getFullYear();
+  const month = calendarMonth.getMonth();
+  document.getElementById('cal-month-label').textContent = `${year}년 ${month+1}월`;
+
+  const firstDay = new Date(year, month, 1);
+  const startWeekday = firstDay.getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const todayStr = today();
+
+  let html = '';
+  const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+  weekdays.forEach((w, i) => {
+    const cls = i === 0 ? 'sun' : i === 6 ? 'sat' : '';
+    html += `<div class="cal-weekday ${cls}">${w}</div>`;
+  });
+
+  const filtered = filterContents(data.contents);
+
+  // 빈 칸 (이전 달)
+  const prevMonthLastDay = new Date(year, month, 0).getDate();
+  for (let i = 0; i < startWeekday; i++) {
+    const d = prevMonthLastDay - startWeekday + i + 1;
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+
+  // 이번 달
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const wd = (startWeekday + day - 1) % 7;
+    const cls = wd === 0 ? 'sun' : wd === 6 ? 'sat' : '';
+    const isToday = dateStr === todayStr ? 'today' : '';
+
+    // 이 날짜에 해당하는 콘텐츠 (예정일, 받기로 한 일, 업로드된 일)
+    const items = filtered.filter(c => {
+      return c.scheduledDate === dateStr ||
+             c.uploadedDate === dateStr ||
+             c.receivedDate === dateStr ||
+             c.requestDate === dateStr;
+    });
+
+    let pillsHtml = '';
+    const maxPills = 3;
+    items.slice(0, maxPills).forEach(c => {
+      const ch = data.channels.find(x => x.id === c.channelId);
+      const platform = ch ? PLATFORMS[ch.platform] || PLATFORMS.other : PLATFORMS.other;
+      let icon = '';
+      if (c.uploadedDate === dateStr) icon = '✅';
+      else if (c.scheduledDate === dateStr) icon = '📅';
+      else if (c.receivedDate === dateStr) icon = '📦';
+      else if (c.requestDate === dateStr) icon = '📤';
+      pillsHtml += `<span class="cal-pill ${platform.cls}" onclick="event.stopPropagation(); editContent('${c.id}')" title="${escapeHtml(c.title)}">${icon} ${escapeHtml(c.title.length > 8 ? c.title.slice(0,8)+'...' : c.title)}</span>`;
+    });
+    if (items.length > maxPills) {
+      pillsHtml += `<div class="cal-more">+${items.length - maxPills}개 더</div>`;
+    }
+
+    html += `<div class="cal-day ${isToday}" onclick="openContentModalForDate('${dateStr}')">
+      <div class="cal-day-num ${cls}">${day}</div>
+      ${pillsHtml}
+    </div>`;
+  }
+
+  document.getElementById('calendar-grid').innerHTML = html;
+}
+
+function openContentModalForDate(dateStr) {
+  openContentModal(null, dateStr);
+}
+
+// ============================================
+// 채널별 뷰
+// ============================================
+function renderByChannel() {
+  const container = document.getElementById('bychannel-content');
+  if (data.channels.length === 0) {
+    container.innerHTML = '<div class="empty">먼저 채널을 등록해주세요.</div>';
+    return;
+  }
+
+  const filtered = filterContents(data.contents);
+  let html = '<div class="channels-view">';
+
+  data.channels.forEach(ch => {
+    const platform = PLATFORMS[ch.platform] || PLATFORMS.other;
+    const items = filtered.filter(c => c.channelId === ch.id && c.stage !== 'uploaded');
+    items.sort((a,b) => STAGES.findIndex(s => s.key === a.stage) - STAGES.findIndex(s => s.key === b.stage));
+
+    html += `<div class="channel-block" style="border-top-color: ${getColorForPlatform(ch.platform)};">
+      <div class="channel-block-header">
+        <div>
+          <span class="content-platform ${platform.cls}" style="margin-right:8px;">${platform.icon}</span>
+          <span class="channel-block-name">${escapeHtml(ch.name)}</span>
+        </div>
+        <span class="channel-block-count">${items.length}개 진행중</span>
+      </div>`;
+
+    if (items.length === 0) {
+      html += '<div class="empty">진행 중인 콘텐츠 없음</div>';
+    } else {
+      items.forEach(c => {
+        html += renderContentCard(c);
+      });
+    }
+
+    html += '</div>';
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function getColorForPlatform(p) {
+  const colors = {
+    youtube: '#FF0000',
+    instagram: '#E1306C',
+    threads: '#000000',
+    x: '#000000',
+    tiktok: '#FE2C55',
+    other: '#888888'
+  };
+  return colors[p] || '#888';
+}
+
+// ============================================
+// 채널 관리
+// ============================================
+function renderChannelsMgmt() {
+  const container = document.getElementById('channels-content');
+  if (data.channels.length === 0) {
+    container.innerHTML = '<div class="empty">+ 새 채널 추가 버튼을 눌러주세요.</div>';
+    return;
+  }
+  let html = '<div class="channels-mgmt-grid">';
+  data.channels.forEach(c => {
+    const platform = PLATFORMS[c.platform] || PLATFORMS.other;
+    const contentCount = data.contents.filter(x => x.channelId === c.id).length;
+    html += `<div class="channel-mgmt-card" style="border-left-color: ${getColorForPlatform(c.platform)};">
+      <div class="channel-mgmt-name"><span class="content-platform ${platform.cls}" style="margin-right:6px;">${platform.icon}</span>${escapeHtml(c.name)}</div>
+      <div class="channel-mgmt-info"><strong>플랫폼:</strong> ${platform.label}</div>
+      <div class="channel-mgmt-info"><strong>구독자:</strong> ${escapeHtml(c.followers || '-')}</div>
+      <div class="channel-mgmt-info"><strong>콘텐츠:</strong> ${contentCount}개</div>
+      ${c.url ? `<div class="channel-mgmt-info"><a href="${escapeHtml(c.url)}" target="_blank" style="color:#667eea;">🔗 바로가기</a></div>` : ''}
+      <div class="channel-mgmt-actions">
+        <button class="btn-gray btn-small" onclick="editChannel('${c.id}')">수정</button>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function openChannelModal(channel) {
+  document.getElementById('channel-modal-title').textContent = channel ? '채널 수정' : '새 채널 추가';
+  document.getElementById('channel-id').value = channel ? channel.id : '';
+  document.getElementById('channel-name').value = channel ? channel.name : '';
+  document.getElementById('channel-platform').value = channel ? channel.platform : 'youtube';
+  document.getElementById('channel-followers').value = channel ? (channel.followers || '') : '';
+  document.getElementById('channel-url').value = channel ? (channel.url || '') : '';
+  document.getElementById('channel-memo').value = channel ? (channel.memo || '') : '';
+  document.getElementById('channel-delete-btn').style.display = channel ? 'block' : 'none';
+  document.getElementById('channel-modal').classList.add('show');
+}
+function closeChannelModal() { document.getElementById('channel-modal').classList.remove('show'); }
+
+function saveChannel() {
+  const id = document.getElementById('channel-id').value;
+  const name = document.getElementById('channel-name').value.trim();
+  if (!name) { alert('채널명을 입력해주세요.'); return; }
+  const channel = {
+    id: id || newId(),
+    name,
+    platform: document.getElementById('channel-platform').value,
+    followers: document.getElementById('channel-followers').value.trim(),
+    url: document.getElementById('channel-url').value.trim(),
+    memo: document.getElementById('channel-memo').value.trim()
+  };
+  if (id) {
+    const idx = data.channels.findIndex(c => c.id === id);
+    if (idx >= 0) data.channels[idx] = channel;
+  } else {
+    data.channels.push(channel);
+  }
+  saveData();
+  closeChannelModal();
+  renderAll();
+}
+
+function editChannel(id) {
+  const c = data.channels.find(x => x.id === id);
+  if (c) openChannelModal(c);
+}
+
+function deleteChannel() {
+  const id = document.getElementById('channel-id').value;
+  if (!id) return;
+  const linkedContents = data.contents.filter(c => c.channelId === id).length;
+  let msg = '이 채널을 삭제할까요?';
+  if (linkedContents > 0) msg += `\n\n⚠️ 이 채널의 콘텐츠 ${linkedContents}개도 함께 삭제됩니다.`;
+  if (!confirm(msg)) return;
+  data.channels = data.channels.filter(c => c.id !== id);
+  data.contents = data.contents.filter(c => c.channelId !== id);
+  saveData();
+  closeChannelModal();
+  renderAll();
+}
+
+// ============================================
+// 외주 작업자
+// ============================================
+function renderWorkersList() {
+  const container = document.getElementById('workers-content');
+  if (data.workers.length === 0) {
+    container.innerHTML = '<div class="empty">+ 새 작업자 추가 버튼을 눌러주세요.</div>';
+    return;
+  }
+  let html = '<div class="workers-grid">';
+  data.workers.forEach(w => {
+    const inProgress = data.contents.filter(c => c.workerId === w.id && c.stage !== 'uploaded').length;
+    html += `<div class="worker-card">
+      <div class="worker-name">${escapeHtml(w.name)}</div>
+      <div class="worker-info"><strong>역할:</strong> ${escapeHtml(w.role || '-')}</div>
+      <div class="worker-info"><strong>연락처:</strong> ${escapeHtml(w.contact || '-')}</div>
+      <div class="worker-info"><strong>진행중:</strong> ${inProgress}개</div>
+      <div class="channel-mgmt-actions">
+        <button class="btn-gray btn-small" onclick="editWorker('${w.id}')">수정</button>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function openWorkerModal(worker) {
+  document.getElementById('worker-modal-title').textContent = worker ? '작업자 수정' : '새 외주 작업자';
+  document.getElementById('worker-id').value = worker ? worker.id : '';
+  document.getElementById('worker-name').value = worker ? worker.name : '';
+  document.getElementById('worker-role').value = worker ? (worker.role || '') : '';
+  document.getElementById('worker-contact').value = worker ? (worker.contact || '') : '';
+  document.getElementById('worker-memo').value = worker ? (worker.memo || '') : '';
+  document.getElementById('worker-delete-btn').style.display = worker ? 'block' : 'none';
+  document.getElementById('worker-modal').classList.add('show');
+}
+function closeWorkerModal() { document.getElementById('worker-modal').classList.remove('show'); }
+
+function saveWorker() {
+  const id = document.getElementById('worker-id').value;
+  const name = document.getElementById('worker-name').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  const worker = {
+    id: id || newId(),
+    name,
+    role: document.getElementById('worker-role').value.trim(),
+    contact: document.getElementById('worker-contact').value.trim(),
+    memo: document.getElementById('worker-memo').value.trim()
+  };
+  if (id) {
+    const idx = data.workers.findIndex(w => w.id === id);
+    if (idx >= 0) data.workers[idx] = worker;
+  } else {
+    data.workers.push(worker);
+  }
+  saveData();
+  closeWorkerModal();
+  renderAll();
+}
+
+function editWorker(id) {
+  const w = data.workers.find(x => x.id === id);
+  if (w) openWorkerModal(w);
+}
+
+function deleteWorker() {
+  const id = document.getElementById('worker-id').value;
+  if (!id) return;
+  if (!confirm('이 작업자를 삭제할까요? (연결된 콘텐츠는 유지됩니다)')) return;
+  data.workers = data.workers.filter(w => w.id !== id);
+  data.contents.forEach(c => { if (c.workerId === id) c.workerId = ''; });
+  saveData();
+  closeWorkerModal();
+  renderAll();
+}
+
+// ============================================
+// 콘텐츠 모달
+// ============================================
+function openContentModal(content, defaultDate) {
+  if (data.channels.length === 0) {
+    alert('먼저 채널을 등록해주세요.');
+    switchTab('channels');
+    return;
+  }
+  // 채널 옵션
+  const chSel = document.getElementById('content-channel');
+  chSel.innerHTML = data.channels.map(c => {
+    const p = PLATFORMS[c.platform] || PLATFORMS.other;
+    return `<option value="${c.id}">${p.icon} ${escapeHtml(c.name)}</option>`;
+  }).join('');
+
+  // 작업자 옵션
+  const wSel = document.getElementById('content-worker');
+  wSel.innerHTML = '<option value="">없음 (자체 제작)</option>' +
+    data.workers.map(w => `<option value="${w.id}">${escapeHtml(w.name)} ${w.role ? '(' + escapeHtml(w.role) + ')' : ''}</option>`).join('');
+
+  document.getElementById('content-modal-title').textContent = content ? '콘텐츠 수정' : '새 콘텐츠';
+  document.getElementById('content-id').value = content ? content.id : '';
+  document.getElementById('content-title').value = content ? content.title : '';
+  document.getElementById('content-channel').value = content ? content.channelId : data.channels[0].id;
+  document.getElementById('content-stage').value = content ? content.stage : 'plan';
+  document.getElementById('content-worker').value = content ? (content.workerId || '') : '';
+  document.getElementById('content-cost').value = content ? (content.cost || '') : '';
+  document.getElementById('content-request-date').value = content ? (content.requestDate || '') : (defaultDate || '');
+  document.getElementById('content-received-date').value = content ? (content.receivedDate || '') : '';
+  document.getElementById('content-scheduled-date').value = content ? (content.scheduledDate || '') : (defaultDate || '');
+  document.getElementById('content-uploaded-date').value = content ? (content.uploadedDate || '') : '';
+  document.getElementById('content-url').value = content ? (content.url || '') : '';
+  document.getElementById('content-memo').value = content ? (content.memo || '') : '';
+  document.getElementById('content-delete-btn').style.display = content ? 'block' : 'none';
+  document.getElementById('content-modal').classList.add('show');
+}
+function closeContentModal() { document.getElementById('content-modal').classList.remove('show'); }
+
+function saveContent() {
+  const id = document.getElementById('content-id').value;
+  const title = document.getElementById('content-title').value.trim();
+  if (!title) { alert('제목을 입력해주세요.'); return; }
+
+  const content = {
+    id: id || newId(),
+    title,
+    channelId: document.getElementById('content-channel').value,
+    stage: document.getElementById('content-stage').value,
+    workerId: document.getElementById('content-worker').value,
+    cost: Number(document.getElementById('content-cost').value) || 0,
+    requestDate: document.getElementById('content-request-date').value,
+    receivedDate: document.getElementById('content-received-date').value,
+    scheduledDate: document.getElementById('content-scheduled-date').value,
+    uploadedDate: document.getElementById('content-uploaded-date').value,
+    url: document.getElementById('content-url').value.trim(),
+    memo: document.getElementById('content-memo').value.trim()
+  };
+
+  // 자동: 단계가 'uploaded'인데 실제 업로드 날짜 없으면 오늘로
+  if (content.stage === 'uploaded' && !content.uploadedDate) {
+    content.uploadedDate = today();
+  }
+
+  if (id) {
+    const idx = data.contents.findIndex(c => c.id === id);
+    if (idx >= 0) data.contents[idx] = content;
+  } else {
+    data.contents.push(content);
+  }
+  saveData();
+  closeContentModal();
+  renderAll();
+}
+
+function editContent(id) {
+  const c = data.contents.find(x => x.id === id);
+  if (c) openContentModal(c);
+}
+
+function deleteContent() {
+  const id = document.getElementById('content-id').value;
+  if (!id) return;
+  if (!confirm('이 콘텐츠를 삭제할까요?')) return;
+  data.contents = data.contents.filter(c => c.id !== id);
+  saveData();
+  closeContentModal();
+  renderAll();
+}
+
+// ============================================
+// 백업 / 불러오기
+// ============================================
+function exportBackup() {
+  if (!hasAnyData()) { alert('백업할 데이터가 없습니다.'); return; }
+  const backup = { version: 1, exportedAt: new Date().toISOString(), ...data };
+  const json = JSON.stringify(backup, null, 2);
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `콘텐츠관리_백업_${today()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('백업 파일 저장됨');
+}
+
+function importBackup(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imp = JSON.parse(e.target.result);
+      if (hasAnyData() && !confirm('현재 데이터를 백업으로 덮어쓸까요?')) {
+        event.target.value = ''; return;
+      }
+      data = {
+        channels: imp.channels || [],
+        contents: imp.contents || [],
+        workers: imp.workers || []
+      };
+      ensureDataShape(data);
+      saveData();
+      renderAll();
+      alert(`불러오기 완료!\n채널 ${data.channels.length}개, 콘텐츠 ${data.contents.length}개, 작업자 ${data.workers.length}명`);
+    } catch (err) {
+      alert('파일 읽기 오류.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ============================================
+// 필터 옵션 / 전체 렌더
+// ============================================
+function fillChannelFilter() {
+  const select = document.getElementById('filter-channel');
+  const prev = select.value;
+  select.innerHTML = '<option value="all">📺 모든 채널</option>' +
+    data.channels.map(c => {
+      const p = PLATFORMS[c.platform] || PLATFORMS.other;
+      return `<option value="${c.id}">${p.icon} ${escapeHtml(c.name)}</option>`;
+    }).join('');
+  select.value = prev || 'all';
+}
+
+function renderAll() {
+  fillChannelFilter();
+  renderAlerts();
+  renderKanban();
+  renderCalendar();
+  renderByChannel();
+  renderChannelsMgmt();
+  renderWorkersList();
+}
+
+// 이벤트
+document.getElementById('filter-channel').addEventListener('change', renderAll);
+document.getElementById('filter-platform').addEventListener('change', renderAll);
+document.getElementById('filter-search').addEventListener('input', renderAll);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeContentModal();
+    closeChannelModal();
+    closeWorkerModal();
+  }
+  if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'login-password') {
+    tryLogin();
+  }
+});
+
+// 초기화
+checkAuth();
+renderAll();
+</script>
+</body>
+</html>
