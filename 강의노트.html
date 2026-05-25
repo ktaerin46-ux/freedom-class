@@ -290,13 +290,22 @@
   .editor-area {
     background: white; border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    overflow: hidden;
+  }
+  .editor-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: white;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   }
   .editor-meta {
     padding: 14px 20px;
     border-bottom: 1px solid #eef0f3;
     display: flex; justify-content: space-between; align-items: center;
     flex-wrap: wrap; gap: 8px;
+    background: white;
+    border-radius: 12px 12px 0 0;
   }
   .chapter-title-input {
     border: none; font-size: 20px; font-weight: 700;
@@ -583,6 +592,7 @@
       <!-- 에디터 영역 -->
       <div>
         <div class="editor-area" id="editor-area">
+          <div class="editor-sticky-header">
           <div class="editor-meta">
             <input type="text" id="chapter-title-input" class="chapter-title-input" placeholder="챕터 제목 (예: 1강 - 알고리즘 이해)" oninput="onChapterTitleChange()">
             <div class="editor-meta-info">
@@ -651,6 +661,7 @@
             <div class="separator"></div>
             <button onclick="insertLink()" title="링크">🔗</button>
             <button onclick="execCmd('removeFormat')" title="서식 제거">🧹</button>
+          </div>
           </div>
 
           <div id="editor-content" class="editor-content" contenteditable="true"
