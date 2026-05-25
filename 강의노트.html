@@ -1431,15 +1431,27 @@ function scheduleAutoSave() {
 
 document.addEventListener('DOMContentLoaded', () => {
   const editor = document.getElementById('editor-content');
-  if (editor) editor.addEventListener('input', scheduleAutoSave);
+  if (editor) {
+    editor.addEventListener('input', scheduleAutoSave);
+    // 에디터에서 선택 변경될 때마다 selection 저장
+    editor.addEventListener('mouseup', saveSelection);
+    editor.addEventListener('keyup', saveSelection);
+    editor.addEventListener('focus', saveSelection);
+  }
   const followup = document.getElementById('followup-textarea');
   if (followup) followup.addEventListener('input', scheduleAutoSave);
+
+  // 도구바의 모든 버튼/팔레트 클릭 시 선택 영역 유지 (mousedown 차단)
+  document.querySelectorAll('.editor-toolbar button, .color-swatch').forEach(el => {
+    el.addEventListener('mousedown', (e) => e.preventDefault());
+  });
 });
 
 // 서식 명령
 function execCmd(cmd, value) {
-  document.execCommand(cmd, false, value);
   document.getElementById('editor-content').focus();
+  try { document.execCommand('styleWithCSS', false, true); } catch(e) {}
+  document.execCommand(cmd, false, value);
   scheduleAutoSave();
 }
 
@@ -1462,17 +1474,41 @@ function toggleColorPalette(type) {
 }
 
 function applyColor(type, color) {
+  // 저장된 선택 영역 복원
+  restoreSelection();
+  try { document.execCommand('styleWithCSS', false, true); } catch(e) {}
   if (type === 'text') {
     document.execCommand('foreColor', false, color);
   } else {
-    document.execCommand('hiliteColor', false, color);
-    if (!document.queryCommandSupported('hiliteColor')) {
-      document.execCommand('backColor', false, color);
-    }
+    // hiliteColor가 표준이지만 일부 브라우저는 backColor를 씀
+    const ok = document.execCommand('hiliteColor', false, color);
+    if (!ok) document.execCommand('backColor', false, color);
   }
   document.querySelectorAll('.color-palette').forEach(p => p.classList.remove('show'));
-  document.getElementById('editor-content').focus();
   scheduleAutoSave();
+}
+
+// 텍스트 선택 영역 보존 (도구바 버튼 클릭으로 인한 선택 손실 방지)
+let savedRange = null;
+function saveSelection() {
+  const sel = window.getSelection();
+  if (sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0);
+    // 에디터 안의 선택만 저장
+    const editor = document.getElementById('editor-content');
+    if (editor && editor.contains(range.commonAncestorContainer)) {
+      savedRange = range.cloneRange();
+    }
+  }
+}
+function restoreSelection() {
+  const editor = document.getElementById('editor-content');
+  if (editor) editor.focus();
+  if (savedRange) {
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(savedRange);
+  }
 }
 
 document.addEventListener('click', (e) => {
