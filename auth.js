@@ -128,7 +128,8 @@ function submitApply() {
   if (currentUser && currentUser.loginType === 'kakao') {
     msg += '<br>카카오톡 채널로도 알림이 발송됩니다.';
   }
-  document.getElementById('success-msg').innerHTML = msg;
+  var msgEl = document.getElementById('success-msg');
+  if (msgEl) msgEl.innerHTML = msg;
   document.getElementById('success-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }

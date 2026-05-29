@@ -1081,13 +1081,29 @@
 </div>
 
 <!-- ===== 신청 완료 모달 ===== -->
-<div class="modal-overlay" id="success-modal" style="display:none;" onclick="onOverlayClick(event,'success-modal')">
-  <div class="success-modal-box" onclick="event.stopPropagation()">
+<div class="modal-overlay" id="success-modal" style="display:none;">
+  <div style="background:#090909;border-radius:24px;padding:44px 28px 36px;max-width:420px;width:100%;position:relative;color:#fff;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.9);" onclick="event.stopPropagation()">
     <button class="modal-close-btn" onclick="closeModal('success-modal')">×</button>
-    <div class="success-icon">🎉</div>
-    <div class="success-title">신청이 완료되었습니다!</div>
-    <p class="success-sub" id="success-msg">신청해주셔서 감사합니다.<br>카카오톡으로 안내 메시지를 발송해드립니다.</p>
-    <button class="success-btn" onclick="closeModal('success-modal')">확인</button>
+    <!-- 체크 아이콘 -->
+    <div style="width:68px;height:68px;background:#1a3a28;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#4ade80" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <!-- 제목 -->
+    <div style="font-size:26px;font-weight:800;margin-bottom:24px;letter-spacing:-0.5px;">수강등록 완료!</div>
+    <!-- 리스트 -->
+    <div style="text-align:left;font-size:15px;line-height:2.1;margin-bottom:30px;">
+      <div>🔥 '강의 안내방 입장' 눌러 입장 필수</div>
+      <div>🤔 1건만 해도 몇백만 원이 들어온다고?</div>
+      <div>💸 AI 똑똑하게 활용해서 1년만에 억대 수입!!</div>
+      <div>✨ 평범한 직장인 월 1000 달성 후 퇴사 성공!</div>
+      <div>✨ 독박육아하던 분도 한달만에 3000만 원 달성!</div>
+      <div style="color:#888;">✓ 6월 4일 (목) 저녁 7시 30분 무료강의에서 모두 공개합니다!</div>
+    </div>
+    <!-- 버튼 -->
+    <a href="https://open.kakao.com/o/gc2orTpi" target="_blank" style="display:block;background:#4ade80;color:#000;padding:17px 20px;border-radius:14px;font-size:16px;font-weight:800;text-decoration:none;margin-bottom:10px;font-family:inherit;">(선착순 마감) 강의 안내방 입장 →</a>
+    <button onclick="closeModal('success-modal')" style="display:block;width:100%;background:#0ecfb0;color:#000;padding:15px 20px;border-radius:14px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit;margin-bottom:8px;">내 강의 보기</button>
+    <button onclick="closeModal('success-modal')" style="display:block;width:100%;background:transparent;color:#aaa;padding:15px 20px;border-radius:14px;font-size:15px;font-weight:600;border:1.5px solid #2a2a2a;cursor:pointer;font-family:inherit;">더 많은 강의 보기</button>
+    <p id="success-msg" style="display:none;"></p>
   </div>
 </div>
 
