@@ -1,0 +1,152 @@
+/* ===== FREEDOM CLASS 공통 인증 스타일 ===== */
+
+.nav-auth-btns { display:flex; align-items:center; gap:8px; margin-left:12px; }
+.nav-btn-login {
+  font-size:14px; font-weight:600; color:#4B5563;
+  background:none; border:none; cursor:pointer;
+  padding:8px 10px; border-radius:8px; font-family:inherit; transition:background .15s;
+}
+.nav-btn-login:hover { background:#F3F4F6; }
+.nav-btn-signup {
+  font-size:14px; font-weight:700; color:#fff; background:#3CB371;
+  border:none; cursor:pointer; padding:8px 18px;
+  border-radius:8px; font-family:inherit; transition:background .15s;
+}
+.nav-btn-signup:hover { background:#2e8b57; }
+.nav-user-name { font-size:14px; font-weight:600; color:#2563EB; }
+
+/* ── 모달 공통 ── */
+.modal-overlay {
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,.75); z-index:300;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px; backdrop-filter:blur(3px);
+}
+.modal-close-btn {
+  position:absolute; top:14px; right:18px;
+  background:none; border:none; color:#666;
+  font-size:24px; cursor:pointer; line-height:1;
+  padding:4px; border-radius:4px; transition:color .15s;
+}
+.modal-close-btn:hover { color:#fff; }
+
+/* ── 로그인 모달 ── */
+.login-modal-box {
+  background:#111; border-radius:16px; padding:44px 36px 36px;
+  max-width:480px; width:100%; position:relative; color:#fff;
+}
+.login-modal-title { font-size:26px; font-weight:800; text-align:center; margin-bottom:8px; }
+.login-modal-sub { font-size:14px; color:#888; text-align:center; margin-bottom:32px; }
+.kakao-btn {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; background:#FEE500; color:#191919;
+  padding:17px 20px; border-radius:10px; font-size:16px; font-weight:700;
+  border:none; cursor:pointer; font-family:inherit; transition:background .15s;
+}
+.kakao-btn:hover { background:#e6cf00; }
+.kakao-btn svg { width:22px; height:22px; flex-shrink:0; }
+.modal-divider {
+  display:flex; align-items:center; gap:12px;
+  margin:24px 0 0; color:#444; font-size:12px;
+}
+.modal-divider::before,.modal-divider::after { content:''; flex:1; border-top:1px solid #2a2a2a; }
+.email-toggle-link {
+  display:block; text-align:center; color:#888; font-size:14px;
+  cursor:pointer; margin-top:18px; text-decoration:underline;
+  background:none; border:none; width:100%; font-family:inherit; padding:0;
+}
+.email-toggle-link:hover { color:#ccc; }
+.email-form { display:none; margin-top:20px; }
+.email-form.show { display:block; }
+.modal-field-label {
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:14px; font-weight:600; color:#ccc; margin-bottom:8px;
+}
+.modal-input {
+  width:100%; background:#1a1a1a; border:1.5px solid #2a2a2a;
+  border-radius:8px; padding:14px 16px; font-size:15px; color:#fff;
+  margin-bottom:14px; font-family:inherit; transition:border-color .15s;
+}
+.modal-input:focus { outline:none; border-color:#4dd9ac; }
+.modal-input::placeholder { color:#444; }
+.email-submit-btn {
+  width:100%; background:#4dd9ac; color:#000; padding:16px;
+  border-radius:10px; font-size:16px; font-weight:700;
+  border:none; cursor:pointer; font-family:inherit; transition:background .15s; margin-top:2px;
+}
+.email-submit-btn:hover { background:#3cc99c; }
+.back-kakao-link {
+  display:block; text-align:center; color:#555; font-size:13px;
+  cursor:pointer; margin-top:18px; background:none; border:none;
+  width:100%; font-family:inherit; padding:0; text-decoration:underline;
+}
+.back-kakao-link:hover { color:#888; }
+
+/* ── 신청 모달 ── */
+.apply-modal-box {
+  background:#111; border-radius:16px; max-width:860px; width:100%;
+  position:relative; color:#fff;
+  display:grid; grid-template-columns:1fr 300px;
+  overflow:hidden; max-height:90vh; overflow-y:auto;
+}
+.apply-left { padding:40px 36px; }
+.apply-right { background:#0d0d0d; padding:40px 28px; border-left:1px solid #1e1e1e; }
+.apply-section-title { font-size:22px; font-weight:800; margin-bottom:24px; }
+.apply-product-row {
+  display:flex; align-items:center; gap:14px;
+  background:#1a1a1a; border-radius:10px; padding:14px;
+}
+.apply-product-thumb {
+  width:80px; height:56px;
+  background:linear-gradient(135deg,#1E3A8A 0%,#050814 100%);
+  border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:24px;
+}
+.apply-product-name { font-size:14px; font-weight:700; line-height:1.45; margin-bottom:4px; }
+.apply-product-by { font-size:12px; color:#666; }
+.apply-order-section { margin-top:28px; }
+.apply-order-section h3 { font-size:16px; font-weight:700; margin-bottom:18px; color:#ccc; }
+.apply-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.apply-field { margin-bottom:14px; }
+.apply-field label { display:block; font-size:13px; color:#888; margin-bottom:7px; font-weight:600; }
+.apply-input {
+  width:100%; background:#1a1a1a; border:1.5px solid #2a2a2a;
+  border-radius:8px; padding:13px 15px; font-size:15px;
+  color:#fff; font-family:inherit; transition:border-color .15s;
+}
+.apply-input:focus { outline:none; border-color:#4dd9ac; }
+.apply-input::placeholder { color:#444; }
+.price-right-title { font-size:16px; font-weight:700; margin-bottom:20px; }
+.price-line { display:flex; justify-content:space-between; font-size:14px; color:#888; padding:8px 0; }
+.price-divider { border-top:1px solid #1e1e1e; margin:12px 0; }
+.price-total { display:flex; justify-content:space-between; font-size:16px; font-weight:700; color:#fff; padding:8px 0; }
+.price-total-val { color:#4dd9ac; font-size:18px; }
+.apply-submit-btn {
+  width:100%; background:#4dd9ac; color:#000; padding:17px;
+  border-radius:10px; font-size:16px; font-weight:800;
+  border:none; cursor:pointer; font-family:inherit; margin-top:24px; transition:all .2s;
+}
+.apply-submit-btn:hover { background:#3cc99c; transform:translateY(-1px); }
+.apply-terms { text-align:center; font-size:11px; color:#444; margin-top:10px; line-height:1.5; }
+
+/* ── 성공 모달 ── */
+.success-modal-box {
+  background:#111; border-radius:16px; padding:52px 40px;
+  max-width:440px; width:100%; position:relative; color:#fff; text-align:center;
+}
+.success-icon { font-size:56px; margin-bottom:20px; }
+.success-title { font-size:24px; font-weight:800; margin-bottom:12px; }
+.success-sub { font-size:15px; color:#888; line-height:1.7; margin-bottom:28px; }
+.success-btn {
+  display:inline-block; background:#4dd9ac; color:#000;
+  padding:14px 32px; border-radius:10px; font-size:15px; font-weight:700;
+  border:none; cursor:pointer; font-family:inherit;
+}
+.success-btn:hover { background:#3cc99c; }
+
+@media (max-width:680px) {
+  .apply-modal-box { grid-template-columns:1fr; }
+  .apply-right { border-left:none; border-top:1px solid #1e1e1e; }
+  .apply-row { grid-template-columns:1fr; }
+  .login-modal-box { padding:36px 24px 28px; }
+}

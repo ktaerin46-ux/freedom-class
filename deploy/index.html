@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>유튜브 뿌시기 챌린지 1기 (유뿌챌 1기)</title>
+<meta name="description" content="유튜브 4주 업로드 챌린지 1기. 롱폼/쇼츠 자유 선택, 포인트로 완주하기. 5/20~5/31 모집.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+    background: #FFFFFF;
+    color: #1A1A1A;
+    line-height: 2;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    word-break: keep-all;
+    padding-top: 56px;
+    padding-bottom: 96px;
+  }
+
+  /* ===== PROMO BANNER ===== */
+  .promo-banner {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 110;
+    background: #1E3A8A;
+    color: #FFFFFF;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-decoration: none;
+    font-family: inherit;
+  }
+  .promo-banner .promo-text {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    text-align: center;
+    color: #FFFFFF;
+    line-height: 1.4;
+  }
+  .promo-banner .promo-text .arrow {
+    display: inline-block;
+    margin-left: 6px;
+    transition: transform 0.2s ease;
+  }
+  .promo-banner:hover .promo-text .arrow { transform: translateX(4px); }
+  .promo-banner .promo-actions {
+    position: absolute;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .promo-banner .promo-hide {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+  .promo-banner .promo-hide:hover { color: #FFFFFF; }
+  .promo-banner .promo-hide .check {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid rgba(255, 255, 255, 0.7);
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .promo-banner .promo-close {
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 0 4px;
+  }
+  .promo-banner .promo-close:hover { color: #FFFFFF; }
+  body.promo-on { padding-top: 100px; }
+  body.promo-on .top-header { top: 44px; }
+  @media (max-width: 640px) {
+    .promo-banner { padding: 10px 14px; }
+    .promo-banner .promo-text { font-size: 12px; padding-right: 70px; }
+    .promo-banner .promo-actions { right: 12px; gap: 8px; font-size: 11px; }
+    .promo-banner .promo-hide .label { display: none; }
+    body.promo-on { padding-top: 96px; }
+    body.promo-on .top-header { top: 40px; }
+  }
+
+  /* ===== BOTTOM STICKY CTA BAR ===== */
+  .bottom-cta-bar {
+    position: fixed;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    max-width: 1100px;
+    margin: 0 auto;
+    background: #2A2A2A;
+    color: #FFFFFF;
+    border-radius: 10px;
+    padding: 6px 6px 6px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    z-index: 99;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+  .bottom-cta-text {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.3;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .bottom-cta-text .sub {
+    font-weight: 500;
+    color: #BFC4CC;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .bottom-cta-text .countdown {
+    font-variant-numeric: tabular-nums;
+    color: #FCD34D;
+    font-weight: 700;
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    letter-spacing: 0.5px;
+  }
+  .bottom-cta-btn {
+    flex-shrink: 0;
+    background: #2563EB;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+  }
+  .bottom-cta-btn:hover {
+    background: #1D4ED8;
+  }
+
+  /* ===== KAKAO FLOATING BUTTON ===== */
+  .kakao-float {
+    position: fixed;
+    right: 20px;
+    bottom: 78px;
+    width: 56px;
+    height: 56px;
+    background: #FEE500;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+    z-index: 98;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .kakao-float:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  }
+  .kakao-float svg {
+    width: 30px;
+    height: 30px;
+  }
+  .kakao-float .kakao-tooltip {
+    position: absolute;
+    right: 68px;
+    background: #1A1A1A;
+    color: #FFFFFF;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+  .kakao-float:hover .kakao-tooltip {
+    opacity: 1;
+  }
+
+  @media (max-width: 640px) {
+    body { padding-bottom: 110px; }
+    .bottom-cta-bar {
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      padding: 12px 12px 12px 18px;
+      gap: 10px;
+      border-radius: 12px;
+    }
+    .bottom-cta-text {
+      font-size: 14px;
+      gap: 6px;
+    }
+    .bottom-cta-text .sub {
+      font-size: 12px;
+    }
+    .bottom-cta-text .sub .label {
+      display: inline;
+    }
+    .bottom-cta-btn {
+      font-size: 14px;
+      padding: 12px 18px;
+    }
+    .kakao-float {
+      right: 14px;
+      bottom: 96px;
+      width: 50px;
+      height: 50px;
+    }
+    .kakao-float svg {
+      width: 28px;
+      height: 28px;
+    }
+    .kakao-float .kakao-tooltip {
+      display: none;
+    }
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ===== TOP HEADER ===== */
+  .top-header {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    color: #1A1A1A;
+    padding: 12px 24px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    border-bottom: 1px solid #F0F0F0;
+  }
+  .top-header .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .top-header .logo {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
+    text-decoration: none;
+    color: inherit;
+    font-family: "Helvetica Neue", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .top-header .logo-main {
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #1A1A1A;
+  }
+  .top-header .logo-sub {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    color: #6B7280;
+    margin-top: 3px;
+  }
+  .top-header .nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .top-header .nav-menu a {
+    text-decoration: none;
+    color: #4B5563;
+    transition: color 0.15s ease;
+  }
+  .top-header .nav-menu a:hover {
+    color: #2563EB;
+  }
+  .top-header .nav-menu a.nav-active {
+    color: #2563EB;
+    font-weight: 800;
+  }
+  .top-header .nav-cta {
+    background: #1A1A1A;
+    color: #FFFFFF !important;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .top-header .nav-cta:hover {
+    background: #2563EB;
+    color: #FFFFFF !important;
+  }
+  @media (max-width: 640px) {
+    .top-header { padding: 10px 16px; }
+    .top-header .logo-main { font-size: 17px; }
+    .top-header .logo-sub { font-size: 8px; letter-spacing: 4px; }
+    .top-header .nav-menu { gap: 14px; font-size: 13px; }
+    .top-header .nav-menu .hide-mobile { display: none; }
+    .top-header .nav-cta { padding: 7px 12px; font-size: 12px; }
+  }
+
+  /* ===== PRODUCT HEADER ===== */
+  .product-section {
+    padding: 40px 24px 24px;
+    border-bottom: 1px solid #F0F0F0;
+  }
+  .product-thumb {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #2563EB;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    margin-bottom: 24px;
+    text-align: center;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .product-thumb .top-tag {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: #FFFFFF;
+    color: #2563EB;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  .product-thumb .small-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .product-thumb .big-title {
+    font-size: 68px;
+    font-weight: 900;
+    line-height: 1.25;
+    letter-spacing: -2px;
+  }
+  .product-thumb .big-title span {
+    display: block;
+  }
+  .product-thumb .big-title .gen {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 38px;
+    background: #FFFFFF;
+    color: #2563EB;
+    padding: 6px 24px;
+    border-radius: 999px;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+  .product-info {
+    text-align: left;
+  }
+  .product-info .tags {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .product-info .tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 3px;
+    color: #FFFFFF;
+  }
+  .product-info .tag.sale { background: #2563EB; }
+  .product-info .tag.best { background: #1E40AF; }
+  .product-info .tag.hot { background: #0EA5E9; }
+  .product-info h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+  .product-info .price {
+    font-size: 24px;
+    font-weight: 800;
+    color: #2563EB;
+    margin-bottom: 4px;
+  }
+  .product-info .price-note {
+    font-size: 13px;
+    color: #9CA3AF;
+    margin-bottom: 24px;
+  }
+
+  /* ===== COPY SECTIONS ===== */
+  .copy-section {
+    text-align: center;
+    padding: 64px 24px;
+  }
+  .copy-section p {
+    font-size: 16px;
+    color: #1A1A1A;
+    margin: 4px 0;
+    text-wrap: balance;
+    -webkit-text-wrap: balance;
+  }
+  .pin-section p { text-wrap: balance; }
+  .faq-answer { text-wrap: pretty; }
+  .copy-section p.bold {
+    font-weight: 700;
+    font-size: 17px;
+  }
+  .copy-section .gap-sm { height: 32px; }
+  .copy-section .gap-md { height: 56px; }
+  .copy-section .gap-lg { height: 80px; }
+
+  .brand-name {
+    font-weight: 800;
+    font-size: 22px;
+    color: #1A1A1A;
+  }
+
+  /* ===== COPY EMPHASIS ===== */
+  .copy-section .quote-box {
+    display: block;
+    max-width: 500px;
+    margin: 28px auto;
+    background: #F9FAFB;
+    border-left: 4px solid #2563EB;
+    border-radius: 0 10px 10px 0;
+    padding: 20px 26px;
+    text-align: left;
+  }
+  .copy-section .quote-box p {
+    font-weight: 700;
+    font-size: 18px;
+    margin: 4px 0;
+    color: #1A1A1A;
+    line-height: 1.6;
+  }
+  .copy-section .highlight {
+    background: linear-gradient(180deg, transparent 55%, rgba(252, 211, 77, 0.55) 55%);
+    padding: 0 2px;
+    font-weight: 700;
+  }
+  .copy-section .accent {
+    color: #2563EB;
+    font-weight: 800;
+  }
+  .copy-section .conclusion {
+    display: inline-block;
+    background: #EFF6FF;
+    color: #2563EB;
+    padding: 10px 24px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 19px;
+    margin-top: 8px;
+  }
+  @media (max-width: 640px) {
+    .copy-section .quote-box { padding: 16px 18px; margin: 22px auto; }
+    .copy-section .quote-box p { font-size: 16px; }
+    .copy-section .conclusion { font-size: 17px; padding: 8px 18px; }
+  }
+
+  /* ===== PIN SECTION ===== */
+  .pin-section {
+    text-align: center;
+    padding: 56px 24px;
+  }
+  .pin-title {
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #EFF6FF;
+    color: #2563EB;
+    padding: 8px 20px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
+  }
+  .pin-section p {
+    margin: 4px 0;
+  }
+  .pin-section .strong {
+    font-weight: 700;
+    font-size: 18px;
+    color: #1A1A1A;
+  }
+  .pin-section .note {
+    font-size: 13px;
+    color: #9CA3AF;
+    margin-top: 6px;
+  }
+
+  /* ===== BIG DATE (제공 사항) ===== */
+  .pin-section .big-date {
+    font-size: 28px;
+    font-weight: 900;
+    color: #2563EB;
+    margin: 10px 0 6px;
+    letter-spacing: -0.5px;
+    line-height: 1.3;
+  }
+  .pin-section .auto-cert-box {
+    max-width: 540px;
+    margin: 36px auto 0;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 10px;
+    padding: 18px 22px;
+    text-align: center;
+    font-size: 14px;
+    color: #1E3A8A;
+    line-height: 1.75;
+    font-weight: 600;
+  }
+  .pin-section .auto-cert-box strong {
+    color: #1E3A8A;
+    font-weight: 800;
+  }
+  .pin-section .auto-cert-box .cert-emoji {
+    display: inline-block;
+    margin-right: 4px;
+  }
+  @media (max-width: 640px) {
+    .pin-section .big-date { font-size: 23px; }
+    .pin-section .auto-cert-box { font-size: 13.5px; padding: 16px 18px; }
+  }
+
+  /* ===== PREMIUM CALLOUT (개강식 가치) ===== */
+  .pin-section .premium-callout {
+    max-width: 420px;
+    margin: 14px auto 0;
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-radius: 10px;
+    padding: 12px 20px;
+    text-align: center;
+  }
+  .pin-section .premium-tag {
+    display: none;
+  }
+  .pin-section .premium-main {
+    font-size: 15px;
+    font-weight: 700;
+    color: #78350F;
+    margin: 0 0 4px;
+    line-height: 1.6;
+  }
+  .pin-section .premium-main strong {
+    color: #B45309;
+    font-weight: 800;
+  }
+  .pin-section .premium-sub {
+    font-size: 12.5px;
+    color: #92400E;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.7;
+    opacity: 0.9;
+  }
+  @media (max-width: 640px) {
+    .pin-section .premium-callout { padding: 11px 16px; }
+    .pin-section .premium-main { font-size: 14.5px; }
+    .pin-section .premium-sub { font-size: 12px; }
+  }
+
+  /* ===== POINT SYSTEM BOX ===== */
+  .point-box {
+    max-width: 480px;
+    margin: 24px auto 0;
+    border: 1px solid #1A1A1A;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: left;
+  }
+  .point-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed #E5E7EB;
+    font-size: 15px;
+  }
+  .point-row:last-child { border-bottom: none; }
+  .point-row .label { font-weight: 600; }
+  .point-row .value {
+    font-weight: 800;
+    color: #2563EB;
+  }
+  .point-goal {
+    background: #1A1A1A;
+    color: #FFFFFF;
+    padding: 14px 18px;
+    border-radius: 6px;
+    text-align: center;
+    margin-top: 14px;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .point-goal strong {
+    color: #FFD700;
+    font-size: 17px;
+  }
+  .point-examples {
+    max-width: 520px;
+    margin: 32px auto 0;
+    text-align: left;
+  }
+  .point-examples .ex-line {
+    padding: 8px 0;
+    font-size: 14px;
+    color: #4B5563;
+  }
+  .point-examples .ex-line strong { color: #1A1A1A; }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    height: 1px;
+    background: #F0F0F0;
+    margin: 0;
+  }
+
+  /* ===== FADE-IN ON SCROLL ===== */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    will-change: opacity, transform;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* ===== SUCCESS REWARDS ===== */
+  .rewards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    max-width: 520px;
+    margin: 24px auto 0;
+  }
+  .reward-card {
+    background: #FFFFFF;
+    border: 2px solid #2563EB;
+    border-radius: 14px;
+    padding: 22px 18px;
+    text-align: center;
+    transition: transform 0.15s ease;
+  }
+  .reward-card.gold {
+    border-color: #F59E0B;
+    background: linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 100%);
+  }
+  .reward-card .reward-badge {
+    display: inline-block;
+    background: #2563EB;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+  .reward-card.gold .reward-badge {
+    background: #F59E0B;
+  }
+  .reward-card .reward-amount {
+    font-size: 26px;
+    font-weight: 900;
+    color: #1A1A1A;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+  }
+  .reward-card .reward-sub {
+    font-size: 13px;
+    color: #6B7280;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .rewards-note {
+    max-width: 620px;
+    margin: 56px auto 0;
+    font-size: 14px;
+    color: #6B7280;
+    line-height: 2.2;
+    text-align: center;
+    padding: 0 16px;
+    word-break: keep-all;
+    letter-spacing: 0.2px;
+  }
+  .rewards-note strong { color: #374151; }
+  @media (max-width: 640px) {
+    .rewards-grid { gap: 10px; }
+    .reward-card { padding: 18px 14px; }
+    .reward-card .reward-amount { font-size: 22px; }
+    .reward-card .reward-badge { font-size: 11px; padding: 3px 10px; }
+  }
+
+  /* ===== FAQ ===== */
+  .faq-section {
+    padding: 64px 24px;
+    background: #FAFAFA;
+  }
+  .faq-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .faq-subtitle {
+    text-align: center;
+    color: #6B7280;
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+  .faq-list {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .faq-item {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+  }
+  .faq-item[open] {
+    border-color: #2563EB;
+  }
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A1A1A;
+    list-style: none;
+    line-height: 1.5;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: "+";
+    flex-shrink: 0;
+    font-size: 24px;
+    color: #9CA3AF;
+    font-weight: 400;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  .faq-item[open] summary::after {
+    transform: rotate(45deg);
+    color: #2563EB;
+  }
+  .faq-item .faq-q-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: #2563EB;
+    color: #FFFFFF;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 800;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  .faq-item .faq-answer {
+    padding: 4px 20px 22px 56px;
+    font-size: 15px;
+    color: #4B5563;
+    line-height: 1.75;
+  }
+  .faq-item .faq-answer strong {
+    color: #1A1A1A;
+  }
+  .faq-item .faq-answer p {
+    margin: 0 0 10px 0;
+  }
+  .faq-item .faq-answer p:last-child {
+    margin-bottom: 0;
+  }
+  .faq-item .faq-answer .lead {
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 12px;
+  }
+  .faq-item .faq-answer ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+  }
+  .faq-item .faq-answer ul li {
+    position: relative;
+    padding-left: 16px;
+    margin: 6px 0;
+  }
+  .faq-item .faq-answer ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #2563EB;
+    font-weight: 800;
+  }
+  @media (max-width: 640px) {
+    .faq-section { padding: 48px 20px; }
+    .faq-item summary { font-size: 15px; padding: 16px 18px; }
+    .faq-item .faq-answer { padding: 0 18px 18px 52px; font-size: 14px; }
+  }
+
+  /* ===== CHECKLIST ===== */
+  .checklist {
+    text-align: center;
+    padding: 56px 24px;
+  }
+  .checklist p {
+    margin: 12px auto;
+    font-weight: 700;
+    font-size: 16px;
+    max-width: 360px;
+    text-wrap: balance;
+    -webkit-text-wrap: balance;
+    line-height: 1.6;
+  }
+  .checklist .check {
+    color: #2563EB;
+    margin-right: 4px;
+  }
+  @media (max-width: 640px) {
+    .checklist p { max-width: 280px; }
+  }
+
+  /* ===== OPTION SELECTION ===== */
+  .options-section {
+    padding: 64px 24px;
+    background: #F9FAFB;
+  }
+  .options-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .options-subtitle {
+    text-align: center;
+    color: #6B7280;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .options-guide {
+    max-width: 540px;
+    margin: 0 auto 32px;
+    background: #FEF3C7;
+    border: 2px solid #FCD34D;
+    border-radius: 12px;
+    padding: 18px 24px;
+    text-align: center;
+    font-size: 19px;
+    font-weight: 800;
+    color: #92400E;
+    line-height: 1.5;
+  }
+  .options-guide .guide-emoji {
+    font-size: 26px;
+    margin-right: 4px;
+  }
+  .options-guide .guide-sub {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #B45309;
+    margin-top: 6px;
+  }
+  @media (max-width: 640px) {
+    .options-guide { font-size: 17px; padding: 16px 18px; }
+    .options-guide .guide-sub { font-size: 14px; }
+  }
+  .option-grid {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .option-card {
+    background: #FFFFFF;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+  }
+  .option-card:hover {
+    border-color: #93C5FD;
+  }
+  .option-card.selected {
+    border-color: #2563EB;
+    background: #EFF6FF;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+  }
+  .option-card .option-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .option-card .option-label-wrap {
+    flex: 1;
+  }
+  .option-card .option-tier {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #6B7280;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .option-card.selected .option-tier {
+    color: #2563EB;
+  }
+  .option-card.premium .option-tier {
+    color: #FFFFFF;
+  }
+  .option-card .option-name {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  .option-card .option-sub {
+    font-size: 14px;
+    color: #6B7280;
+  }
+  .option-card .option-price {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1A1A1A;
+    white-space: nowrap;
+    text-align: right;
+  }
+  .option-card .option-price .extra {
+    color: #2563EB;
+  }
+  .option-card .option-price .free {
+    color: #1A1A1A;
+    font-size: 18px;
+  }
+  .option-card.selected .option-price {
+    color: #2563EB;
+  }
+  .option-card.premium {
+    background: #1A1A1A;
+    color: #FFFFFF;
+    border-color: #1A1A1A;
+  }
+  .option-card.premium:hover { border-color: #2563EB; }
+  .option-card.premium.selected {
+    border-color: #FFD700;
+    background: #1A1A1A;
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.2);
+  }
+  .option-card.premium .option-name { color: #FFFFFF; }
+  .option-card.premium .option-sub { color: #D1D5DB; }
+  .option-card.premium .option-price { color: #FFD700; }
+  .option-card.premium .option-price .extra { color: #FFD700; }
+  .option-card .premium-badge {
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    background: #FFD700;
+    color: #1A1A1A;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 1px;
+  }
+  .option-card .best-badge {
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    background: #2563EB;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+  }
+  .option-card ul {
+    list-style: none;
+    padding-top: 12px;
+    border-top: 1px solid #F3F4F6;
+    margin-top: 4px;
+  }
+  .option-card.premium ul {
+    border-top-color: #374151;
+  }
+  .option-card ul li {
+    font-size: 14px;
+    color: #4B5563;
+    padding: 4px 0;
+    line-height: 1.5;
+  }
+  .option-card.premium ul li {
+    color: #D1D5DB;
+  }
+  .option-card ul li:before {
+    content: "✓ ";
+    color: #2563EB;
+    font-weight: 800;
+    margin-right: 6px;
+  }
+  .option-card.premium ul li:before {
+    color: #FFD700;
+  }
+
+  /* ===== ORDER SUMMARY ===== */
+  .order-summary {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 15px;
+  }
+  .summary-row.total {
+    border-top: 2px solid #1A1A1A;
+    margin-top: 12px;
+    padding-top: 16px;
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .summary-row.total .total-price {
+    color: #2563EB;
+    font-size: 22px;
+  }
+  .summary-label { color: #4B5563; }
+  .summary-value { font-weight: 700; }
+
+  /* ===== CTA BUTTONS ===== */
+  .cta-wrap {
+    max-width: 480px;
+    margin: 24px auto 0;
+  }
+  .cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 18px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+  .cta-btn.apply {
+    background: #2563EB;
+    color: #FFFFFF;
+  }
+  .cta-btn.apply:hover {
+    background: #1D4ED8;
+  }
+  .cta-btn.kakao {
+    background: #FEE500;
+    color: #391B1B;
+  }
+  .cta-btn.kakao:hover {
+    background: #EBD400;
+  }
+  .cta-deadline {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #9CA3AF;
+    text-align: center;
+  }
+  .cta-warning {
+    text-align: center;
+    font-size: 13px;
+    color: #6B7280;
+    margin-top: 8px;
+  }
+
+  /* ===== NOTICE BOX ===== */
+  .notice-box {
+    max-width: 600px;
+    margin: 24px auto;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 8px;
+    padding: 20px 24px;
+    text-align: center;
+  }
+  .notice-box .notice-title {
+    font-weight: 800;
+    color: #2563EB;
+    margin-bottom: 6px;
+    font-size: 15px;
+  }
+  .notice-box .notice-text {
+    font-size: 14px;
+    color: #4B5563;
+    line-height: 1.6;
+  }
+
+  /* ===== FLAME LINE ===== */
+  .flame-line {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 17px;
+    font-weight: 800;
+  }
+  .flame-line .sub {
+    display: block;
+    font-weight: 400;
+    font-size: 14px;
+    color: #6B7280;
+    margin-top: 4px;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: #FAFAFA;
+    color: #9CA3AF;
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 13px;
+    border-top: 1px solid #F0F0F0;
+  }
+
+  /* ===== REVIEWS ===== */
+  .reviews-section {
+    padding: 64px 24px;
+    background: #FFFFFF;
+  }
+  .reviews-title-wrap {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .reviews-eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    color: #2563EB;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+  }
+  .reviews-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .reviews-subtitle {
+    color: #6B7280;
+    font-size: 14px;
+  }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .review-photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .review-photo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  }
+  .review-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .review-photo .photo-placeholder {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #9CA3AF;
+    font-weight: 700;
+    gap: 8px;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        #F9FAFB,
+        #F9FAFB 10px,
+        #F3F4F6 10px,
+        #F3F4F6 20px
+      );
+  }
+  .review-photo.no-image .photo-placeholder {
+    display: flex;
+  }
+  .review-photo .photo-placeholder .ph-icon {
+    font-size: 28px;
+  }
+  .review-photo .photo-placeholder .ph-label {
+    font-size: 13px;
+  }
+  .reviews-note {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 13px;
+    color: #9CA3AF;
+  }
+
+  /* ===== OPTIONS WARNING ===== */
+  .options-warning {
+    max-width: 540px;
+    margin: 0 auto 24px;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 10px;
+    padding: 14px 18px;
+    text-align: center;
+    font-size: 14px;
+    color: #991B1B;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  /* ===== NEXT BATCH NOTICE ===== */
+  .cta-next-batch {
+    margin-top: 14px;
+    background: #FEF3C7;
+    border: 1px solid #FCD34D;
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 13px;
+    color: #78350F;
+    font-weight: 700;
+    line-height: 1.55;
+  }
+  .cta-next-batch strong {
+    color: #78350F;
+  }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 640px) {
+    body { font-size: 15px; }
+    .product-thumb .big-title { font-size: 50px; line-height: 1.25; }
+    .product-thumb .big-title .gen { font-size: 28px; padding: 4px 18px; margin-top: 12px; }
+    .product-thumb .small-title { font-size: 17px; }
+    .copy-section { padding: 48px 20px; }
+    .pin-section { padding: 40px 20px; }
+    .options-section { padding: 48px 20px; }
+    .option-card .option-name { font-size: 18px; }
+    .option-card .option-price { font-size: 18px; }
+    .options-title { font-size: 22px; }
+    .reviews-section { padding: 48px 20px; }
+    .reviews-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .reviews-title { font-size: 22px; }
+  }
+</style>
+<link rel="stylesheet" href="auth.css">
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
+  integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
+  crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <!-- ===== PROMO BANNER ===== -->
+  <a href="free-lecture/index.html" class="promo-banner" id="promoBanner" style="display:none;">
+    <span class="promo-text">초보도 의지만 있다면 월 100만 원 가능! <strong>[무료 웨비나]</strong><span class="arrow">→</span></span>
+    <span class="promo-actions" onclick="event.stopPropagation(); event.preventDefault();">
+      <span class="promo-hide" onclick="hidePromoToday(event)">
+        <span class="check"></span><span class="label">오늘 하루 보지 않기</span>
+      </span>
+      <span class="promo-close" onclick="closePromo(event)">×</span>
+    </span>
+  </a>
+
+  <!-- ===== TOP BAR ===== -->
+  <header class="top-header">
+    <div class="nav-inner">
+      <a href="home/index.html" class="logo">
+        <span class="logo-main">FREEDOM</span>
+        <span class="logo-sub">CLASS</span>
+      </a>
+      <nav class="nav-menu">
+        <a href="home/index.html">HOME</a>
+        <a href="free-lecture/index.html">무료 특강</a>
+        <a href="index.html" class="nav-active">유뿌챌</a>
+      </nav>
+      <div class="nav-auth-btns" id="nav-auth">
+        <button class="nav-btn-login" onclick="openLoginModal()">로그인</button>
+        <button class="nav-btn-signup" onclick="openApplyModal()">회원가입</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== PRODUCT HEADER ===== -->
+  <section class="product-section">
+    <div class="container">
+      <div class="product-thumb">
+        <span class="top-tag">주문폭주</span>
+        <div class="small-title">4주 업로드 챌린지</div>
+        <div class="big-title">
+          <span>유튜브 뿌시기</span>
+          <span>챌린지</span>
+          <span class="gen">1기</span>
+        </div>
+      </div>
+
+      <div class="product-info">
+        <div class="tags">
+          <span class="tag sale">NEW</span>
+          <span class="tag best">1기</span>
+          <span class="tag hot">HOT</span>
+        </div>
+        <h1>유튜브 뿌시기 챌린지 [유뿌챌 1기]</h1>
+        <div class="price">59,000원<span style="font-size:14px; color:#9CA3AF; font-weight:500; margin-left:6px;">/ 기본 참가비</span></div>
+        <div class="price-note">* 컨설팅 옵션은 아래에서 추가 선택 가능합니다</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COPY 1 ===== -->
+  <section class="copy-section">
+    <div class="container">
+      <p>아무 것도 하지 않으면</p>
+      <p>아무 일도 일어나지 않습니다</p>
+      <div class="quote-box">
+        <p>"아무 영상도 올리지 않으면</p>
+        <p>아무 일도 일어나지 않습니다"</p>
+      </div>
+      <p>유튜브를 꾸준히 올리는 힘,</p>
+      <p>이번엔 혼자가 아니라 <span class="accent">시스템으로</span> 만드세요</p>
+      <div class="gap-sm"></div>
+      <p>콘텐츠 업로드를 습관화 해줄 시스템,</p>
+      <p><span class="brand-name">유뿌챌</span> 입니다</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== COPY 2 ===== -->
+  <section class="copy-section">
+    <div class="container">
+      <p>아이디어가 막혀서, 방향이 헷갈려서,</p>
+      <p>작심삼일로 끝나서 영상을 미루고 있었다면</p>
+      <div class="gap-sm"></div>
+      <p class="bold">이번 챌린지에서 <span class="highlight">'AI 아이디어 생성 프롬프트 + 2회 라이브 강의'</span>로</p>
+      <p class="bold">지속 가능한 콘텐츠 루틴을 만들어주세요.</p>
+      <div class="gap-sm"></div>
+      <p>초보자도 시작할 수 있게 <span class="accent">캡컷 기초 VOD</span>까지 함께 제공합니다.</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== COPY 3 ===== -->
+  <section class="copy-section">
+    <div class="container">
+      <p>"오랫동안 지켜보고 있었어요"</p>
+      <p>유튜브에서 기회와 수입은 이렇게 다가옵니다</p>
+      <div class="gap-sm"></div>
+      <p>사람들은 지켜보고 있어요</p>
+      <p>당신이 얼마나 믿을만한 사람인지</p>
+      <p>그게 바로 꾸준한 콘텐츠로 증명됩니다</p>
+      <div class="gap-md"></div>
+      <p>그런데, 못 할 것 같다구요?</p>
+      <p>아니요!!</p>
+      <div style="height:12px"></div>
+      <p class="conclusion">시스템 안에 있으면 가능합니다</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== 활동 기간 ===== -->
+  <section class="pin-section">
+    <div class="container">
+      <div class="pin-title">📍 활동 기간</div>
+      <p>6/3 (수) ~ 6/30 (화)</p>
+      <p class="strong">[4주, 총 12점 이상 업로드]</p>
+    </div>
+  </section>
+
+  <!-- ===== 제공 사항 ===== -->
+  <section class="pin-section">
+    <div class="container">
+      <div class="pin-title">📍 제공 사항</div>
+      <p class="strong">90분 개강식 웨비나 1회</p>
+      <p class="big-date">📅 6/3 (수) 밤 8시</p>
+      <p class="note">강의 60분 + Q&amp;A 30분 · 녹화본 제공</p>
+
+      <div class="premium-callout">
+        <span class="premium-tag">💎 SPECIAL</span>
+        <p class="premium-main">가벼운 OT가 아닌 <strong>유료급 강의</strong>입니다</p>
+        <p class="premium-sub">강의만 들으셔도 참가비가 아깝지 않으실 거예요</p>
+      </div>
+
+      <div style="height:28px"></div>
+      <p class="strong">60분 종강식 웨비나 1회</p>
+      <p class="big-date">📅 6/30 (화) 밤 8시</p>
+      <p class="note">우수 참여자 라이브 피드백 및 정규 과정 커리큘럼 안내</p>
+      <div style="height:28px"></div>
+      <p class="strong">유튜브 아이디어 AI 프롬프트</p>
+      <div style="height:14px"></div>
+      <p class="strong">캡컷 기초 VOD</p>
+      <p class="note">(초보자분들도 도전 가능)</p>
+
+      <div class="auto-cert-box">
+        <span class="cert-emoji">ⓘ</span> 라이브 강의 2회 외에는 <strong>자율적으로 인증하는 시스템</strong>입니다<br>
+        첫 강의(6/3)에서 챌린지가 어떻게 진행되는지 <strong>자세히 안내</strong>해드립니다
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 운영 방식 ===== -->
+  <section class="pin-section">
+    <div class="container">
+      <div class="pin-title">📍 운영 방식 (포인트 환산)</div>
+      <p class="strong">롱폼·쇼츠 자유 선택 · 매주 3점 이상 업로드</p>
+
+      <div class="point-box">
+        <div class="point-row">
+          <span class="label">🎬 롱폼 영상 1개</span>
+          <span class="value">3점</span>
+        </div>
+        <div class="point-row">
+          <span class="label">📱 쇼츠 영상 1개</span>
+          <span class="value">1점</span>
+        </div>
+        <div class="point-goal">완주 기준 : 매주 <strong>3점</strong> × 4주 = 총 <strong>12점</strong></div>
+      </div>
+
+      <div class="point-examples">
+        <div class="ex-line">· <strong>예시 1)</strong> 이번 주 바쁘다면 — 쇼츠 3개 (1점 × 3 = 3점) ✓</div>
+        <div class="ex-line">· <strong>예시 2)</strong> 제대로 기획 — 롱폼 1개 (3점) ✓</div>
+        <div class="ex-line">· <strong>예시 3)</strong> 욕심 — 롱폼 1개 + 쇼츠 1개 (4점, 초과 달성)</div>
+      </div>
+
+      <div style="height:24px"></div>
+      <p>주 3점 이상 업로드 인증</p>
+      <p class="note">(단톡방 운영 및 사이트 별도 인증)</p>
+    </div>
+  </section>
+
+  <!-- ===== 성공 혜택 ===== -->
+  <section class="pin-section">
+    <div class="container">
+      <div class="pin-title">📍 성공 혜택</div>
+      <p class="strong">완주하면 다음 챌린지·강의에 쓸 수 있는 크레딧을 드립니다</p>
+
+      <div class="rewards-grid">
+        <div class="reward-card gold">
+          <div class="reward-badge">100% 성공</div>
+          <div class="reward-amount">30,000원</div>
+          <div class="reward-sub">크레딧 쿠폰</div>
+        </div>
+        <div class="reward-card">
+          <div class="reward-badge">75% 성공</div>
+          <div class="reward-amount">15,000원</div>
+          <div class="reward-sub">크레딧 쿠폰</div>
+        </div>
+      </div>
+
+      <p class="rewards-note">
+        크레딧은 추후 <strong>유뿌챌 재참가</strong> 및 <strong>1:1 컨설팅</strong>, <strong>하이프리덤 정규강의</strong>까지<br>원하는 곳에서 사용 가능합니다
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 모집 기간 ===== -->
+  <section class="pin-section">
+    <div class="container">
+      <div class="pin-title">📍 모집 기간</div>
+      <p>5/20 (수) ~ 5/31 (일)</p>
+      <p class="note">(인원 충원 시 마감)</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== 추천 대상 ===== -->
+  <section class="checklist">
+    <div class="container">
+      <p><span class="check">✓</span> 4주 동안 꾸준히 콘텐츠를 올려보고 싶은 분</p>
+      <p><span class="check">✓</span> 콘텐츠 제작을 습관으로 만들고 싶은 분</p>
+      <p><span class="check">✓</span> 서로 동기부여 받으며 함께 성장하실 분</p>
+      <div style="height:32px"></div>
+      <p style="font-weight:400; color:#6B7280;">저는 최대한 많은 분들이</p>
+      <p style="font-weight:400; color:#6B7280;">성공하길 원합니다</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== 수강생 후기 ===== -->
+  <section class="reviews-section">
+    <div class="container">
+      <div class="reviews-title-wrap">
+        <div class="reviews-eyebrow">REAL REVIEWS</div>
+        <h2 class="reviews-title">먼저 함께한 분들의 후기</h2>
+        <p class="reviews-subtitle">유튜브 코칭·컨설팅을 받으신 분들이 직접 보내주신 카카오톡 후기입니다</p>
+      </div>
+
+      <div class="reviews-grid">
+        <a href="reviews/review-01.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-01.jpg" alt="수강생 후기 1" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 1</span>
+          </span>
+        </a>
+        <a href="reviews/review-02.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-02.jpg" alt="수강생 후기 2" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 2</span>
+          </span>
+        </a>
+        <a href="reviews/review-03.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-03.jpg" alt="수강생 후기 3" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 3</span>
+          </span>
+        </a>
+        <a href="reviews/review-04.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-04.jpg" alt="수강생 후기 4" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 4</span>
+          </span>
+        </a>
+        <a href="reviews/review-05.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-05.jpg" alt="수강생 후기 5" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 5</span>
+          </span>
+        </a>
+        <a href="reviews/review-06.jpg" class="review-photo" target="_blank" rel="noopener">
+          <img src="reviews/review-06.jpg" alt="수강생 후기 6" loading="lazy"
+               onerror="this.parentElement.classList.add('no-image'); this.remove();">
+          <span class="photo-placeholder">
+            <span class="ph-icon">💬</span>
+            <span class="ph-label">후기 6</span>
+          </span>
+        </a>
+      </div>
+
+      <p class="reviews-note">📷 사진을 누르시면 크게 보실 수 있습니다</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== FAQ ===== -->
+  <section class="faq-section">
+    <div class="container">
+      <h2 class="faq-title">자주 묻는 질문</h2>
+      <p class="faq-subtitle">신청 전에 궁금하실 만한 질문들을 정리했어요</p>
+
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>기본 참가에 1:1 컨설팅이 포함되나요?</span></summary>
+          <div class="faq-answer">
+            <p class="lead">기본 참가(59,000원)에는 1:1 개별 컨설팅이 포함되지 않습니다.</p>
+            <p>1:1 컨설팅을 원하시면 신청 시 아래 옵션을 추가로 선택해주세요.</p>
+            <ul>
+              <li><strong>옵션 A</strong> · 온라인 컨설팅 60분 (+220,000원)</li>
+              <li><strong>옵션 B</strong> · 오프라인 컨설팅 100분 (+350,000원)</li>
+            </ul>
+            <p>단톡방 내 Q&amp;A는 모든 참여자에게 항시 열려 있습니다.</p>
+            <p><strong style="color:#991B1B;">⚠️ 컨설팅 옵션(A·B)은 정원이 적어 모집 마감 전에도 조기 마감될 수 있습니다.</strong></p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>다음 기수(2기)는 언제 열리나요?</span></summary>
+          <div class="faq-answer">
+            <p class="lead">다음 기수(2기)의 판매 일정은 아직 미정입니다.</p>
+            <p>유뿌챌은 이번 1기가 첫 번째 운영이며, 2기 이후의 판매 시점·가격·운영 방식은 아직 정해진 바가 없습니다.</p>
+            <p>특히 <strong>1:1 컨설팅(옵션 A·B)</strong>은 정원이 매우 적게 운영되어 조기 마감될 수 있으니, 컨설팅이 필요하시거나 이번 기회를 놓치고 싶지 않으시다면 이번 기수에서 신청해주시는 것을 권해드립니다.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>롱폼이나 쇼츠 중 꼭 하나만 만들어야 하나요?</span></summary>
+          <div class="faq-answer">
+            <p class="lead">아니요, 자유롭게 선택하실 수 있습니다.</p>
+            <p>매주 3점 이상 (롱폼 3점 · 쇼츠 1점)만 채우시면 됩니다.</p>
+            <p>그 주 사정에 따라 쇼츠만 3개 올리셔도 되고, 롱폼 1개로 마무리해도 됩니다.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>주간 점수를 채우지 못하면 어떻게 되나요?</span></summary>
+          <div class="faq-answer">
+            <p class="lead">완주 인증은 받지 못하지만, 콘텐츠는 그대로 이용 가능합니다.</p>
+            <p>강의·VOD·AI 아이디어 프롬프트 등 모든 자료는 그대로 제공되며, 단톡방 활동도 계속하실 수 있습니다.</p>
+            <p><strong>완주 시 크레딧 쿠폰이 지급됩니다.</strong></p>
+            <ul>
+              <li>4주 12점 <strong>100% 달성</strong> → 30,000원 크레딧</li>
+              <li>4주 12점 <strong>75% 이상 달성</strong> → 15,000원 크레딧</li>
+            </ul>
+            <p>크레딧은 추후 유뿌챌 재참가·1:1 컨설팅·하이프리덤 정규강의에 사용 가능합니다.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>유튜브 채널이 아직 없는데 참여 가능한가요?</span></summary>
+          <div class="faq-answer">
+            <p class="lead">참여는 가능하나, 사전 준비가 필요합니다.</p>
+            <p><strong>6/3 (수) 개강식 웨비나 전까지</strong> 아래 두 가지를 직접 준비해주셔야 합니다.</p>
+            <ul>
+              <li>본인 유튜브 채널 개설</li>
+              <li>유튜브 영상 업로드 방법 숙지</li>
+            </ul>
+            <p>본 챌린지에서는 채널 개설 및 업로드 방법을 별도로 안내하지 않습니다.</p>
+            <p>(영상 편집은 캡컷 기초 VOD로 도움드립니다)</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>1:1 컨설팅은 어디서, 언제 진행되나요?</span></summary>
+          <div class="faq-answer">
+            <p class="lead">옵션별로 진행 방식이 다릅니다.</p>
+            <ul>
+              <li><strong>옵션 A · 온라인 60분</strong> — Zoom으로 진행</li>
+              <li><strong>옵션 B · 오프라인 100분</strong> — 강남역 앞 사무실에서 진행 (상세 주소는 신청 후 개별 안내)</li>
+            </ul>
+            <p><strong>일정 조율은 5/31 (일) 단톡방 초대 이후 개별적으로</strong> 진행해드립니다.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary><span><span class="faq-q-icon">Q</span>결제 후 환불이 가능한가요?</span></summary>
+          <div class="faq-answer">
+            <p class="lead">단톡방 개설 전까지만 환불 가능합니다.</p>
+            <ul>
+              <li><strong>모집 기간(~5/31) 중</strong> → 환불 가능</li>
+              <li><strong>5/31 (일) 오후 단톡방 개설 이후</strong> → 환불 불가</li>
+            </ul>
+            <p>신중하게 결정 부탁드립니다.</p>
+            <p>기타 문의는 우측 하단 카카오톡 채널로 연락주세요.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 단톡 초대 안내 ===== -->
+  <section class="flame-line">
+    <div class="container">
+      🔥 개별 문자로 5/31 (일) 오후 단톡 초대됩니다 🔥
+      <span class="sub">&lt;단톡방 개설 후 환불 불가&gt;</span>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== 옵션 선택 + 신청 ===== -->
+  <section class="options-section" id="apply">
+    <div class="container">
+      <h2 class="options-title">참가 옵션 선택</h2>
+      <p class="options-subtitle">기본 챌린지에 컨설팅 옵션을 추가할 수 있습니다</p>
+
+      <div class="options-guide">
+        <span class="guide-emoji">👇</span> 아래 박스를 <u>클릭</u>해서 옵션을 선택해주세요
+        <span class="guide-sub">선택하시면 가격이 자동으로 계산됩니다</span>
+      </div>
+
+      <div class="options-warning">
+        ⚠️ 1:1 컨설팅 옵션(A·B)은 정원이 적어<br>모집 마감 전에도 조기 마감될 수 있습니다
+      </div>
+
+      <div class="option-grid">
+
+        <!-- 옵션 1: 기본 참가 -->
+        <div class="option-card selected" data-option="basic" data-extra="0">
+          <div class="option-header">
+            <div class="option-label-wrap">
+              <div class="option-tier">BASIC</div>
+              <div class="option-name">기본 참가</div>
+              <div class="option-sub">4주 업로드 챌린지만 참여</div>
+            </div>
+            <div class="option-price">
+              <span>59,000원</span>
+            </div>
+          </div>
+          <ul>
+            <li>4주 업로드 챌린지 참여 (주 3점 이상)</li>
+            <li>개강식·종강식 웨비나 2회</li>
+            <li>캡컷 기초 VOD + 유튜브 아이디어 AI 프롬프트</li>
+            <li>전용 단톡방 참여 (Q&amp;A 가능)</li>
+          </ul>
+        </div>
+
+        <!-- 옵션 2: 온라인 컨설팅 -->
+        <div class="option-card" data-option="online" data-extra="220000">
+          <span class="best-badge">BEST</span>
+          <div class="option-header">
+            <div class="option-label-wrap">
+              <div class="option-tier">추가 옵션 A</div>
+              <div class="option-name">+ 온라인 컨설팅 (60분)</div>
+              <div class="option-sub">기본 59,000원 + 옵션 220,000원 = 총 279,000원</div>
+            </div>
+            <div class="option-price">
+              <span class="extra">+220,000원</span>
+            </div>
+          </div>
+          <ul>
+            <li>기본 참가 혜택 전부 포함</li>
+            <li>1:1 온라인 컨설팅 60분 (Zoom)</li>
+            <li>채널 진단 + 콘텐츠 방향성 제안</li>
+            <li>일정은 단톡방 초대 후 개별 조율</li>
+          </ul>
+        </div>
+
+        <!-- 옵션 3: 오프라인 컨설팅 (PREMIUM) -->
+        <div class="option-card premium" data-option="offline" data-extra="350000">
+          <span class="premium-badge">PREMIUM</span>
+          <div class="option-header">
+            <div class="option-label-wrap">
+              <div class="option-tier">추가 옵션 B</div>
+              <div class="option-name">+ 오프라인 컨설팅 (100분)</div>
+              <div class="option-sub">기본 59,000원 + 옵션 350,000원 = 총 409,000원</div>
+            </div>
+            <div class="option-price">
+              <span class="extra">+350,000원</span>
+            </div>
+          </div>
+          <ul>
+            <li>기본 참가 혜택 전부 포함</li>
+            <li>1:1 오프라인 컨설팅 100분 (대면 미팅)</li>
+            <li>장소: <strong style="color:#FFD700">강남역 앞 사무실</strong> (상세 주소는 신청 후 안내)</li>
+            <li>채널 심화 진단 + 맞춤 콘텐츠 전략 설계</li>
+            <li>사업자·자영업자 브랜딩 맞춤 상담</li>
+            <li>일정은 단톡방 초대 후 개별 조율</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 주문 요약 -->
+      <div class="order-summary">
+        <div class="summary-row">
+          <span class="summary-label">선택 옵션</span>
+          <span class="summary-value" id="summary-option">기본 참가</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">기본 참가비</span>
+          <span class="summary-value">59,000원</span>
+        </div>
+        <div class="summary-row" id="summary-extra-row" style="display:none;">
+          <span class="summary-label">추가 옵션</span>
+          <span class="summary-value" id="summary-extra">+0원</span>
+        </div>
+        <div class="summary-row total">
+          <span>총 결제 금액</span>
+          <span class="total-price" id="summary-total">59,000원</span>
+        </div>
+      </div>
+
+      <!-- CTA 버튼들 -->
+      <div class="cta-wrap">
+        <a href="https://www.latpeed.com/products/lMEK_" id="apply-btn" class="cta-btn apply" target="_blank" rel="noopener">
+          유뿌챌 1기 신청하기 — 59,000원
+        </a>
+        <a href="http://pf.kakao.com/_nxhFAX/chat" class="cta-btn kakao" target="_blank" rel="noopener">
+          💬 카카오톡 문의
+        </a>
+        <div class="cta-warning">⚠️ 선착순 마감 · 추가 모집 없음</div>
+        <div class="cta-deadline">📅 모집 마감 : 2026. 5. 31 (일)</div>
+        <div class="cta-next-batch">
+          📢 <strong>다음 기수(2기)는 판매 일정이 미정입니다.</strong><br>
+          이번 기수에서 함께해주세요.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div>© 2026 유튜브 뿌시기 챌린지 (유뿌챌) 1기</div>
+  </footer>
+
+  <!-- ===== BOTTOM STICKY CTA BAR ===== -->
+  <div class="bottom-cta-bar">
+    <div class="bottom-cta-text">
+      <span>유튜브 뿌시기 챌린지 1기, 지금 신청하세요!</span>
+      <span class="sub">
+        <span class="label">⏰ 마감까지</span>
+        <span class="countdown" id="countdown">--일 --:--:--</span>
+      </span>
+    </div>
+    <a href="#apply" class="bottom-cta-btn">신청하기</a>
+  </div>
+
+  <!-- ===== KAKAO FLOATING BUTTON ===== -->
+  <a href="http://pf.kakao.com/_nxhFAX/chat" class="kakao-float" target="_blank" rel="noopener" aria-label="카카오톡 문의">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 3C6.477 3 2 6.582 2 11.001c0 2.85 1.866 5.343 4.677 6.738l-1.18 4.31a.36.36 0 0 0 .553.4l5.122-3.4c.27.018.546.027.828.027 5.523 0 10-3.582 10-8.001S17.523 3 12 3Z" fill="#391B1B"/>
+    </svg>
+    <span class="kakao-tooltip">카카오톡 문의</span>
+  </a>
+
+  <script>
+    (function () {
+      var BASE_PRICE = 59000;
+      var APPLY_URLS = {
+        basic: 'https://www.latpeed.com/products/lMEK_',
+        online: 'https://www.latpeed.com/products/721Na',
+        offline: 'https://www.latpeed.com/products/mvQtg'
+      };
+      var cards = document.querySelectorAll('.option-card');
+      var summaryOption = document.getElementById('summary-option');
+      var summaryExtraRow = document.getElementById('summary-extra-row');
+      var summaryExtra = document.getElementById('summary-extra');
+      var summaryTotal = document.getElementById('summary-total');
+      var applyBtn = document.getElementById('apply-btn');
+
+      function formatPrice(n) {
+        return n.toLocaleString('ko-KR') + '원';
+      }
+
+      function selectCard(card) {
+        cards.forEach(function (c) { c.classList.remove('selected'); });
+        card.classList.add('selected');
+
+        var option = card.dataset.option;
+        var extra = parseInt(card.dataset.extra, 10) || 0;
+        var total = BASE_PRICE + extra;
+
+        var labels = {
+          basic: '기본 참가',
+          online: '기본 + 온라인 컨설팅 60분 (Zoom)',
+          offline: '기본 + 오프라인 컨설팅 100분'
+        };
+
+        summaryOption.textContent = labels[option];
+        summaryTotal.textContent = formatPrice(total);
+        applyBtn.href = APPLY_URLS[option];
+
+        if (extra > 0) {
+          summaryExtraRow.style.display = 'flex';
+          summaryExtra.textContent = '+' + formatPrice(extra);
+          applyBtn.textContent = labels[option] + ' 신청 — ' + formatPrice(total);
+        } else {
+          summaryExtraRow.style.display = 'none';
+          applyBtn.textContent = '유뿌챌 1기 신청하기 — ' + formatPrice(total);
+        }
+      }
+
+      cards.forEach(function (card) {
+        card.addEventListener('click', function () { selectCard(card); });
+      });
+    })();
+
+    // ===== 스크롤 페이드인 모션 =====
+    (function () {
+      var targets = document.querySelectorAll(
+        '.copy-section, .pin-section, .checklist, .flame-line, .options-section, .reward-card, .faq-section'
+      );
+
+      targets.forEach(function (el) { el.classList.add('fade-in'); });
+
+      if (!('IntersectionObserver' in window)) {
+        targets.forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+      targets.forEach(function (el) { observer.observe(el); });
+    })();
+
+    // ===== 마감 카운트다운 타이머 =====
+    (function () {
+      var deadline = new Date('2026-05-31T23:59:59+09:00').getTime();
+      var el = document.getElementById('countdown');
+      if (!el) return;
+
+      function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+      function tick() {
+        var now = Date.now();
+        var diff = deadline - now;
+
+        if (diff <= 0) {
+          el.textContent = '마감되었습니다';
+          el.style.color = '#9CA3AF';
+          clearInterval(timer);
+          return;
+        }
+
+        var days = Math.floor(diff / 86400000);
+        var hours = Math.floor((diff % 86400000) / 3600000);
+        var minutes = Math.floor((diff % 3600000) / 60000);
+        var seconds = Math.floor((diff % 60000) / 1000);
+
+        el.textContent = days + '일 ' + pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+      }
+
+      tick();
+      var timer = setInterval(tick, 1000);
+    })();
+  </script>
+
+  <script>
+    (function() {
+      var KEY = 'freedom_promo_hidden_until';
+      var banner = document.getElementById('promoBanner');
+      if (location.search.indexOf('promo=reset') !== -1) {
+        localStorage.removeItem(KEY);
+      }
+      var hiddenUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
+      if (Date.now() < hiddenUntil) return;
+      banner.style.display = 'flex';
+      document.body.classList.add('promo-on');
+    })();
+    function hidePromoToday(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var until = Date.now() + 24 * 60 * 60 * 1000;
+      localStorage.setItem('freedom_promo_hidden_until', String(until));
+      document.getElementById('promoBanner').style.display = 'none';
+      document.body.classList.remove('promo-on');
+    }
+    function closePromo(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('promoBanner').style.display = 'none';
+      document.body.classList.remove('promo-on');
+    }
+  </script>
+
+<!-- ===== 로그인 모달 ===== -->
+<div class="modal-overlay" id="login-modal" style="display:none;" onclick="onOverlayClick(event,'login-modal')">
+  <div class="login-modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="closeModal('login-modal')">×</button>
+    <div class="login-modal-title">로그인</div>
+    <p class="login-modal-sub">계정에 로그인하여 강의를 수강하세요</p>
+    <button class="kakao-btn" onclick="loginWithKakao()">
+      <svg viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.477 3 2 6.477 2 10.89c0 2.785 1.65 5.225 4.138 6.728L5.1 21l4.485-2.366A10.9 10.9 0 0 0 12 18.78c5.523 0 10-3.477 10-7.89S17.523 3 12 3z"/></svg>
+      카카오로 로그인
+    </button>
+    <div class="modal-divider"><span>이메일 계정</span></div>
+    <div class="email-form" id="email-form">
+      <div class="modal-field-label">이메일</div>
+      <input type="email" class="modal-input" id="email-input" placeholder="name@example.com">
+      <div class="modal-field-label">비밀번호</div>
+      <input type="password" class="modal-input" id="pw-input" placeholder="비밀번호를 입력해주세요">
+      <button class="email-submit-btn" onclick="loginWithEmail()">로그인</button>
+      <button class="back-kakao-link" onclick="toggleEmailForm(false)">카카오로 로그인하기</button>
+    </div>
+    <button class="email-toggle-link" id="email-toggle-btn" onclick="toggleEmailForm(true)">이메일 계정으로 로그인</button>
+  </div>
+</div>
+
+<!-- ===== 수강 신청 모달 ===== -->
+<div class="modal-overlay" id="apply-modal" style="display:none;" onclick="onOverlayClick(event,'apply-modal')">
+  <div class="apply-modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="closeModal('apply-modal')">×</button>
+    <div class="apply-left">
+      <div class="apply-section-title">수강 신청하기</div>
+      <div class="apply-product-row">
+        <div class="apply-product-thumb">🎬</div>
+        <div>
+          <div class="apply-product-name">[5/30 19시 30분] 구독자 0명에서<br>가장 빠르게 성장시키는 법 무료 특강</div>
+          <div class="apply-product-by">FREEDOM CLASS</div>
+        </div>
+      </div>
+      <button class="kakao-btn" onclick="loginWithKakao()" id="apply-kakao-btn" style="margin-top:20px;font-size:14px;padding:13px 20px;">
+        <svg viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.477 3 2 6.477 2 10.89c0 2.785 1.65 5.225 4.138 6.728L5.1 21l4.485-2.366A10.9 10.9 0 0 0 12 18.78c5.523 0 10-3.477 10-7.89S17.523 3 12 3z"/></svg>
+        카카오로 정보 자동입력
+      </button>
+      <p style="text-align:center;font-size:12px;color:#555;margin:8px 0 20px;">또는 아래에 직접 입력하세요</p>
+      <div class="apply-order-section" style="margin-top:0;">
+        <h3>신청자 정보</h3>
+        <div class="apply-row">
+          <div class="apply-field"><label>이름 *</label><input type="text" class="apply-input" id="reg-name" placeholder="홍길동"></div>
+          <div class="apply-field"><label>전화번호 *</label><input type="tel" class="apply-input" id="reg-phone" placeholder="010-0000-0000"></div>
+        </div>
+        <div class="apply-field"><label>연락처 (이메일) *</label><input type="email" class="apply-input" id="reg-email" placeholder="name@example.com"></div>
+        <div class="apply-field">
+          <label>연령대 *</label>
+          <select class="apply-input" id="reg-age" style="cursor:pointer;">
+            <option value="">선택해주세요</option>
+            <option value="10대">10대</option><option value="20대">20대</option>
+            <option value="30대">30대</option><option value="40대">40대</option>
+            <option value="50대">50대</option><option value="60대 이상">60대 이상</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="apply-right">
+      <div class="price-right-title">결제 금액</div>
+      <div class="price-line"><span>상품 금액</span><span>0원</span></div>
+      <div class="price-divider"></div>
+      <div class="price-total"><span>총 결제 금액</span><span class="price-total-val">무료</span></div>
+      <button class="apply-submit-btn" onclick="submitApply()">무료 수강신청</button>
+      <div class="apply-terms">결제 시 <u>이용약관</u> 및 <u>환불규정</u>에<br>동의합니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 신청 완료 모달 ===== -->
+<div class="modal-overlay" id="success-modal" style="display:none;" onclick="onOverlayClick(event,'success-modal')">
+  <div class="success-modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="closeModal('success-modal')">×</button>
+    <div class="success-icon">🎉</div>
+    <div class="success-title">신청이 완료되었습니다!</div>
+    <p class="success-sub" id="success-msg">신청해주셔서 감사합니다.</p>
+    <button class="success-btn" onclick="closeModal('success-modal')">확인</button>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+</body>
+</html>
