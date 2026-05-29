@@ -1,7 +1,7 @@
 /* ===== FREEDOM CLASS 공통 인증 스크립트 (Supabase 버전) ===== */
 var KAKAO_JS_KEY     = 'ecdd6aee1b7bc3c1b077470126aee7f8';
 var KAKAO_CHANNEL_ID = '_nxhFAX';
-var FORM_ENDPOINT    = '';
+var FORM_ENDPOINT    = 'https://script.google.com/macros/s/AKfycbz7iiU8EtFwpz6zjNVsl-T-Acl4AM88QlSZ9WlMeMwHv7RAKs7u8EzUiP1ybsJobDdnPw/exec';
 
 /* ── Supabase 설정 ── */
 var SUPABASE_URL = 'https://ovfqxufzrdzqlitsuokv.supabase.co';
@@ -23,14 +23,12 @@ db.auth.onAuthStateChange(function(event, session) {
   };
   updateNavAfterLogin();
 
-  /* 실제 로그인 직후에만 신청 모달 자동 오픈 (세션 복구 시 제외) */
-  if (event === 'SIGNED_IN' && !sessionStorage.getItem('apply_modal_shown')) {
-    sessionStorage.setItem('apply_modal_shown', '1');
+  /* 로그인 직후 카카오 채널 추가 (모달은 자동으로 열지 않음) */
+  if (event === 'SIGNED_IN') {
     if (window.Kakao && KAKAO_CHANNEL_ID) {
       if (!Kakao.isInitialized()) Kakao.init(KAKAO_JS_KEY);
       try { Kakao.Channel.addChannel({ channelPublicId: KAKAO_CHANNEL_ID }); } catch(e) {}
     }
-    setTimeout(function() { openApplyModal(); }, 300);
   }
 });
 
