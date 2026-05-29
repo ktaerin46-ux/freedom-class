@@ -108,13 +108,19 @@ function updateNavAfterLogin() {
 }
 
 /* ── 신청 제출 ── */
+function openPrivacyModal() {
+  document.getElementById('privacy-modal').style.display = 'flex';
+}
+
 function submitApply() {
   var name  = document.getElementById('reg-name').value.trim();
   var phone = document.getElementById('reg-phone').value.trim();
   var email = document.getElementById('reg-email').value.trim();
+  var privacyEl = document.getElementById('privacy-check');
   if (!name)  { alert('이름을 입력해주세요.'); return; }
   if (!phone) { alert('전화번호를 입력해주세요.'); return; }
   if (!email) { alert('이메일을 입력해주세요.'); return; }
+  if (privacyEl && !privacyEl.checked) { alert('개인정보 수집 및 이용에 동의해주세요.'); return; }
 
   var payload = {
     name:       name,
