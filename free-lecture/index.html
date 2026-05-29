@@ -821,10 +821,6 @@
 </style>
 
 <link rel="stylesheet" href="../auth.css">
-<!-- ★ 카카오 JavaScript SDK ★ -->
-<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
-  integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
-  crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -851,9 +847,8 @@
         <a href="index.html" class="nav-active">무료 특강</a>
         <a href="../index.html">유뿌챌</a>
       </nav>
-      <div class="nav-auth-btns" id="nav-auth">
-        <button class="nav-btn-login" onclick="openLoginModal()">로그인</button>
-        <button class="nav-btn-signup" onclick="openApplyModal()">회원가입</button>
+      <div class="nav-auth-btns">
+        <button class="nav-btn-signup" onclick="openApplyModal()">수강신청</button>
       </div>
     </div>
   </header>
@@ -885,8 +880,8 @@
           </div>
         </div>
         <div>
-          <button class="apply-btn" onclick="openLoginModal()" style="width:100%; border:none; font-family:inherit;">무료 신청하기</button>
-          <div class="product-note">선착순 마감 · 카카오 로그인 후 신청 가능</div>
+          <button class="apply-btn" onclick="openApplyModal()" style="width:100%; border:none; font-family:inherit;">무료 신청하기</button>
+          <div class="product-note">선착순 마감 · 무료</div>
         </div>
       </div>
 
@@ -979,38 +974,6 @@
     </div>
     <div>© 2026 FREEDOM CLASS · 토크유미디어</div>
   </footer>
-
-<!-- ===== 로그인 모달 ===== -->
-<div class="modal-overlay" id="login-modal" style="display:none;" onclick="onOverlayClick(event,'login-modal')">
-  <div class="login-modal-box" onclick="event.stopPropagation()">
-    <button class="modal-close-btn" onclick="closeModal('login-modal')">×</button>
-    <div class="login-modal-title">로그인</div>
-    <p class="login-modal-sub">계정에 로그인하여 강의를 수강하세요</p>
-
-    <button class="kakao-btn" id="kakao-login-btn" onclick="loginWithKakao()">
-      <svg viewBox="0 0 24 24" fill="#191919">
-        <path d="M12 3C6.477 3 2 6.477 2 10.89c0 2.785 1.65 5.225 4.138 6.728L5.1 21l4.485-2.366A10.9 10.9 0 0 0 12 18.78c5.523 0 10-3.477 10-7.89S17.523 3 12 3z"/>
-      </svg>
-      카카오로 로그인
-    </button>
-
-    <div class="modal-divider"><span>이메일 계정</span></div>
-
-    <div class="email-form" id="email-form">
-      <div class="modal-field-label">이메일</div>
-      <input type="email" class="modal-input" id="email-input" placeholder="name@example.com">
-      <div class="modal-field-label">
-        비밀번호
-        <span class="find-pw-link" onclick="alert('비밀번호 찾기는 이메일로 문의해주세요.')">비밀번호 찾기</span>
-      </div>
-      <input type="password" class="modal-input" id="pw-input" placeholder="비밀번호를 입력해주세요">
-      <button class="email-submit-btn" onclick="loginWithEmail()">로그인</button>
-      <button class="back-kakao-link" onclick="toggleEmailForm(false)">카카오로 로그인하기</button>
-    </div>
-
-    <button class="email-toggle-link" id="email-toggle-btn" onclick="toggleEmailForm(true)">이메일 계정으로 로그인</button>
-  </div>
-</div>
 
 <!-- ===== 수강 신청 모달 ===== -->
 <div class="modal-overlay" id="apply-modal" style="display:none;" onclick="onOverlayClick(event,'apply-modal')">
@@ -1146,7 +1109,6 @@
     document.body.classList.remove('promo-on');
   }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../auth.js"></script>
 
 </body>
