@@ -1,53 +1,45 @@
-/* ===== FREEDOM CLASS 공통 인증 스크립트 ===== */
-var KAKAO_REST_KEY     = '202dbf29b60b923a688d39742085a545';
-var KAKAO_JS_KEY       = 'ecdd6aee1b7bc3c1b077470126aee7f8';
-var KAKAO_CHANNEL_ID   = '_nxhFAX';
-var FORM_ENDPOINT      = '';
-var KAKAO_REDIRECT_URI = 'https://freedom-class.vercel.app/api/kakao-callback';
+/* ===== FREEDOM CLASS 공통 인증 스크립트 (Supabase 버전) ===== */
+var KAKAO_JS_KEY     = 'ecdd6aee1b7bc3c1b077470126aee7f8';
+var KAKAO_CHANNEL_ID = '_nxhFAX';
+var FORM_ENDPOINT    = '';
+
+/* ── Supabase 설정 ── */
+var SUPABASE_URL = 'https://ovfqxufzrdzqlitsuokv.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_Wt1QDZnP_NlRum3eO43SuQ_Ln0lhuGS';
+var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 var currentUser = null;
 
-/* ── 페이지 로드 시 카카오 로그인 결과 처리 ── */
-(function checkKakaoCallback() {
-  var params = new URLSearchParams(window.location.search);
+/* ── 로그인 상태 감지 ── */
+db.auth.onAuthStateChange(function(event, session) {
+  if (!session || !session.user) return;
+  var meta = session.user.user_metadata || {};
+  currentUser = {
+    name:      meta.full_name || meta.name || meta.preferred_username || '',
+    email:     session.user.email || '',
+    phone:     '',
+    loginType: 'kakao',
+    kakaoId:   meta.provider_id || '',
+  };
+  updateNavAfterLogin();
 
-  if (params.get('kakao_success') === '1') {
-    currentUser = {
-      name:      decodeURIComponent(params.get('name')     || ''),
-      email:     decodeURIComponent(params.get('email')    || ''),
-      phone:     '',
-      loginType: 'kakao',
-      kakaoId:   params.get('kakao_id') || '',
-    };
-    // URL 파라미터 제거
-    window.history.replaceState({}, '', window.location.pathname);
-
-    updateNavAfterLogin();
-
-    // 카카오 채널 추가
+  if (event === 'SIGNED_IN') {
     if (window.Kakao && KAKAO_CHANNEL_ID) {
       if (!Kakao.isInitialized()) Kakao.init(KAKAO_JS_KEY);
       try { Kakao.Channel.addChannel({ channelPublicId: KAKAO_CHANNEL_ID }); } catch(e) {}
     }
-
-    // 신청 모달 자동 열기
     setTimeout(function() { openApplyModal(); }, 300);
   }
+});
 
-  if (params.get('kakao_error')) {
-    alert('카카오 로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
-    window.history.replaceState({}, '', window.location.pathname);
-  }
-})();
-
-/* ── 카카오 로그인 (리다이렉트 방식) ── */
+/* ── 카카오 로그인 (Supabase OAuth) ── */
 function loginWithKakao() {
-  var authUrl = 'https://kauth.kakao.com/oauth/authorize'
-    + '?client_id=' + KAKAO_REST_KEY
-    + '&redirect_uri=' + encodeURIComponent(KAKAO_REDIRECT_URI)
-    + '&response_type=code'
-    + '&scope=profile_nickname%2Caccount_email';
-  window.location.href = authUrl;
+  db.auth.signInWithOAuth({
+    provider: 'kakao',
+    options: {
+      redirectTo: 'https://freedom-class.vercel.app/free-lecture/index.html',
+    }
+  });
 }
 
 /* ── 모달 제어 ── */
