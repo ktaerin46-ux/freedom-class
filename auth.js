@@ -130,11 +130,12 @@ function submitApply() {
     if (res.error) console.error('Supabase insert error:', res.error);
   });
 
-  /* Google Sheets 백업 (선택) */
+  /* Google Sheets 저장 */
   if (FORM_ENDPOINT) {
     fetch(FORM_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     }).catch(function() {});
   }
