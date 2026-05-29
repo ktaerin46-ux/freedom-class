@@ -146,6 +146,7 @@
   .top-header .nav-menu a {
     color: #4B5563;
     transition: color 0.15s ease;
+    white-space: nowrap;
   }
   .top-header .nav-menu a:hover {
     color: #2563EB;
@@ -425,9 +426,6 @@
   }
 </style>
 <link rel="stylesheet" href="../auth.css">
-<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
-  integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
-  crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -454,10 +452,6 @@
         <a href="../free-lecture/index.html">무료 특강</a>
         <a href="../index.html">유뿌챌</a>
       </nav>
-      <div class="nav-auth-btns" id="nav-auth">
-        <button class="nav-btn-login" onclick="openLoginModal()">로그인</button>
-        <button class="nav-btn-signup" onclick="openApplyModal()">회원가입</button>
-      </div>
     </div>
   </header>
 
@@ -537,29 +531,6 @@
   }
 </script>
 
-<!-- ===== 로그인 모달 ===== -->
-<div class="modal-overlay" id="login-modal" style="display:none;" onclick="onOverlayClick(event,'login-modal')">
-  <div class="login-modal-box" onclick="event.stopPropagation()">
-    <button class="modal-close-btn" onclick="closeModal('login-modal')">×</button>
-    <div class="login-modal-title">로그인</div>
-    <p class="login-modal-sub">계정에 로그인하여 강의를 수강하세요</p>
-    <button class="kakao-btn" onclick="loginWithKakao()">
-      <svg viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.477 3 2 6.477 2 10.89c0 2.785 1.65 5.225 4.138 6.728L5.1 21l4.485-2.366A10.9 10.9 0 0 0 12 18.78c5.523 0 10-3.477 10-7.89S17.523 3 12 3z"/></svg>
-      카카오로 로그인
-    </button>
-    <div class="modal-divider"><span>이메일 계정</span></div>
-    <div class="email-form" id="email-form">
-      <div class="modal-field-label">이메일</div>
-      <input type="email" class="modal-input" id="email-input" placeholder="name@example.com">
-      <div class="modal-field-label">비밀번호</div>
-      <input type="password" class="modal-input" id="pw-input" placeholder="비밀번호를 입력해주세요">
-      <button class="email-submit-btn" onclick="loginWithEmail()">로그인</button>
-      <button class="back-kakao-link" onclick="toggleEmailForm(false)">카카오로 로그인하기</button>
-    </div>
-    <button class="email-toggle-link" id="email-toggle-btn" onclick="toggleEmailForm(true)">이메일 계정으로 로그인</button>
-  </div>
-</div>
-
 <!-- ===== 수강 신청 모달 ===== -->
 <div class="modal-overlay" id="apply-modal" style="display:none;" onclick="onOverlayClick(event,'apply-modal')">
   <div class="apply-modal-box" onclick="event.stopPropagation()">
@@ -573,27 +544,13 @@
           <div class="apply-product-by">FREEDOM CLASS</div>
         </div>
       </div>
-      <button class="kakao-btn" onclick="loginWithKakao()" id="apply-kakao-btn" style="margin-top:20px;font-size:14px;padding:13px 20px;">
-        <svg viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.477 3 2 6.477 2 10.89c0 2.785 1.65 5.225 4.138 6.728L5.1 21l4.485-2.366A10.9 10.9 0 0 0 12 18.78c5.523 0 10-3.477 10-7.89S17.523 3 12 3z"/></svg>
-        카카오로 정보 자동입력
-      </button>
-      <p style="text-align:center;font-size:12px;color:#555;margin:8px 0 20px;">또는 아래에 직접 입력하세요</p>
-      <div class="apply-order-section" style="margin-top:0;">
+      <div class="apply-order-section" style="margin-top:20px;">
         <h3>신청자 정보</h3>
         <div class="apply-row">
           <div class="apply-field"><label>이름 *</label><input type="text" class="apply-input" id="reg-name" placeholder="홍길동"></div>
           <div class="apply-field"><label>전화번호 *</label><input type="tel" class="apply-input" id="reg-phone" placeholder="010-0000-0000"></div>
         </div>
         <div class="apply-field"><label>연락처 (이메일) *</label><input type="email" class="apply-input" id="reg-email" placeholder="name@example.com"></div>
-        <div class="apply-field">
-          <label>연령대 *</label>
-          <select class="apply-input" id="reg-age" style="cursor:pointer;">
-            <option value="">선택해주세요</option>
-            <option value="10대">10대</option><option value="20대">20대</option>
-            <option value="30대">30대</option><option value="40대">40대</option>
-            <option value="50대">50대</option><option value="60대 이상">60대 이상</option>
-          </select>
-        </div>
       </div>
     </div>
     <div class="apply-right">
@@ -601,24 +558,51 @@
       <div class="price-line"><span>상품 금액</span><span>0원</span></div>
       <div class="price-divider"></div>
       <div class="price-total"><span>총 결제 금액</span><span class="price-total-val">무료</span></div>
+      <div style="display:flex;align-items:flex-start;gap:10px;margin:16px 0 14px;">
+        <input type="checkbox" id="privacy-check" style="margin-top:3px;cursor:pointer;width:15px;height:15px;flex-shrink:0;accent-color:#FEE500;">
+        <label for="privacy-check" style="font-size:12px;color:#888;line-height:1.6;cursor:pointer;">
+          <a href="#" onclick="event.preventDefault();openPrivacyModal();" style="color:#bbb;text-decoration:underline;">개인정보 수집 및 이용</a>에 동의합니다 <span style="color:#e55;">(필수)</span>
+        </label>
+      </div>
       <button class="apply-submit-btn" onclick="submitApply()">무료 수강신청</button>
-      <div class="apply-terms">결제 시 <u>이용약관</u> 및 <u>환불규정</u>에<br>동의합니다.</div>
+      <div class="apply-terms">수강신청 시 <a href="#" onclick="event.preventDefault();openPrivacyModal();" style="color:#444;text-decoration:underline;">개인정보 수집 약관</a>에<br>동의한 것으로 간주됩니다.</div>
     </div>
   </div>
 </div>
 
-<!-- ===== 신청 완료 모달 ===== -->
-<div class="modal-overlay" id="success-modal" style="display:none;" onclick="onOverlayClick(event,'success-modal')">
-  <div class="success-modal-box" onclick="event.stopPropagation()">
-    <button class="modal-close-btn" onclick="closeModal('success-modal')">×</button>
-    <div class="success-icon">🎉</div>
-    <div class="success-title">신청이 완료되었습니다!</div>
-    <p class="success-sub" id="success-msg">신청해주셔서 감사합니다.</p>
-    <button class="success-btn" onclick="closeModal('success-modal')">확인</button>
+<!-- ===== 개인정보 수집 약관 모달 ===== -->
+<div id="privacy-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#111;border-radius:20px;padding:36px 28px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;position:relative;color:#fff;" onclick="event.stopPropagation()">
+    <button onclick="document.getElementById('privacy-modal').style.display='none'" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.08);border:none;color:#888;font-size:18px;cursor:pointer;width:32px;height:32px;border-radius:50%;">×</button>
+    <h3 style="font-size:18px;font-weight:800;margin-bottom:8px;">개인정보 수집 동의</h3>
+    <p style="color:#666;font-size:13px;margin-bottom:20px;">* 동의를 거부하실 수 있으나 신청이 불가능합니다.</p>
+    <div style="font-size:13px;line-height:1.9;color:#bbb;background:#1a1a1a;border-radius:12px;padding:20px;">
+      <p><strong style="color:#fff;">수집하는 개인 정보 항목</strong><br>이름, 연락처, 이메일</p><br>
+      <p><strong style="color:#fff;">수집 및 이용목적</strong><br>강의 안내 및 FREEDOM CLASS가 제공하는 소식 및 프로그램</p><br>
+      <p><strong style="color:#fff;">보유 및 이용 기간</strong><br>수집 목적 달성시까지, 또는 동의 철회 시까지</p>
+    </div>
+    <button onclick="document.getElementById('privacy-modal').style.display='none';document.getElementById('privacy-check').checked=true;" style="width:100%;background:#FEE500;color:#000;padding:15px;border-radius:12px;font-size:15px;font-weight:800;border:none;cursor:pointer;margin-top:20px;font-family:inherit;">동의하고 닫기</button>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- ===== 신청 완료 모달 ===== -->
+<div class="modal-overlay" id="success-modal" style="display:none;">
+  <div style="background:#090909;border-radius:24px;padding:44px 28px 36px;max-width:420px;width:100%;position:relative;color:#fff;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.9);" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="closeModal('success-modal')">×</button>
+    <div style="width:68px;height:68px;background:#1a3a28;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#4ade80" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div style="font-size:26px;font-weight:800;margin-bottom:24px;letter-spacing:-0.5px;">수강등록 완료!</div>
+    <div style="text-align:left;font-size:15px;line-height:2.1;margin-bottom:30px;">
+      <div>🔥 '강의 안내방 입장' 눌러 입장 필수</div>
+      <div>🤔 이것만 알면 유튜브 떡상한다고?</div>
+      <div>💸 AI 똑똑하게 활용해서 유튜브 수익화 성공비결!</div>
+      <div style="color:#888;">✓ 5월 30일 (토) 저녁 7시 30분 무료강의에서 모두 공개합니다!</div>
+    </div>
+    <a href="https://open.kakao.com/o/gc2orTpi" target="_blank" style="display:block;background:#4ade80;color:#000;padding:17px 20px;border-radius:14px;font-size:16px;font-weight:800;text-decoration:none;font-family:inherit;">(선착순 마감) 강의 안내방 입장 →</a>
+  </div>
+</div>
+
 <script src="../auth.js"></script>
 </body>
 </html>
