@@ -1,14 +1,56 @@
 /* ===== FREEDOM CLASS 공통 인증 스크립트 ===== */
-var KAKAO_APP_KEY    = 'ecdd6aee1b7bc3c1b077470126aee7f8';
-var KAKAO_CHANNEL_ID = '_nxhFAX';
-var FORM_ENDPOINT    = '';
+var KAKAO_REST_KEY     = '202dbf29b60b923a688d39742085a545';
+var KAKAO_JS_KEY       = 'ecdd6aee1b7bc3c1b077470126aee7f8';
+var KAKAO_CHANNEL_ID   = '_nxhFAX';
+var FORM_ENDPOINT      = '';
+var KAKAO_REDIRECT_URI = 'https://freedom-class.vercel.app/api/kakao-callback';
 
 var currentUser = null;
 
-if (window.Kakao && !Kakao.isInitialized()) {
-  Kakao.init(KAKAO_APP_KEY);
+/* ── 페이지 로드 시 카카오 로그인 결과 처리 ── */
+(function checkKakaoCallback() {
+  var params = new URLSearchParams(window.location.search);
+
+  if (params.get('kakao_success') === '1') {
+    currentUser = {
+      name:      decodeURIComponent(params.get('name')     || ''),
+      email:     decodeURIComponent(params.get('email')    || ''),
+      phone:     '',
+      loginType: 'kakao',
+      kakaoId:   params.get('kakao_id') || '',
+    };
+    // URL 파라미터 제거
+    window.history.replaceState({}, '', window.location.pathname);
+
+    updateNavAfterLogin();
+
+    // 카카오 채널 추가
+    if (window.Kakao && KAKAO_CHANNEL_ID) {
+      if (!Kakao.isInitialized()) Kakao.init(KAKAO_JS_KEY);
+      try { Kakao.Channel.addChannel({ channelPublicId: KAKAO_CHANNEL_ID }); } catch(e) {}
+    }
+
+    // 신청 모달 자동 열기
+    setTimeout(function() { openApplyModal(); }, 300);
+  }
+
+  if (params.get('kakao_error')) {
+    alert('카카오 로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+})();
+
+/* ── 카카오 로그인 (리다이렉트 방식) ── */
+function loginWithKakao() {
+  var authUrl = 'https://kauth.kakao.com/oauth/authorize'
+    + '?client_id=' + KAKAO_REST_KEY
+    + '&redirect_uri=' + encodeURIComponent(KAKAO_REDIRECT_URI)
+    + '&response_type=code'
+    + '&scope=profile_nickname%2Caccount_email';
+  window.location.href = authUrl;
 }
 
+/* ── 모달 제어 ── */
 function openLoginModal() {
   if (currentUser) { openApplyModal(); return; }
   document.getElementById('login-modal').style.display = 'flex';
@@ -36,57 +78,17 @@ function toggleEmailForm(show) {
   document.getElementById('email-toggle-btn').style.display = show ? 'none' : 'block';
 }
 
-function loginWithKakao() {
-  if (!window.Kakao) { alert('카카오 SDK 로드 실패. 새로고침 후 시도해주세요.'); return; }
-  Kakao.Auth.login({
-    scope: 'profile_nickname,account_email',
-    success: function(authObj) {
-      Kakao.API.request({
-        url: '/v2/user/me',
-        success: function(res) {
-          var acct = res.kakao_account || {};
-          currentUser = {
-            name:      (acct.profile || {}).nickname || '',
-            email:     acct.email || '',
-            phone:     '',
-            loginType: 'kakao',
-            kakaoId:   String(res.id || '')
-          };
-          updateNavAfterLogin();
-          if (KAKAO_CHANNEL_ID) {
-            try { Kakao.Channel.addChannel({ channelPublicId: KAKAO_CHANNEL_ID }); } catch(e) {}
-          }
-          if (document.getElementById('apply-modal').style.display === 'flex') {
-            document.getElementById('reg-name').value  = currentUser.name  || '';
-            document.getElementById('reg-email').value = currentUser.email || '';
-            var btn = document.getElementById('apply-kakao-btn');
-            if (btn) btn.textContent = '✅ 카카오 정보 자동입력 완료';
-          } else {
-            openApplyModal();
-          }
-        },
-        fail: function() {
-          currentUser = { name:'', email:'', phone:'', loginType:'kakao' };
-          updateNavAfterLogin(); openApplyModal();
-        }
-      });
-    },
-    fail: function(err) {
-      console.error(err);
-      alert('카카오 로그인에 실패했습니다. 다시 시도해주세요.');
-    }
-  });
-}
-
+/* ── 이메일 로그인 ── */
 function loginWithEmail() {
   var email = document.getElementById('email-input').value.trim();
   var pw    = document.getElementById('pw-input').value;
   if (!email || !pw) { alert('이메일과 비밀번호를 입력해주세요.'); return; }
-  currentUser = { name:'', email:email, phone:'', loginType:'email' };
+  currentUser = { name: '', email: email, phone: '', loginType: 'email' };
   updateNavAfterLogin();
   openApplyModal();
 }
 
+/* ── 로그인 후 네비 업데이트 ── */
 function updateNavAfterLogin() {
   var nav = document.getElementById('nav-auth');
   if (!nav || !currentUser) return;
@@ -96,6 +98,7 @@ function updateNavAfterLogin() {
     '<button class="nav-btn-login" onclick="openApplyModal()">수강신청</button>';
 }
 
+/* ── 신청 제출 ── */
 function submitApply() {
   var name  = document.getElementById('reg-name').value.trim();
   var phone = document.getElementById('reg-phone').value.trim();
@@ -111,14 +114,14 @@ function submitApply() {
     loginType: currentUser ? currentUser.loginType : 'unknown',
     kakaoId:   currentUser ? (currentUser.kakaoId || '') : '',
     lecture: '[5/30] 구독자 0명에서 가장 빠르게 성장시키는 법 무료 특강',
-    submittedAt: new Date().toISOString()
+    submittedAt: new Date().toISOString(),
   };
 
   if (FORM_ENDPOINT) {
     fetch(FORM_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     }).catch(function() {});
   }
 
@@ -129,18 +132,19 @@ function submitApply() {
   } catch(e) {}
 
   closeModal('apply-modal');
-  document.getElementById('success-msg').innerHTML =
-    name + ' 님, 신청이 완료되었습니다! 🎉<br>' +
-    email + ' 로 안내 메시지를 발송해드립니다.' +
-    (currentUser && currentUser.loginType === 'kakao'
-      ? '<br>카카오톡 채널로도 알림이 발송됩니다.' : '');
+  var msg = name + ' 님, 신청이 완료되었습니다! 🎉<br>' + email + ' 로 안내드릴게요.';
+  if (currentUser && currentUser.loginType === 'kakao') {
+    msg += '<br>카카오톡 채널로도 알림이 발송됩니다.';
+  }
+  document.getElementById('success-msg').innerHTML = msg;
   document.getElementById('success-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
 
+/* ── ESC 닫기 ── */
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
-    ['login-modal','apply-modal','success-modal'].forEach(function(id) {
+    ['login-modal', 'apply-modal', 'success-modal'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el && el.style.display !== 'none') closeModal(id);
     });
