@@ -1028,17 +1028,7 @@
         </div>
       </div>
 
-      <!-- 카카오로 자동입력 버튼 -->
-      <button class="kakao-btn" onclick="loginWithKakao()" id="apply-kakao-btn"
-        style="margin-top:20px; font-size:14px; padding:13px 20px;">
-        <svg viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.477 3 2 6.477 2 10.89c0 2.785 1.65 5.225 4.138 6.728L5.1 21l4.485-2.366A10.9 10.9 0 0 0 12 18.78c5.523 0 10-3.477 10-7.89S17.523 3 12 3z"/></svg>
-        카카오로 정보 자동입력
-      </button>
-      <p style="text-align:center; font-size:12px; color:#555; margin:8px 0 20px;">
-        또는 아래에 직접 입력하세요
-      </p>
-
-      <div class="apply-order-section" style="margin-top:0;">
+      <div class="apply-order-section" style="margin-top:20px;">
         <h3>신청자 정보</h3>
         <div class="apply-row">
           <div class="apply-field">
@@ -1053,18 +1043,6 @@
         <div class="apply-field">
           <label>연락처 (이메일) *</label>
           <input type="email" class="apply-input" id="reg-email" placeholder="name@example.com">
-        </div>
-        <div class="apply-field">
-          <label>연령대 *</label>
-          <select class="apply-input" id="reg-age" style="cursor:pointer;">
-            <option value="">선택해주세요</option>
-            <option value="10대">10대</option>
-            <option value="20대">20대</option>
-            <option value="30대">30대</option>
-            <option value="40대">40대</option>
-            <option value="50대">50대</option>
-            <option value="60대 이상">60대 이상</option>
-          </select>
         </div>
       </div>
     </div>
@@ -1093,16 +1071,14 @@
     <!-- 리스트 -->
     <div style="text-align:left;font-size:15px;line-height:2.1;margin-bottom:30px;">
       <div>🔥 '강의 안내방 입장' 눌러 입장 필수</div>
-      <div>🤔 1건만 해도 몇백만 원이 들어온다고?</div>
-      <div>💸 AI 똑똑하게 활용해서 1년만에 억대 수입!!</div>
+      <div>🤔 이것만 알면 유튜브 떡상한다고?</div>
+      <div>💸 AI 똑똑하게 활용해서 유튜브 수익화 성공비결!</div>
       <div>✨ 평범한 직장인 월 1000 달성 후 퇴사 성공!</div>
       <div>✨ 독박육아하던 분도 한달만에 3000만 원 달성!</div>
-      <div style="color:#888;">✓ 6월 4일 (목) 저녁 7시 30분 무료강의에서 모두 공개합니다!</div>
+      <div style="color:#888;">✓ 5월 30일 (토) 저녁 7시 30분 무료강의에서 모두 공개합니다!</div>
     </div>
     <!-- 버튼 -->
-    <a href="https://open.kakao.com/o/gc2orTpi" target="_blank" style="display:block;background:#4ade80;color:#000;padding:17px 20px;border-radius:14px;font-size:16px;font-weight:800;text-decoration:none;margin-bottom:10px;font-family:inherit;">(선착순 마감) 강의 안내방 입장 →</a>
-    <button onclick="closeModal('success-modal')" style="display:block;width:100%;background:#0ecfb0;color:#000;padding:15px 20px;border-radius:14px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit;margin-bottom:8px;">내 강의 보기</button>
-    <button onclick="closeModal('success-modal')" style="display:block;width:100%;background:transparent;color:#aaa;padding:15px 20px;border-radius:14px;font-size:15px;font-weight:600;border:1.5px solid #2a2a2a;cursor:pointer;font-family:inherit;">더 많은 강의 보기</button>
+    <a href="https://open.kakao.com/o/gc2orTpi" target="_blank" style="display:block;background:#4ade80;color:#000;padding:17px 20px;border-radius:14px;font-size:16px;font-weight:800;text-decoration:none;font-family:inherit;">(선착순 마감) 강의 안내방 입장 →</a>
     <p id="success-msg" style="display:none;"></p>
   </div>
 </div>

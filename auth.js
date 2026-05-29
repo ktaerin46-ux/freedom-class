@@ -23,7 +23,9 @@ db.auth.onAuthStateChange(function(event, session) {
   };
   updateNavAfterLogin();
 
-  if (event === 'SIGNED_IN') {
+  /* 실제 로그인 직후에만 신청 모달 자동 오픈 (세션 복구 시 제외) */
+  if (event === 'SIGNED_IN' && !sessionStorage.getItem('apply_modal_shown')) {
+    sessionStorage.setItem('apply_modal_shown', '1');
     if (window.Kakao && KAKAO_CHANNEL_ID) {
       if (!Kakao.isInitialized()) Kakao.init(KAKAO_JS_KEY);
       try { Kakao.Channel.addChannel({ channelPublicId: KAKAO_CHANNEL_ID }); } catch(e) {}
@@ -38,6 +40,20 @@ function loginWithKakao() {
     provider: 'kakao',
     options: {
       redirectTo: 'https://freedom-class.vercel.app/free-lecture/index.html',
+    }
+  });
+}
+
+/* ── 로그아웃 ── */
+function logoutUser() {
+  sessionStorage.removeItem('apply_modal_shown');
+  db.auth.signOut().then(function() {
+    currentUser = null;
+    var nav = document.getElementById('nav-auth');
+    if (nav) {
+      nav.innerHTML =
+        '<button class="nav-btn-login" onclick="openLoginModal()">로그인</button>' +
+        '<button class="nav-btn-signup" onclick="openApplyModal()">수강신청</button>';
     }
   });
 }
@@ -66,8 +82,10 @@ function onOverlayClick(e, id) {
   if (e.target === document.getElementById(id)) closeModal(id);
 }
 function toggleEmailForm(show) {
-  document.getElementById('email-form').classList.toggle('show', show);
-  document.getElementById('email-toggle-btn').style.display = show ? 'none' : 'block';
+  var ef = document.getElementById('email-form');
+  var eb = document.getElementById('email-toggle-btn');
+  if (ef) ef.classList.toggle('show', show);
+  if (eb) eb.style.display = show ? 'none' : 'block';
 }
 
 /* ── 이메일 로그인 ── */
@@ -87,7 +105,8 @@ function updateNavAfterLogin() {
   var displayName = currentUser.name || currentUser.email || '수강생';
   nav.innerHTML =
     '<span class="nav-user-name">' + displayName + ' 님</span>' +
-    '<button class="nav-btn-login" onclick="openApplyModal()">수강신청</button>';
+    '<button class="nav-btn-login" onclick="openApplyModal()">수강신청</button>' +
+    '<button class="nav-btn-login" onclick="logoutUser()" style="color:#999;font-size:13px;">로그아웃</button>';
 }
 
 /* ── 신청 제출 ── */
@@ -95,20 +114,25 @@ function submitApply() {
   var name  = document.getElementById('reg-name').value.trim();
   var phone = document.getElementById('reg-phone').value.trim();
   var email = document.getElementById('reg-email').value.trim();
-  var age   = document.getElementById('reg-age').value;
   if (!name)  { alert('이름을 입력해주세요.'); return; }
   if (!phone) { alert('전화번호를 입력해주세요.'); return; }
   if (!email) { alert('이메일을 입력해주세요.'); return; }
-  if (!age)   { alert('연령대를 선택해주세요.'); return; }
 
   var payload = {
-    name: name, phone: phone, email: email, age: age,
-    loginType: currentUser ? currentUser.loginType : 'unknown',
-    kakaoId:   currentUser ? (currentUser.kakaoId || '') : '',
-    lecture: '[5/30] 구독자 0명에서 가장 빠르게 성장시키는 법 무료 특강',
-    submittedAt: new Date().toISOString(),
+    name:       name,
+    phone:      phone,
+    email:      email,
+    login_type: currentUser ? currentUser.loginType : 'unknown',
+    kakao_id:   currentUser ? (currentUser.kakaoId || '') : '',
+    lecture:    '[5/30] 구독자 0명에서 가장 빠르게 성장시키는 법 무료 특강',
   };
 
+  /* Supabase DB 저장 */
+  db.from('signups').insert(payload).then(function(res) {
+    if (res.error) console.error('Supabase insert error:', res.error);
+  });
+
+  /* Google Sheets 백업 (선택) */
   if (FORM_ENDPOINT) {
     fetch(FORM_ENDPOINT, {
       method: 'POST',
@@ -117,19 +141,9 @@ function submitApply() {
     }).catch(function() {});
   }
 
-  try {
-    var saved = JSON.parse(localStorage.getItem('fc_signups') || '[]');
-    saved.push(payload);
-    localStorage.setItem('fc_signups', JSON.stringify(saved));
-  } catch(e) {}
-
   closeModal('apply-modal');
-  var msg = name + ' 님, 신청이 완료되었습니다! 🎉<br>' + email + ' 로 안내드릴게요.';
-  if (currentUser && currentUser.loginType === 'kakao') {
-    msg += '<br>카카오톡 채널로도 알림이 발송됩니다.';
-  }
   var msgEl = document.getElementById('success-msg');
-  if (msgEl) msgEl.innerHTML = msg;
+  if (msgEl) msgEl.innerHTML = name + ' 님 신청 완료!';
   document.getElementById('success-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
