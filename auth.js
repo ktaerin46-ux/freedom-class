@@ -130,14 +130,12 @@ function submitApply() {
     if (res.error) console.error('Supabase insert error:', res.error);
   });
 
-  /* Google Sheets 저장 */
+  /* Google Sheets 저장 (GET 방식 — CORS 없음) */
   if (FORM_ENDPOINT) {
-    fetch(FORM_ENDPOINT, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload),
-    }).catch(function() {});
+    var qs = Object.keys(payload).map(function(k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(payload[k] || '');
+    }).join('&');
+    fetch(FORM_ENDPOINT + '?' + qs, { mode: 'no-cors' }).catch(function() {});
   }
 
   closeModal('apply-modal');

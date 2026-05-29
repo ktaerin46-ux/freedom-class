@@ -1,11 +1,10 @@
 // ===== Freedom Class 수강신청 데이터 → 구글 시트 저장 =====
-// 이 파일을 script.google.com 에 붙여넣고 웹앱으로 배포하세요
+// script.google.com 에 붙여넣고 웹앱으로 배포하세요
 
 var SHEET_NAME = '수강신청';
 
-function doPost(e) {
+function doGet(e) {
   try {
-    var data = JSON.parse(e.postData.contents);
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
 
     // 헤더가 없으면 첫 행에 추가
@@ -15,12 +14,12 @@ function doPost(e) {
 
     sheet.appendRow([
       new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
-      data.name    || '',
-      data.phone   || '',
-      data.email   || '',
-      data.login_type || '',
-      data.kakao_id   || '',
-      data.lecture    || '',
+      e.parameter.name       || '',
+      e.parameter.phone      || '',
+      e.parameter.email      || '',
+      e.parameter.login_type || '',
+      e.parameter.kakao_id   || '',
+      e.parameter.lecture    || '',
     ]);
 
     return ContentService
@@ -34,8 +33,6 @@ function doPost(e) {
   }
 }
 
-function doGet(e) {
-  return ContentService
-    .createTextOutput(JSON.stringify({ result: 'ok', message: 'Freedom Class API 정상 작동 중' }))
-    .setMimeType(ContentService.MimeType.JSON);
+function doPost(e) {
+  return doGet(e);
 }
