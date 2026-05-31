@@ -2015,18 +2015,17 @@ function getRevenueEntries(channelId, month) {
 }
 
 function revFormHtml(prefix, id, r) {
-  // prefix: 'add' or 'edit', id: channelId or entryId, r: existing entry or null
   const isEdit = prefix === 'edit';
   const date = r ? (r.date || '') : new Date().toISOString().slice(0,10);
   const amount = r ? (r.amount || '') : '';
-  const cardFee = r ? (r.cardFee || '') : '';
+  const feeRate = r ? (r.feeRate || '') : '';
+  const cardFee = Math.round((Number(amount)||0) * (Number(feeRate)||0) / 100);
   const payMethod = r ? (r.payMethod || '') : '';
   const source = r ? (r.source || '') : '';
   const memo = r ? (r.memo || '') : '';
-  const net = (Number(amount)||0) - (Number(cardFee)||0);
+  const net = (Number(amount)||0) - cardFee;
 
   const formClass = isEdit ? 'rev-edit-form' : 'rev-inline-form';
-  const netId = `${prefix}-net-${id}`;
   const btnLabel = isEdit ? '저장' : '+ 추가';
   const btnAction = isEdit ? `saveEditRevenue('${id}')` : `addRevenueEntry('${id}')`;
 
@@ -2041,13 +2040,17 @@ function revFormHtml(prefix, id, r) {
         <label>매출액 (원)</label>
         <input type="number" id="${prefix}-amount-${id}" value="${amount}" placeholder="0" oninput="updateRevNet('${prefix}','${id}')">
       </div>
+      <div class="rev-field" style="min-width:100px; max-width:120px;">
+        <label>수수료율 (%)</label>
+        <input type="number" id="${prefix}-feeRate-${id}" value="${feeRate}" placeholder="예: 3.5" step="0.1" min="0" max="100" oninput="updateRevNet('${prefix}','${id}')">
+      </div>
       <div class="rev-field">
-        <label>카드사수수료 (원)</label>
-        <input type="number" id="${prefix}-cardFee-${id}" value="${cardFee}" placeholder="0" oninput="updateRevNet('${prefix}','${id}')">
+        <label>수수료 금액</label>
+        <div class="rev-computed" id="${prefix}-fee-${id}" style="color:#e74c3c;">${cardFee ? cardFee.toLocaleString('ko-KR')+'원' : '—'}</div>
       </div>
       <div class="rev-field">
         <label>실수령액</label>
-        <div class="rev-computed" id="${netId}">${net.toLocaleString('ko-KR')}원</div>
+        <div class="rev-computed" id="${prefix}-net-${id}">${net.toLocaleString('ko-KR')}원</div>
       </div>
     </div>
     <div class="rev-form-row">
@@ -2122,19 +2125,21 @@ function renderRevenues(container) {
       html += `<div style="overflow-x:auto;">
         <table class="revenue-entry-table">
           <thead><tr>
-            <th>날짜</th><th>매출액</th><th>카드사수수료</th><th>실수령액</th>
+            <th>날짜</th><th>매출액</th><th>수수료율</th><th>수수료</th><th>실수령액</th>
             <th>결제방식/플랫폼</th><th>구분</th><th>메모</th><th></th>
           </tr></thead><tbody>`;
       entries.forEach(r => {
         if (editingRevenueId === r.id) {
-          html += `<tr><td colspan="8" style="padding:0;">${revFormHtml('edit', r.id, r)}</td></tr>`;
+          html += `<tr><td colspan="9" style="padding:0;">${revFormHtml('edit', r.id, r)}</td></tr>`;
         } else {
           const dateDisp = r.date ? r.date.slice(5).replace('-', '/') : '';
-          const net = (Number(r.amount)||0) - (Number(r.cardFee)||0);
+          const cardFee = Number(r.cardFee) || Math.round((Number(r.amount)||0) * (Number(r.feeRate)||0) / 100);
+          const net = (Number(r.amount)||0) - cardFee;
           html += `<tr>
             <td style="color:#888;">${escapeHtml(dateDisp)}</td>
             <td style="font-weight:600; text-align:right;">${Number(r.amount||0).toLocaleString('ko-KR')}원</td>
-            <td style="color:#e74c3c; text-align:right;">${r.cardFee ? Number(r.cardFee).toLocaleString('ko-KR')+'원' : '—'}</td>
+            <td style="color:#e74c3c; text-align:center;">${r.feeRate ? r.feeRate+'%' : '—'}</td>
+            <td style="color:#e74c3c; text-align:right;">${cardFee ? cardFee.toLocaleString('ko-KR')+'원' : '—'}</td>
             <td style="font-weight:700; color:#27ae60; text-align:right;">${net.toLocaleString('ko-KR')}원</td>
             <td>${escapeHtml(r.payMethod || '')}</td>
             <td>${escapeHtml(r.source || '')}</td>
@@ -2175,15 +2180,19 @@ function onRevenueMonthChange() {
 
 function updateRevNet(prefix, id) {
   const amount = Number(document.getElementById(prefix + '-amount-' + id)?.value) || 0;
-  const fee = Number(document.getElementById(prefix + '-cardFee-' + id)?.value) || 0;
-  const netEl = document.getElementById((prefix === 'add' ? 'add' : 'edit') + '-net-' + id);
+  const feeRate = Number(document.getElementById(prefix + '-feeRate-' + id)?.value) || 0;
+  const fee = Math.round(amount * feeRate / 100);
+  const feeEl = document.getElementById(prefix + '-fee-' + id);
+  const netEl = document.getElementById(prefix + '-net-' + id);
+  if (feeEl) feeEl.textContent = fee ? fee.toLocaleString('ko-KR') + '원' : '—';
   if (netEl) netEl.textContent = (amount - fee).toLocaleString('ko-KR') + '원';
 }
 
 function addRevenueEntry(channelId) {
   const date = document.getElementById('add-date-' + channelId).value;
   const amount = Number(document.getElementById('add-amount-' + channelId).value) || 0;
-  const cardFee = Number(document.getElementById('add-cardFee-' + channelId).value) || 0;
+  const feeRate = Number(document.getElementById('add-feeRate-' + channelId).value) || 0;
+  const cardFee = Math.round(amount * feeRate / 100);
   const payMethod = document.getElementById('add-payMethod-' + channelId).value.trim();
   const source = document.getElementById('add-source-' + channelId).value.trim();
   const memo = document.getElementById('add-memo-' + channelId).value.trim();
@@ -2191,7 +2200,7 @@ function addRevenueEntry(channelId) {
   if (!date) { showToast('날짜를 입력해주세요'); return; }
   if (!amount) { showToast('금액을 입력해주세요'); return; }
 
-  data.revenues.push({ id: newId(), channelId, date, amount, cardFee, payMethod, source, memo });
+  data.revenues.push({ id: newId(), channelId, date, amount, feeRate, cardFee, payMethod, source, memo });
   saveData();
   showToast('매출 추가됨');
   renderResources();
@@ -2218,7 +2227,8 @@ function cancelEditRevenue() {
 function saveEditRevenue(entryId) {
   const date = document.getElementById('edit-date-' + entryId).value;
   const amount = Number(document.getElementById('edit-amount-' + entryId).value) || 0;
-  const cardFee = Number(document.getElementById('edit-cardFee-' + entryId).value) || 0;
+  const feeRate = Number(document.getElementById('edit-feeRate-' + entryId).value) || 0;
+  const cardFee = Math.round(amount * feeRate / 100);
   const payMethod = document.getElementById('edit-payMethod-' + entryId).value.trim();
   const source = document.getElementById('edit-source-' + entryId).value.trim();
   const memo = document.getElementById('edit-memo-' + entryId).value.trim();
@@ -2228,7 +2238,7 @@ function saveEditRevenue(entryId) {
 
   const idx = data.revenues.findIndex(r => r.id === entryId);
   if (idx >= 0) {
-    data.revenues[idx] = { ...data.revenues[idx], date, amount, cardFee, payMethod, source, memo };
+    data.revenues[idx] = { ...data.revenues[idx], date, amount, feeRate, cardFee, payMethod, source, memo };
   }
   editingRevenueId = null;
   saveData();
