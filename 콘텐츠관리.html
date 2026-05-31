@@ -427,14 +427,153 @@
   .status-upcoming .product-status { background: #fff5e6; color: #b8651a; }
   .status-ended .product-status { background: #f0f0f0; color: #888; }
 
-  /* 매출 표 */
-  .revenue-table input {
+  /* 매출 */
+  .revenue-channel-block {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .revenue-channel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .revenue-channel-subtotal { color: #27ae60; font-size: 15px; }
+  .revenue-entry-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 700px;
+  }
+  .revenue-entry-table th {
+    background: #fafafa;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+  }
+  .revenue-entry-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f5f5f5;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .revenue-total-bar {
+    background: #f0faf4;
+    border-radius: 12px;
+    padding: 16px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 17px;
+    font-weight: 700;
+    color: #27ae60;
+    margin-top: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .revenue-empty {
+    color: #aaa;
+    padding: 18px;
+    font-size: 14px;
+    text-align: center;
+  }
+  /* 매출 인라인 폼 */
+  .rev-inline-form {
+    padding: 14px 18px;
+    background: #fffbf5;
+    border-top: 2px dashed #f0e0c8;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .rev-add-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #b8651a;
+    margin-bottom: 2px;
+  }
+  .rev-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .rev-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 130px;
+  }
+  .rev-field-wide { min-width: 200px; flex: 1; }
+  .rev-field label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .rev-field input {
     border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 6px 10px;
+    border-radius: 8px;
+    padding: 8px 12px;
     font-size: 14px;
     font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
   }
+  .rev-field input:focus { outline: none; border-color: #f39c12; box-shadow: 0 0 0 2px rgba(243,156,18,0.15); }
+  .rev-computed {
+    padding: 8px 12px;
+    background: #f0faf4;
+    border: 1px solid #c8ecd4;
+    border-radius: 8px;
+    font-weight: 700;
+    color: #27ae60;
+    font-size: 14px;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+  }
+  .rev-field-actions { min-width: unset; }
+  /* 수정 모드 */
+  .rev-edit-form {
+    padding: 14px 18px;
+    background: #f0f6ff;
+    border-top: 2px solid #c0d0f5;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .rev-edit-form .rev-field input:focus { border-color: #3b6de8; box-shadow: 0 0 0 2px rgba(59,109,232,0.15); }
+  .rev-edit-form .rev-computed { background: #e8f0ff; border-color: #b0c4f0; color: #3b6de8; }
+  /* 버튼 */
+  .btn-danger-small {
+    background: #fff0f0; color: #e74c3c; border: 1px solid #f5c0c0;
+    border-radius: 6px; padding: 5px 11px; font-size: 12px;
+    cursor: pointer; font-family: inherit;
+  }
+  .btn-danger-small:hover { background: #ffe0e0; }
+  .btn-edit-small {
+    background: #f0f4ff; color: #3b6de8; border: 1px solid #c0d0f5;
+    border-radius: 6px; padding: 5px 11px; font-size: 12px;
+    cursor: pointer; font-family: inherit; margin-right: 4px;
+  }
+  .btn-edit-small:hover { background: #dce8ff; }
+  .btn-cancel-small {
+    background: #f5f5f5; color: #666; border: 1px solid #ddd;
+    border-radius: 6px; padding: 5px 11px; font-size: 12px;
+    cursor: pointer; font-family: inherit; margin-left: 6px;
+  }
+  .btn-cancel-small:hover { background: #e8e8e8; }
 
   /* 상단 네비 */
   .top-nav {
@@ -497,11 +636,16 @@
   .cal-day {
     background: #fafbfc;
     border-radius: 8px;
+    transition: background 0.12s;
     padding: 6px;
-    min-height: 95px;
+    min-height: 120px;
     border: 1px solid #f0f1f3;
     cursor: pointer;
-    overflow: hidden;
+  }
+  .cal-day.cal-drag-active {
+    background: #eef2ff !important;
+    outline: 2px dashed #667eea;
+    outline-offset: -2px;
   }
   .cal-day.other-month { opacity: 0.3; }
   .cal-day.today { border-color: #667eea; background: #f0f3ff; }
@@ -515,17 +659,21 @@
   .cal-day-num.sat { color: #2c7be5; }
   .cal-pill {
     display: block;
-    font-size: 10px;
-    padding: 2px 6px;
-    margin-bottom: 2px;
+    font-size: 10.5px;
+    padding: 3px 7px;
+    margin-bottom: 3px;
     border-radius: 4px;
     color: white;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-all;
     cursor: pointer;
+    line-height: 1.4;
+    font-weight: 500;
   }
   .cal-pill:hover { opacity: 0.85; }
+  .cal-pill.event-appointment { background: #667eea; }
+  .cal-pill.event-cost { background: #e67e22; }
+  .cal-pill.event-memo { background: #95a5a6; }
   .cal-more {
     font-size: 10px;
     color: #888;
@@ -552,23 +700,54 @@
     color: white;
   }
   .cal-day-add-todo {
-    position: absolute;
-    top: 4px;
-    right: 4px;
     font-size: 11px;
     color: #aaa;
     cursor: pointer;
-    padding: 1px 5px;
+    padding: 2px 5px;
     border-radius: 4px;
     opacity: 0;
     transition: opacity 0.15s;
     background: #f5f6f8;
+    display: inline-block;
   }
-  .cal-day:hover .cal-day-add-todo { opacity: 1; }
+  .cal-day:hover .cal-day-add-todo,
+  .cal-day:hover .cal-day-add-event { opacity: 1; }
   .cal-day-add-todo:hover {
     background: #11998e;
     color: white;
   }
+  .cal-day-add-event {
+    font-size: 11px;
+    color: #aaa;
+    cursor: pointer;
+    padding: 2px 5px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    background: #f5f6f8;
+    display: inline-block;
+  }
+  .cal-day-add-event:hover {
+    background: #667eea;
+    color: white;
+  }
+  .cal-day-btns {
+    display: flex;
+    gap: 3px;
+    margin-top: 3px;
+  }
+  /* 채널 색상 스와치 */
+  .color-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s, transform 0.1s;
+    display: inline-block;
+  }
+  .color-swatch:hover { transform: scale(1.1); }
+  .color-swatch.selected { border-color: #1a1a1a; box-shadow: 0 0 0 1px #fff inset; }
 
   /* 할 일 모달 */
   .todo-list {
@@ -1423,6 +1602,10 @@ function ensureDataShape(d) {
   if (!Array.isArray(d.ideas)) d.ideas = [];
   if (!Array.isArray(d.revenues)) d.revenues = [];
   if (!Array.isArray(d.todos)) d.todos = [];
+  // 기존 revenues 마이그레이션: date 없는 항목에 date 추가
+  d.revenues.forEach(r => {
+    if (!r.date && r.month) r.date = r.month + '-01';
+  });
 }
 
 function loadData() {
@@ -1825,16 +2008,83 @@ let currentRevenueMonth = (() => {
   const d = new Date();
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 })();
+let editingRevenueId = null;
+
+function getRevenueEntries(channelId, month) {
+  return data.revenues.filter(r => r.channelId === channelId && r.date && r.date.startsWith(month));
+}
+
+function revFormHtml(prefix, id, r) {
+  // prefix: 'add' or 'edit', id: channelId or entryId, r: existing entry or null
+  const isEdit = prefix === 'edit';
+  const date = r ? (r.date || '') : new Date().toISOString().slice(0,10);
+  const amount = r ? (r.amount || '') : '';
+  const cardFee = r ? (r.cardFee || '') : '';
+  const payMethod = r ? (r.payMethod || '') : '';
+  const source = r ? (r.source || '') : '';
+  const memo = r ? (r.memo || '') : '';
+  const net = (Number(amount)||0) - (Number(cardFee)||0);
+
+  const formClass = isEdit ? 'rev-edit-form' : 'rev-inline-form';
+  const netId = `${prefix}-net-${id}`;
+  const btnLabel = isEdit ? '저장' : '+ 추가';
+  const btnAction = isEdit ? `saveEditRevenue('${id}')` : `addRevenueEntry('${id}')`;
+
+  return `<div class="${formClass}">
+    ${!isEdit ? '<div class="rev-add-label">+ 새 매출 항목 추가</div>' : ''}
+    <div class="rev-form-row">
+      <div class="rev-field">
+        <label>날짜</label>
+        <input type="date" id="${prefix}-date-${id}" value="${escapeHtml(date)}">
+      </div>
+      <div class="rev-field">
+        <label>매출액 (원)</label>
+        <input type="number" id="${prefix}-amount-${id}" value="${amount}" placeholder="0" oninput="updateRevNet('${prefix}','${id}')">
+      </div>
+      <div class="rev-field">
+        <label>카드사수수료 (원)</label>
+        <input type="number" id="${prefix}-cardFee-${id}" value="${cardFee}" placeholder="0" oninput="updateRevNet('${prefix}','${id}')">
+      </div>
+      <div class="rev-field">
+        <label>실수령액</label>
+        <div class="rev-computed" id="${netId}">${net.toLocaleString('ko-KR')}원</div>
+      </div>
+    </div>
+    <div class="rev-form-row">
+      <div class="rev-field">
+        <label>결제방식 / 플랫폼</label>
+        <input type="text" id="${prefix}-payMethod-${id}" value="${escapeHtml(payMethod)}" placeholder="네이버페이, 카드, 계좌이체...">
+      </div>
+      <div class="rev-field">
+        <label>구분</label>
+        <input type="text" id="${prefix}-source-${id}" value="${escapeHtml(source)}" placeholder="광고, 상품, 협찬...">
+      </div>
+      <div class="rev-field rev-field-wide">
+        <label>메모</label>
+        <input type="text" id="${prefix}-memo-${id}" value="${escapeHtml(memo)}" placeholder="메모">
+      </div>
+      <div class="rev-field rev-field-actions">
+        <label>&nbsp;</label>
+        <div style="display:flex; gap:6px;">
+          <button class="btn-primary btn-small" onclick="${btnAction}">${btnLabel}</button>
+          ${isEdit ? `<button class="btn-cancel-small" onclick="cancelEditRevenue()">취소</button>` : ''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
 
 function renderRevenues(container) {
   const filter = getResChannelFilter();
 
-  // 월별 옵션
   const months = new Set([currentRevenueMonth]);
-  data.revenues.forEach(r => { if (r.month) months.add(r.month); });
+  data.revenues.forEach(r => {
+    if (r.date) months.add(r.date.slice(0,7));
+    else if (r.month) months.add(r.month);
+  });
   const sortedMonths = Array.from(months).sort().reverse();
 
-  let html = `<div class="resource-controls">
+  let html = `<div class="resource-controls" style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
     <label style="font-weight:600;">조회 월:</label>
     <select id="revenue-month-select" onchange="onRevenueMonthChange()" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px;">`;
   sortedMonths.forEach(m => {
@@ -1851,39 +2101,70 @@ function renderRevenues(container) {
     return;
   }
 
-  html += `<table class="revenue-table">
-    <thead>
-      <tr>
-        <th>채널</th>
-        <th>${currentRevenueMonth.replace('-', '년 ')}월 매출 (원)</th>
-        <th>구분 (광고/상품/협찬)</th>
-        <th>메모</th>
-        <th>저장</th>
-      </tr>
-    </thead>
-    <tbody>`;
+  let grandRevenue = 0, grandFee = 0;
 
-  let total = 0;
   channels.forEach(c => {
-    const rev = data.revenues.find(r => r.channelId === c.id && r.month === currentRevenueMonth);
-    const amount = rev ? rev.amount : '';
-    const source = rev ? (rev.source || '') : '';
-    const memo = rev ? (rev.memo || '') : '';
-    total += Number(amount) || 0;
+    const entries = getRevenueEntries(c.id, currentRevenueMonth);
+    const subRevenue = entries.reduce((s, r) => s + (Number(r.amount)||0), 0);
+    const subFee = entries.reduce((s, r) => s + (Number(r.cardFee)||0), 0);
+    const subNet = subRevenue - subFee;
+    grandRevenue += subRevenue;
+    grandFee += subFee;
     const platform = PLATFORMS[c.platform] || PLATFORMS.other;
-    html += `<tr>
-      <td><span class="content-platform ${platform.cls}">${platform.icon}</span> <strong>${escapeHtml(c.name)}</strong></td>
-      <td><input type="number" id="rev-amount-${c.id}" value="${amount}" placeholder="0" style="width:130px;" oninput="updateRevTotal()"></td>
-      <td><input type="text" id="rev-source-${c.id}" value="${escapeHtml(source)}" placeholder="예: 광고, 전자책, 협찬" style="width:160px;"></td>
-      <td><input type="text" id="rev-memo-${c.id}" value="${escapeHtml(memo)}" placeholder="메모" style="width:180px;"></td>
-      <td><button class="btn-primary btn-small" onclick="saveRevenueRow('${c.id}')">저장</button></td>
-    </tr>`;
+
+    html += `<div class="revenue-channel-block">
+      <div class="revenue-channel-header">
+        <span><span class="content-platform ${platform.cls}">${platform.icon}</span> ${escapeHtml(c.name)}</span>
+        <span class="revenue-channel-subtotal">실수령 소계: ${formatMoney(subNet)}</span>
+      </div>`;
+
+    if (entries.length > 0) {
+      html += `<div style="overflow-x:auto;">
+        <table class="revenue-entry-table">
+          <thead><tr>
+            <th>날짜</th><th>매출액</th><th>카드사수수료</th><th>실수령액</th>
+            <th>결제방식/플랫폼</th><th>구분</th><th>메모</th><th></th>
+          </tr></thead><tbody>`;
+      entries.forEach(r => {
+        if (editingRevenueId === r.id) {
+          html += `<tr><td colspan="8" style="padding:0;">${revFormHtml('edit', r.id, r)}</td></tr>`;
+        } else {
+          const dateDisp = r.date ? r.date.slice(5).replace('-', '/') : '';
+          const net = (Number(r.amount)||0) - (Number(r.cardFee)||0);
+          html += `<tr>
+            <td style="color:#888;">${escapeHtml(dateDisp)}</td>
+            <td style="font-weight:600; text-align:right;">${Number(r.amount||0).toLocaleString('ko-KR')}원</td>
+            <td style="color:#e74c3c; text-align:right;">${r.cardFee ? Number(r.cardFee).toLocaleString('ko-KR')+'원' : '—'}</td>
+            <td style="font-weight:700; color:#27ae60; text-align:right;">${net.toLocaleString('ko-KR')}원</td>
+            <td>${escapeHtml(r.payMethod || '')}</td>
+            <td>${escapeHtml(r.source || '')}</td>
+            <td style="color:#888;">${escapeHtml(r.memo || '')}</td>
+            <td>
+              <button class="btn-edit-small" onclick="startEditRevenue('${r.id}')">수정</button>
+              <button class="btn-danger-small" onclick="deleteRevenueEntry('${r.id}')">삭제</button>
+            </td>
+          </tr>`;
+        }
+      });
+      html += '</tbody></table></div>';
+    } else {
+      html += `<div class="revenue-empty">이번 달 매출 항목이 없습니다.</div>`;
+    }
+
+    html += revFormHtml('add', c.id, null);
+    html += `</div>`;
   });
-  html += `<tr style="background:#fff5e6; font-weight:700;">
-    <td>📊 ${currentRevenueMonth.replace('-', '년 ')}월 총 매출</td>
-    <td id="revenue-total">${formatMoney(total)}</td>
-    <td colspan="3"></td>
-  </tr></tbody></table>`;
+
+  const grandNet = grandRevenue - grandFee;
+  html += `<div class="revenue-total-bar">
+    <span>📊 ${currentRevenueMonth.replace('-', '년 ')}월 합계</span>
+    <span style="display:flex; gap:24px; align-items:center; font-size:15px;">
+      <span style="color:#888; font-weight:500;">매출 ${formatMoney(grandRevenue)}</span>
+      <span style="color:#e74c3c; font-weight:500;">수수료 ${formatMoney(grandFee)}</span>
+      <span style="color:#27ae60; font-size:18px;">실수령 ${formatMoney(grandNet)}</span>
+    </span>
+  </div>`;
+
   container.innerHTML = html;
 }
 
@@ -1892,33 +2173,70 @@ function onRevenueMonthChange() {
   renderResources();
 }
 
-function updateRevTotal() {
-  let total = 0;
-  document.querySelectorAll('[id^="rev-amount-"]').forEach(inp => {
-    total += Number(inp.value) || 0;
-  });
-  const el = document.getElementById('revenue-total');
-  if (el) el.textContent = formatMoney(total);
+function updateRevNet(prefix, id) {
+  const amount = Number(document.getElementById(prefix + '-amount-' + id)?.value) || 0;
+  const fee = Number(document.getElementById(prefix + '-cardFee-' + id)?.value) || 0;
+  const netEl = document.getElementById((prefix === 'add' ? 'add' : 'edit') + '-net-' + id);
+  if (netEl) netEl.textContent = (amount - fee).toLocaleString('ko-KR') + '원';
 }
 
-function saveRevenueRow(channelId) {
-  const amount = Number(document.getElementById('rev-amount-' + channelId).value) || 0;
-  const source = document.getElementById('rev-source-' + channelId).value.trim();
-  const memo = document.getElementById('rev-memo-' + channelId).value.trim();
+function addRevenueEntry(channelId) {
+  const date = document.getElementById('add-date-' + channelId).value;
+  const amount = Number(document.getElementById('add-amount-' + channelId).value) || 0;
+  const cardFee = Number(document.getElementById('add-cardFee-' + channelId).value) || 0;
+  const payMethod = document.getElementById('add-payMethod-' + channelId).value.trim();
+  const source = document.getElementById('add-source-' + channelId).value.trim();
+  const memo = document.getElementById('add-memo-' + channelId).value.trim();
 
-  const idx = data.revenues.findIndex(r => r.channelId === channelId && r.month === currentRevenueMonth);
-  if (idx >= 0) {
-    data.revenues[idx].amount = amount;
-    data.revenues[idx].source = source;
-    data.revenues[idx].memo = memo;
-  } else {
-    data.revenues.push({
-      id: newId(), channelId, month: currentRevenueMonth, amount, source, memo
-    });
-  }
+  if (!date) { showToast('날짜를 입력해주세요'); return; }
+  if (!amount) { showToast('금액을 입력해주세요'); return; }
+
+  data.revenues.push({ id: newId(), channelId, date, amount, cardFee, payMethod, source, memo });
   saveData();
-  showToast('매출 저장됨');
+  showToast('매출 추가됨');
+  renderResources();
 }
+
+function deleteRevenueEntry(entryId) {
+  if (!confirm('이 매출 항목을 삭제할까요?')) return;
+  data.revenues = data.revenues.filter(r => r.id !== entryId);
+  saveData();
+  showToast('삭제됨');
+  renderResources();
+}
+
+function startEditRevenue(entryId) {
+  editingRevenueId = entryId;
+  renderResources();
+}
+
+function cancelEditRevenue() {
+  editingRevenueId = null;
+  renderResources();
+}
+
+function saveEditRevenue(entryId) {
+  const date = document.getElementById('edit-date-' + entryId).value;
+  const amount = Number(document.getElementById('edit-amount-' + entryId).value) || 0;
+  const cardFee = Number(document.getElementById('edit-cardFee-' + entryId).value) || 0;
+  const payMethod = document.getElementById('edit-payMethod-' + entryId).value.trim();
+  const source = document.getElementById('edit-source-' + entryId).value.trim();
+  const memo = document.getElementById('edit-memo-' + entryId).value.trim();
+
+  if (!date) { showToast('날짜를 입력해주세요'); return; }
+  if (!amount) { showToast('금액을 입력해주세요'); return; }
+
+  const idx = data.revenues.findIndex(r => r.id === entryId);
+  if (idx >= 0) {
+    data.revenues[idx] = { ...data.revenues[idx], date, amount, cardFee, payMethod, source, memo };
+  }
+  editingRevenueId = null;
+  saveData();
+  showToast('수정됨');
+  renderResources();
+}
+
+function updateRevTotal() {}
 
 // ============================================
 // 알림 + 필터
