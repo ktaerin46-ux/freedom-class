@@ -262,17 +262,15 @@
   }
   .top-header .logo {
     display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     line-height: 1;
     text-decoration: none;
     color: inherit;
-    font-family: "Helvetica Neue", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   }
   .top-header .logo-main {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 900;
-    letter-spacing: 1px;
+    letter-spacing: -0.5px;
     color: #1A1A1A;
   }
   .top-header .logo-sub {
@@ -292,7 +290,6 @@
   .top-header .nav-menu a {
     text-decoration: none;
     color: #4B5563;
-    white-space: nowrap;
     transition: color 0.15s ease;
   }
   .top-header .nav-menu a:hover {
@@ -316,8 +313,7 @@
   }
   @media (max-width: 640px) {
     .top-header { padding: 10px 16px; }
-    .top-header .logo-main { font-size: 17px; }
-    .top-header .logo-sub { font-size: 8px; letter-spacing: 4px; }
+    .top-header .logo-main { font-size: 18px; }
     .top-header .nav-menu { gap: 14px; font-size: 13px; }
     .top-header .nav-menu .hide-mobile { display: none; }
     .top-header .nav-cta { padding: 7px 12px; font-size: 12px; }
@@ -1323,6 +1319,9 @@
   }
 </style>
 <link rel="stylesheet" href="auth.css">
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
+  integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
+  crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -1341,14 +1340,17 @@
   <header class="top-header">
     <div class="nav-inner">
       <a href="home/index.html" class="logo">
-        <span class="logo-main">FREEDOM</span>
-        <span class="logo-sub">CLASS</span>
+        <span class="logo-main">프리덤클래스</span>
       </a>
       <nav class="nav-menu">
         <a href="home/index.html">HOME</a>
         <a href="free-lecture/index.html">무료 특강</a>
         <a href="index.html" class="nav-active">유뿌챌</a>
       </nav>
+      <div class="nav-auth-btns" id="nav-auth">
+        <button class="nav-btn-login" onclick="openLoginModal()">로그인</button>
+        <button class="nav-btn-signup" onclick="openApplyModal()">회원가입</button>
+      </div>
     </div>
   </header>
 
@@ -2003,6 +2005,87 @@
       document.body.classList.remove('promo-on');
     }
   </script>
+
+<!-- ===== 로그인 모달 ===== -->
+<div class="modal-overlay" id="login-modal" style="display:none;" onclick="onOverlayClick(event,'login-modal')">
+  <div class="login-modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="closeModal('login-modal')">×</button>
+    <div class="login-modal-title">로그인</div>
+    <p class="login-modal-sub">계정에 로그인하여 강의를 수강하세요</p>
+    <button class="kakao-btn" onclick="loginWithKakao()">
+      <svg viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.477 3 2 6.477 2 10.89c0 2.785 1.65 5.225 4.138 6.728L5.1 21l4.485-2.366A10.9 10.9 0 0 0 12 18.78c5.523 0 10-3.477 10-7.89S17.523 3 12 3z"/></svg>
+      카카오로 로그인
+    </button>
+    <div class="modal-divider"><span>이메일 계정</span></div>
+    <div class="email-form" id="email-form">
+      <div class="modal-field-label">이메일</div>
+      <input type="email" class="modal-input" id="email-input" placeholder="name@example.com">
+      <div class="modal-field-label">비밀번호</div>
+      <input type="password" class="modal-input" id="pw-input" placeholder="비밀번호를 입력해주세요">
+      <button class="email-submit-btn" onclick="loginWithEmail()">로그인</button>
+      <button class="back-kakao-link" onclick="toggleEmailForm(false)">카카오로 로그인하기</button>
+    </div>
+    <button class="email-toggle-link" id="email-toggle-btn" onclick="toggleEmailForm(true)">이메일 계정으로 로그인</button>
+  </div>
+</div>
+
+<!-- ===== 수강 신청 모달 ===== -->
+<div class="modal-overlay" id="apply-modal" style="display:none;" onclick="onOverlayClick(event,'apply-modal')">
+  <div class="apply-modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="closeModal('apply-modal')">×</button>
+    <div class="apply-left">
+      <div class="apply-section-title">수강 신청하기</div>
+      <div class="apply-product-row">
+        <div class="apply-product-thumb">🎬</div>
+        <div>
+          <div class="apply-product-name">[5/30 19시 30분] 구독자 0명에서<br>가장 빠르게 성장시키는 법 무료 특강</div>
+          <div class="apply-product-by">FREEDOM CLASS</div>
+        </div>
+      </div>
+      <button class="kakao-btn" onclick="loginWithKakao()" id="apply-kakao-btn" style="margin-top:20px;font-size:14px;padding:13px 20px;">
+        <svg viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.477 3 2 6.477 2 10.89c0 2.785 1.65 5.225 4.138 6.728L5.1 21l4.485-2.366A10.9 10.9 0 0 0 12 18.78c5.523 0 10-3.477 10-7.89S17.523 3 12 3z"/></svg>
+        카카오로 정보 자동입력
+      </button>
+      <p style="text-align:center;font-size:12px;color:#555;margin:8px 0 20px;">또는 아래에 직접 입력하세요</p>
+      <div class="apply-order-section" style="margin-top:0;">
+        <h3>신청자 정보</h3>
+        <div class="apply-row">
+          <div class="apply-field"><label>이름 *</label><input type="text" class="apply-input" id="reg-name" placeholder="홍길동"></div>
+          <div class="apply-field"><label>전화번호 *</label><input type="tel" class="apply-input" id="reg-phone" placeholder="010-0000-0000"></div>
+        </div>
+        <div class="apply-field"><label>연락처 (이메일) *</label><input type="email" class="apply-input" id="reg-email" placeholder="name@example.com"></div>
+        <div class="apply-field">
+          <label>연령대 *</label>
+          <select class="apply-input" id="reg-age" style="cursor:pointer;">
+            <option value="">선택해주세요</option>
+            <option value="10대">10대</option><option value="20대">20대</option>
+            <option value="30대">30대</option><option value="40대">40대</option>
+            <option value="50대">50대</option><option value="60대 이상">60대 이상</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="apply-right">
+      <div class="price-right-title">결제 금액</div>
+      <div class="price-line"><span>상품 금액</span><span>0원</span></div>
+      <div class="price-divider"></div>
+      <div class="price-total"><span>총 결제 금액</span><span class="price-total-val">무료</span></div>
+      <button class="apply-submit-btn" onclick="submitApply()">무료 수강신청</button>
+      <div class="apply-terms">결제 시 <u>이용약관</u> 및 <u>환불규정</u>에<br>동의합니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 신청 완료 모달 ===== -->
+<div class="modal-overlay" id="success-modal" style="display:none;" onclick="onOverlayClick(event,'success-modal')">
+  <div class="success-modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="closeModal('success-modal')">×</button>
+    <div class="success-icon">🎉</div>
+    <div class="success-title">신청이 완료되었습니다!</div>
+    <p class="success-sub" id="success-msg">신청해주셔서 감사합니다.</p>
+    <button class="success-btn" onclick="closeModal('success-modal')">확인</button>
+  </div>
+</div>
 
 <script src="auth.js"></script>
 </body>

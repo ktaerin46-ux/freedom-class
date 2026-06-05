@@ -112,21 +112,17 @@
   }
   .top-header .logo {
     display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     line-height: 1;
-    font-family: "Helvetica Neue", "Inter", sans-serif;
   }
-  .top-header .logo-main { font-size: 20px; font-weight: 900; letter-spacing: 1px; color: #1A1A1A; }
-  .top-header .logo-sub { font-size: 9px; font-weight: 700; letter-spacing: 5px; color: #6B7280; margin-top: 3px; }
+  .top-header .logo-main { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; color: #1A1A1A; }
   .top-header .nav-menu { display: flex; align-items: center; gap: 28px; font-size: 14px; font-weight: 600; }
-  .top-header .nav-menu a { color: #4B5563; transition: color 0.15s ease; white-space: nowrap; }
+  .top-header .nav-menu a { color: #4B5563; transition: color 0.15s ease; }
   .top-header .nav-menu a:hover { color: #2563EB; }
   .top-header .nav-menu a.nav-active { color: #2563EB; font-weight: 800; }
   @media (max-width: 640px) {
     .top-header { padding: 10px 16px; }
-    .top-header .logo-main { font-size: 17px; }
-    .top-header .logo-sub { font-size: 8px; letter-spacing: 4px; }
+    .top-header .logo-main { font-size: 18px; }
     .top-header .nav-menu { gap: 18px; font-size: 13px; }
   }
 
@@ -140,7 +136,7 @@
     display: grid;
     grid-template-columns: 1.4fr 1fr;
     gap: 24px;
-    align-items: stretch;
+    align-items: start;
   }
 
   /* 썸네일 */
@@ -226,6 +222,31 @@
     justify-content: space-between;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   }
+  @media (min-width: 901px) {
+    .product-card {
+      position: sticky;
+      top: 80px;
+    }
+  }
+  /* 배지 */
+  .badge-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+  }
+  .badge-best { background: #DCFCE7; color: #166534; }
+  .badge-hot  { background: #FEF3C7; color: #92400E; }
   .product-title {
     font-size: 20px;
     font-weight: 800;
@@ -284,10 +305,10 @@
   }
   .price-free {
     margin-top: 6px;
-    font-size: 28px;
-    color: #2563EB;
+    font-size: 32px;
+    color: #1A1A1A;
     font-weight: 900;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
   }
   .apply-btn {
     display: block;
@@ -764,19 +785,41 @@
   .price-total-val { color: #4dd9ac; font-size: 18px; }
   .apply-submit-btn {
     width: 100%;
-    background: #4dd9ac;
-    color: #000;
+    background: #FFD600;
+    color: #111;
     padding: 17px;
     border-radius: 10px;
-    font-size: 16px;
-    font-weight: 800;
+    font-size: 17px;
+    font-weight: 900;
     border: none;
     cursor: pointer;
     font-family: inherit;
-    margin-top: 24px;
+    margin-top: 8px;
     transition: all 0.2s;
+    letter-spacing: -0.3px;
   }
-  .apply-submit-btn:hover { background: #3cc99c; transform: translateY(-1px); }
+  .apply-submit-btn:hover { background: #F5CC00; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255, 214, 0, 0.4); }
+  .apply-consent {
+    margin: 18px 0 12px;
+  }
+  .consent-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: #ccc;
+    cursor: pointer;
+    line-height: 1.5;
+  }
+  .consent-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    cursor: pointer;
+    accent-color: #FFD600;
+  }
+  .consent-required { color: #EF4444; font-weight: 700; }
   .apply-terms {
     text-align: center;
     font-size: 11px;
@@ -794,33 +837,61 @@
   /* ===== 성공 모달 ===== */
   .success-modal-box {
     background: #111;
-    border-radius: 16px;
-    padding: 52px 40px;
-    max-width: 440px;
+    border-radius: 20px;
+    padding: 44px 36px 40px;
+    max-width: 420px;
     width: 100%;
     position: relative;
     color: #fff;
     text-align: center;
   }
-  .success-icon { font-size: 56px; margin-bottom: 20px; }
-  .success-title { font-size: 24px; font-weight: 800; margin-bottom: 12px; }
-  .success-sub { font-size: 15px; color: #888; line-height: 1.7; margin-bottom: 28px; }
-  .success-btn {
-    display: inline-block;
-    background: #4dd9ac;
-    color: #000;
-    padding: 14px 32px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
+  .success-check-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #1E5C3F;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 34px;
+    color: #fff;
+    font-weight: 900;
   }
-  .success-btn:hover { background: #3cc99c; }
+  .success-title { font-size: 26px; font-weight: 900; margin-bottom: 24px; letter-spacing: -0.5px; }
+  .success-benefits { text-align: left; margin-bottom: 28px; }
+  .success-benefit-item {
+    font-size: 15px;
+    padding: 7px 0;
+    color: #E5E7EB;
+    line-height: 1.5;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .success-benefit-item:last-child { border-bottom: none; color: #9CA3AF; font-size: 14px; }
+  .success-room-btn {
+    display: block;
+    width: 100%;
+    background: #95D5A0;
+    color: #111;
+    padding: 18px 20px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 900;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    letter-spacing: -0.3px;
+    transition: background 0.2s;
+  }
+  .success-room-btn:hover { background: #7EC88C; }
 </style>
 
 <link rel="stylesheet" href="../auth.css">
+<!-- ★ 카카오 JavaScript SDK ★ -->
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
+  integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
+  crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -839,14 +910,17 @@
   <header class="top-header">
     <div class="nav-inner">
       <a href="../home/index.html" class="logo">
-        <span class="logo-main">FREEDOM</span>
-        <span class="logo-sub">CLASS</span>
+        <span class="logo-main">프리덤클래스</span>
       </a>
       <nav class="nav-menu">
         <a href="../home/index.html">HOME</a>
         <a href="index.html" class="nav-active">무료 특강</a>
         <a href="../index.html">유뿌챌</a>
       </nav>
+      <div class="nav-auth-btns" id="nav-auth">
+        <button class="nav-btn-login" onclick="openLoginModal()">로그인</button>
+        <button class="nav-btn-signup" onclick="openApplyModal()">회원가입</button>
+      </div>
     </div>
   </header>
 
@@ -859,10 +933,11 @@
         <div class="thumb-content">
           <span class="thumb-tag">🔥 선착순 무료 →</span>
           <h1 class="thumb-title">
-            <span class="date-prefix">[5/30 19시 30분]</span><br>
-            구독자 <span class="accent">0명</span>에서<br>
-            가장 빠르게 성장시키는 법<br>
-            <span class="suffix">무료 특강</span>
+            <span class="date-prefix">[7/2 19시 30분]</span><br>
+            월 <span class="accent">100만 원</span><br>
+            상위 <span class="accent">0.1%</span> AI 반자동화<br>
+            유튜브 수익화 기초<br>
+            <span class="suffix">무료 실전 강의</span>
           </h1>
         </div>
       </div>
@@ -870,15 +945,19 @@
       <!-- 우측: 상품 카드 -->
       <div class="product-card" id="apply">
         <div>
-          <h2 class="product-title">[5/30 19시 30분] 구독자 0명에서 가장 빠르게 성장시키는 법 무료 특강</h2>
+          <div class="badge-row">
+            <span class="badge badge-best">👍 BEST</span>
+            <span class="badge badge-hot">🔥 HOT</span>
+          </div>
+          <h2 class="product-title">[7/2 19시 30분] 월 100만 원 상위 0.1% AI 반자동화 유튜브 수익화 기초 무료 실전 강의</h2>
           <div class="price-row">
-            <div class="price-strike">590,000원</div>
-            <div class="price-free">100% 무료</div>
+            <div class="price-strike">3,000,000원</div>
+            <div class="price-free">하루 0원</div>
           </div>
         </div>
         <div>
-          <button class="apply-btn" onclick="openApplyModal()" style="width:100%; border:none; font-family:inherit;">무료 신청하기</button>
-          <div class="product-note">선착순 마감 · 무료</div>
+          <button class="apply-btn" onclick="openApplyModal()" style="width:100%; border:none; font-family:inherit;">가격 인상 전에 신청하기</button>
+          <div class="product-note">선착순 마감 · 카카오 로그인 후 신청 가능</div>
         </div>
       </div>
 
@@ -972,6 +1051,38 @@
     <div>© 2026 FREEDOM CLASS · 토크유미디어</div>
   </footer>
 
+<!-- ===== 로그인 모달 ===== -->
+<div class="modal-overlay" id="login-modal" style="display:none;" onclick="onOverlayClick(event,'login-modal')">
+  <div class="login-modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="closeModal('login-modal')">×</button>
+    <div class="login-modal-title">로그인</div>
+    <p class="login-modal-sub">계정에 로그인하여 강의를 수강하세요</p>
+
+    <button class="kakao-btn" id="kakao-login-btn" onclick="loginWithKakao()">
+      <svg viewBox="0 0 24 24" fill="#191919">
+        <path d="M12 3C6.477 3 2 6.477 2 10.89c0 2.785 1.65 5.225 4.138 6.728L5.1 21l4.485-2.366A10.9 10.9 0 0 0 12 18.78c5.523 0 10-3.477 10-7.89S17.523 3 12 3z"/>
+      </svg>
+      카카오로 로그인
+    </button>
+
+    <div class="modal-divider"><span>이메일 계정</span></div>
+
+    <div class="email-form" id="email-form">
+      <div class="modal-field-label">이메일</div>
+      <input type="email" class="modal-input" id="email-input" placeholder="name@example.com">
+      <div class="modal-field-label">
+        비밀번호
+        <span class="find-pw-link" onclick="alert('비밀번호 찾기는 이메일로 문의해주세요.')">비밀번호 찾기</span>
+      </div>
+      <input type="password" class="modal-input" id="pw-input" placeholder="비밀번호를 입력해주세요">
+      <button class="email-submit-btn" onclick="loginWithEmail()">로그인</button>
+      <button class="back-kakao-link" onclick="toggleEmailForm(false)">카카오로 로그인하기</button>
+    </div>
+
+    <button class="email-toggle-link" id="email-toggle-btn" onclick="toggleEmailForm(true)">이메일 계정으로 로그인</button>
+  </div>
+</div>
+
 <!-- ===== 수강 신청 모달 ===== -->
 <div class="modal-overlay" id="apply-modal" style="display:none;" onclick="onOverlayClick(event,'apply-modal')">
   <div class="apply-modal-box" onclick="event.stopPropagation()">
@@ -983,7 +1094,7 @@
       <div class="apply-product-row">
         <div class="apply-product-thumb">🎬</div>
         <div>
-          <div class="apply-product-name">[5/30 19시 30분] 구독자 0명에서<br>가장 빠르게 성장시키는 법 무료 특강</div>
+          <div class="apply-product-name">[7/2 19시 30분] 월 100만 원 상위 0.1%<br>AI 반자동화 유튜브 수익화 기초 무료 실전 강의</div>
           <div class="apply-product-by">FREEDOM CLASS</div>
         </div>
       </div>
@@ -1012,65 +1123,238 @@
       <div class="price-line"><span>상품 금액</span><span>0원</span></div>
       <div class="price-divider"></div>
       <div class="price-total"><span>총 결제 금액</span><span class="price-total-val">무료</span></div>
-      <!-- 개인정보 동의 체크박스 -->
-      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">
-        <input type="checkbox" id="privacy-check" style="margin-top:3px;cursor:pointer;width:15px;height:15px;flex-shrink:0;accent-color:#FEE500;">
-        <label for="privacy-check" style="font-size:12px;color:#888;line-height:1.6;cursor:pointer;">
-          <a href="#" onclick="event.preventDefault();openPrivacyModal();" style="color:#bbb;text-decoration:underline;">개인정보 수집 및 이용</a>에 동의합니다 <span style="color:#e55;">(필수)</span>
+      <div class="apply-consent">
+        <label class="consent-label">
+          <input type="checkbox" id="reg-consent">
+          <span>개인정보 수집 및 이용에 동의합니다 <span class="consent-required">(필수)</span></span>
         </label>
       </div>
       <button class="apply-submit-btn" onclick="submitApply()">무료 수강신청</button>
-      <div class="apply-terms">수강신청 시 <a href="#" onclick="event.preventDefault();openPrivacyModal();" style="color:#444;text-decoration:underline;">개인정보 수집 약관</a>에<br>동의한 것으로 간주됩니다.</div>
+      <div class="apply-terms">수강신청 시 <u>개인정보 수집 약관</u>에<br>동의한 것으로 간주됩니다.</div>
     </div>
-  </div>
-</div>
-
-<!-- ===== 개인정보 수집 약관 모달 ===== -->
-<div id="privacy-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;">
-  <div style="background:#111;border-radius:20px;padding:36px 28px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;position:relative;color:#fff;" onclick="event.stopPropagation()">
-    <button onclick="document.getElementById('privacy-modal').style.display='none'" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.08);border:none;color:#888;font-size:18px;cursor:pointer;width:32px;height:32px;border-radius:50%;">×</button>
-    <h3 style="font-size:18px;font-weight:800;margin-bottom:8px;">개인정보 수집 동의</h3>
-    <p style="color:#666;font-size:13px;margin-bottom:20px;">* 동의를 거부하실 수 있으나 설문 참여가 불가능합니다.</p>
-    <div style="font-size:13px;line-height:1.9;color:#bbb;background:#1a1a1a;border-radius:12px;padding:20px;">
-      <p><strong style="color:#fff;">수집하는 개인 정보 항목</strong><br>이름, 연락처, 이메일</p>
-      <br>
-      <p><strong style="color:#fff;">수집 및 이용목적</strong><br>전자책 배포 이후 안녕자유 하이프리덤이 제공하는 소식 및 프로그램</p>
-      <br>
-      <p><strong style="color:#fff;">보유 및 이용 기간</strong><br>개인정보의 수집, 이용 목적 달성시까지, 또는 상대방이 자신의 개인정보제공의 동의를 철회한 때. 단 관련 법령의 규정에 의하여 개인정보를 보유할 필요가 있는 경우, 해당 법령에서 정한 기한까지.</p>
-      <br>
-      <p style="color:#666;font-size:12px;">제출 버튼을 클릭하시면 개인정보 수집 및 이용에 동의한 것으로 간주됩니다.</p>
-    </div>
-    <button onclick="document.getElementById('privacy-modal').style.display='none';document.getElementById('privacy-check').checked=true;" style="width:100%;background:#FEE500;color:#000;padding:15px;border-radius:12px;font-size:15px;font-weight:800;border:none;cursor:pointer;margin-top:20px;font-family:inherit;">동의하고 닫기</button>
   </div>
 </div>
 
 <!-- ===== 신청 완료 모달 ===== -->
-<div class="modal-overlay" id="success-modal" style="display:none;">
-  <div style="background:#090909;border-radius:24px;padding:44px 28px 36px;max-width:420px;width:100%;position:relative;color:#fff;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.9);" onclick="event.stopPropagation()">
+<div class="modal-overlay" id="success-modal" style="display:none;" onclick="onOverlayClick(event,'success-modal')">
+  <div class="success-modal-box" onclick="event.stopPropagation()">
     <button class="modal-close-btn" onclick="closeModal('success-modal')">×</button>
-    <!-- 체크 아이콘 -->
-    <div style="width:68px;height:68px;background:#1a3a28;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#4ade80" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="success-check-circle">✓</div>
+    <div class="success-title">수강등록 완료!</div>
+    <div class="success-benefits">
+      <div class="success-benefit-item">🔥 '강의 안내방 입장' 눌러 입장 필수</div>
+      <div class="success-benefit-item">🤔 이것만 알면 유튜브 떡상한다고?</div>
+      <div class="success-benefit-item">🦊 AI 똑똑하게 활용해서 유튜브 수익화 성공비결!</div>
+      <div class="success-benefit-item">✨ 평범한 직장인 월 1000 달성 후 퇴사 성공!</div>
+      <div class="success-benefit-item">✨ 독박육아하던 분도 한달만에 3000만 원 달성!</div>
+      <div class="success-benefit-item">✓ 7월 2일 (수) 저녁 7시 30분 무료강의에서 모두 공개합니다!</div>
     </div>
-    <!-- 제목 -->
-    <div style="font-size:26px;font-weight:800;margin-bottom:24px;letter-spacing:-0.5px;">수강등록 완료!</div>
-    <!-- 리스트 -->
-    <div style="text-align:left;font-size:15px;line-height:2.1;margin-bottom:30px;">
-      <div>🔥 '강의 안내방 입장' 눌러 입장 필수</div>
-      <div>🤔 이것만 알면 유튜브 떡상한다고?</div>
-      <div>💸 AI 똑똑하게 활용해서 유튜브 수익화 성공비결!</div>
-      <div>✨ 평범한 직장인 월 1000 달성 후 퇴사 성공!</div>
-      <div>✨ 독박육아하던 분도 한달만에 3000만 원 달성!</div>
-      <div style="color:#888;">✓ 5월 30일 (토) 저녁 7시 30분 무료강의에서 모두 공개합니다!</div>
-    </div>
-    <!-- 버튼 -->
-    <a href="https://open.kakao.com/o/gc2orTpi" target="_blank" style="display:block;background:#4ade80;color:#000;padding:17px 20px;border-radius:14px;font-size:16px;font-weight:800;text-decoration:none;font-family:inherit;">(선착순 마감) 강의 안내방 입장 →</a>
-    <p id="success-msg" style="display:none;"></p>
+    <button class="success-room-btn" onclick="enterRoom()">(선착순 마감) 강의 안내방 입장 →</button>
   </div>
 </div>
 
 <script>
-  /* 페이지 고유 함수만 (인증은 auth.js에서 처리) */
+  /* ============================================
+     ★ 아래 값을 실제 값으로 교체하세요 ★
+
+     1. KAKAO_APP_KEY: developers.kakao.com에서 앱 등록 후
+        JavaScript 키 발급 (예: 'ab1234cd5678ef90...')
+
+     2. KAKAO_CHANNEL_ID: 카카오 채널 공개 ID
+        (예: '_xABCDE' 형태, 채널 관리자 센터에서 확인)
+
+     3. FORM_ENDPOINT: 신청 데이터 받을 주소
+        - Google Apps Script URL, Formspree, 또는 백엔드 API
+  ============================================= */
+  var KAKAO_APP_KEY  = 'ecdd6aee1b7bc3c1b077470126aee7f8';
+  var KAKAO_CHANNEL_ID = '_nxhFAX';
+  var FORM_ENDPOINT  = '';  // 비워두면 로컬 처리만
+  var ROOM_LINK      = 'https://open.kakao.com/o/gc2orTpi';
+
+  var currentUser = null; // { name, email, phone, loginType }
+
+  /* ── Kakao SDK 초기화 ── */
+  if (window.Kakao && KAKAO_APP_KEY !== 'YOUR_KAKAO_JAVASCRIPT_APP_KEY') {
+    Kakao.init(KAKAO_APP_KEY);
+  }
+
+  /* ── 모달 열기/닫기 ── */
+  function openLoginModal() {
+    if (currentUser) {
+      // 이미 로그인 → 바로 신청 모달
+      openApplyModal();
+      return;
+    }
+    document.getElementById('login-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function openApplyModal() {
+    document.getElementById('login-modal').style.display = 'none';
+    document.getElementById('apply-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    // 카카오 로그인한 경우 자동 입력
+    if (currentUser) {
+      document.getElementById('reg-name').value  = currentUser.name  || '';
+      document.getElementById('reg-email').value = currentUser.email || '';
+      document.getElementById('reg-phone').value = currentUser.phone || '';
+    }
+  }
+
+  // "무료 신청하기" 버튼은 로그인 없이도 바로 폼으로
+  function openApplyDirect() {
+    openApplyModal();
+  }
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function onOverlayClick(e, id) {
+    if (e.target === document.getElementById(id)) closeModal(id);
+  }
+
+  /* ── 이메일 폼 토글 ── */
+  function toggleEmailForm(show) {
+    document.getElementById('email-form').classList.toggle('show', show);
+    document.getElementById('email-toggle-btn').style.display = show ? 'none' : 'block';
+  }
+
+  /* ── 카카오 로그인 ── */
+  function loginWithKakao() {
+    if (!window.Kakao || KAKAO_APP_KEY === 'YOUR_KAKAO_JAVASCRIPT_APP_KEY') {
+      alert('카카오 앱 키가 설정되지 않았습니다.\ndevelopers.kakao.com에서 앱 키를 발급받아 KAKAO_APP_KEY를 수정해주세요.');
+      return;
+    }
+    Kakao.Auth.login({
+      scope: 'profile_nickname,account_email',
+      success: function(authObj) {
+        Kakao.API.request({
+          url: '/v2/user/me',
+          success: function(res) {
+            var acct = res.kakao_account || {};
+            currentUser = {
+              name:      (acct.profile || {}).nickname || '',
+              email:     acct.email || '',
+              phone:     (acct.phone_number || '').replace('+82 ', '0').replace(/-/g, ''),
+              loginType: 'kakao',
+              kakaoId:   String(res.id || '')
+            };
+            updateNavAfterLogin();
+            // 카카오 채널 추가
+            if (KAKAO_CHANNEL_ID) {
+              try {
+                Kakao.Channel.addChannel({ channelPublicId: KAKAO_CHANNEL_ID });
+              } catch(e) {}
+            }
+            // 신청 폼이 이미 열려있으면 자동입력만, 아니면 모달 열기
+            if (document.getElementById('apply-modal').style.display === 'flex') {
+              document.getElementById('reg-name').value  = currentUser.name  || '';
+              document.getElementById('reg-email').value = currentUser.email || '';
+              document.getElementById('reg-phone').value = currentUser.phone || '';
+              var btn = document.getElementById('apply-kakao-btn');
+              if (btn) btn.textContent = '✅ 카카오 정보 자동입력 완료';
+            } else {
+              openApplyModal();
+            }
+          },
+          fail: function() {
+            currentUser = { name: '', email: '', phone: '', loginType: 'kakao' };
+            updateNavAfterLogin();
+            openApplyModal();
+          }
+        });
+      },
+      fail: function(err) {
+        console.error(err);
+        alert('카카오 로그인에 실패했습니다. 다시 시도해주세요.');
+      }
+    });
+  }
+
+  /* ── 이메일 로그인 ── */
+  function loginWithEmail() {
+    var email = document.getElementById('email-input').value.trim();
+    var pw    = document.getElementById('pw-input').value;
+    if (!email || !pw) {
+      alert('이메일과 비밀번호를 입력해주세요.'); return;
+    }
+    /* 실제 인증 서버가 없으므로, 이메일만 받아 신청으로 이동합니다.
+       실제 서비스에서는 백엔드 API 호출로 교체하세요. */
+    currentUser = { name: '', email: email, phone: '', loginType: 'email' };
+    updateNavAfterLogin();
+    openApplyModal();
+  }
+
+  /* ── 로그인 후 네비 업데이트 ── */
+  function updateNavAfterLogin() {
+    var nav = document.getElementById('nav-auth');
+    if (!nav || !currentUser) return;
+    var displayName = currentUser.name || currentUser.email || '수강생';
+    nav.innerHTML =
+      '<span class="nav-user-name">' + displayName + ' 님</span>' +
+      '<button class="nav-btn-login" onclick="openApplyModal()">수강신청</button>';
+  }
+
+  /* ── 강의 안내방 입장 ── */
+  function enterRoom() {
+    if (ROOM_LINK) {
+      window.open(ROOM_LINK, '_blank');
+    } else {
+      alert('강의 안내방 링크가 아직 설정되지 않았습니다.\nscript 상단의 ROOM_LINK에 링크를 입력해주세요.');
+    }
+  }
+
+  /* ── 신청 제출 ── */
+  function submitApply() {
+    var name    = document.getElementById('reg-name').value.trim();
+    var phone   = document.getElementById('reg-phone').value.trim();
+    var email   = document.getElementById('reg-email').value.trim();
+    var consent = document.getElementById('reg-consent');
+    if (!name)  { alert('이름을 입력해주세요.'); return; }
+    if (!phone) { alert('전화번호를 입력해주세요.'); return; }
+    if (!email) { alert('이메일을 입력해주세요.'); return; }
+    if (consent && !consent.checked) { alert('개인정보 수집 및 이용에 동의해주세요.'); return; }
+
+    var payload = {
+      name: name,
+      phone: phone,
+      email: email,
+      loginType: currentUser ? currentUser.loginType : 'unknown',
+      kakaoId: currentUser ? (currentUser.kakaoId || '') : '',
+      lecture: '[7/2] 월 100만 원 상위 0.1% AI 반자동화 유튜브 수익화 기초 무료 실전 강의',
+      submittedAt: new Date().toISOString()
+    };
+
+    /* 폼 데이터 전송 (FORM_ENDPOINT가 있으면 전송) */
+    if (FORM_ENDPOINT) {
+      fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(function() {});
+    }
+
+    /* 로컬에도 저장 (중복 방지) */
+    try {
+      var saved = JSON.parse(localStorage.getItem('fc_signups') || '[]');
+      saved.push(payload);
+      localStorage.setItem('fc_signups', JSON.stringify(saved));
+    } catch(e) {}
+
+    closeModal('apply-modal');
+    document.getElementById('success-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  /* ── ESC 키 닫기 ── */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      ['login-modal','apply-modal','success-modal'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && el.style.display !== 'none') closeModal(id);
+      });
+    }
+  });
+
   function toggleAccordion(btn) {
     var item = btn.parentElement;
     item.classList.toggle('open');
