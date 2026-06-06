@@ -1106,7 +1106,7 @@
   ============================================= */
   var KAKAO_APP_KEY  = 'ecdd6aee1b7bc3c1b077470126aee7f8';
   var KAKAO_CHANNEL_ID = '_nxhFAX';
-  var FORM_ENDPOINT  = 'https://script.google.com/macros/s/AKfycbz9lvRsDBVBrJPrQYVZtsIynAkn1lBdrmUFby2h4xQn7ggyRzeU4u7LKPRAE0aZcWX0aQ/exec';
+  var FORM_ENDPOINT  = 'https://script.google.com/macros/s/AKfycbwsPuUFLSVY72jY88v2PkmEFtZkiQwmgrYw0eEv3dpyCxF3okXZ20h3UZmBQOGBJdxfVA/exec';
 
   var currentUser = null; // { name, email, phone, loginType }
 
@@ -1257,7 +1257,8 @@
     if (FORM_ENDPOINT) {
       fetch(FORM_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload)
       }).catch(function() {});
     }
