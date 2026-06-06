@@ -1168,7 +1168,7 @@
   ============================================= */
   var KAKAO_APP_KEY  = 'ecdd6aee1b7bc3c1b077470126aee7f8';
   var KAKAO_CHANNEL_ID = '_nxhFAX';
-  var FORM_ENDPOINT  = '';  // 비워두면 로컬 처리만
+  var FORM_ENDPOINT  = 'https://script.google.com/macros/s/AKfycbzZBpcUI6aXjs2mlV4hplqGhBq3H-qM9OUi2uPgZZtuu_JeEg3cJ2rOELzrBL_FcbCiFQ/exec';
   var ROOM_LINK      = 'https://open.kakao.com/o/gc2orTpi';
 
   var currentUser = null; // { name, email, phone, loginType }
@@ -1326,11 +1326,8 @@
 
     /* 폼 데이터 전송 (FORM_ENDPOINT가 있으면 전송) */
     if (FORM_ENDPOINT) {
-      fetch(FORM_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(function() {});
+      var params = new URLSearchParams(payload).toString();
+      fetch(FORM_ENDPOINT + '?' + params, { mode: 'no-cors' }).catch(function() {});
     }
 
     /* 로컬에도 저장 (중복 방지) */
