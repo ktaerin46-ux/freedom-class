@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로그인 — 프리덤클래스</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+  background: #F3F4F6;
+  color: #1A1A1A;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+}
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+/* ===== HEADER ===== */
+.header {
+  background: #fff;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 14px 24px;
+}
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  background: #DC2626;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900; color: #fff;
+}
+.logo-text { font-size: 18px; font-weight: 900; color: #1A1A1A; letter-spacing: -0.5px; }
+.nav-links { display: flex; gap: 24px; font-size: 14px; font-weight: 600; color: #6B7280; }
+.nav-links a:hover { color: #1A1A1A; }
+@media (max-width: 640px) { .nav-links { display: none; } }
+
+/* ===== MAIN ===== */
+.main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+}
+.login-box { width: 100%; max-width: 400px; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #FEF2F2;
+  color: #DC2626;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+.login-title {
+  font-size: 32px;
+  font-weight: 900;
+  color: #111827;
+  letter-spacing: -1px;
+  margin-bottom: 6px;
+}
+.login-sub {
+  font-size: 14px;
+  color: #6B7280;
+  margin-bottom: 28px;
+}
+
+/* ERROR */
+.error-box {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #DC2626;
+  font-size: 13px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  display: none;
+}
+.error-box.show { display: block; }
+
+/* CARD */
+.card {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  padding: 28px 24px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
+/* BUTTONS */
+.btn-kakao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px;
+  background: #FEE500;
+  color: #191919;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 10px;
+}
+.btn-kakao:hover { background: #F0D800; }
+.btn-kakao:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px;
+  background: #fff;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1.5px solid #E5E7EB;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-google:hover { background: #F9FAFB; }
+.btn-google:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #D1D5DB;
+  font-size: 13px;
+  margin: 14px 0;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #E5E7EB;
+}
+
+.terms {
+  text-align: center;
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-top: 16px;
+  line-height: 1.7;
+}
+
+/* 결제 안내 */
+.purchase-box {
+  margin-top: 20px;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+.purchase-box h3 {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 10px;
+}
+.purchase-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #4B5563;
+}
+.step-num {
+  flex-shrink: 0;
+  width: 20px; height: 20px;
+  background: #DC2626;
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <a href="/home/" class="logo">
+      <div class="logo-icon">F</div>
+      <span class="logo-text">프리덤클래스</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/home/">HOME</a>
+      <a href="/free-lecture/">무료 특강</a>
+      <a href="/">유뿌챌</a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <div class="login-box">
+    <div class="badge">🔐 회원 전용 강의실</div>
+    <h1 class="login-title">로그인</h1>
+    <p class="login-sub">로그인하고 구매한 강의를 확인하세요</p>
+
+    <div class="error-box" id="error-box"></div>
+
+    <div class="card">
+      <!-- 카카오 로그인 -->
+      <button class="btn-kakao" id="btn-kakao" onclick="signInWithKakao()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3C6.48 3 2 6.69 2 11.25c0 2.93 1.87 5.51 4.71 6.98l-1.2 4.47 5.21-3.27c.41.06.83.09 1.28.09 5.52 0 10-3.69 10-8.25S17.52 3 12 3z" fill="#191919"/>
+        </svg>
+        <span id="kakao-label">카카오로 로그인</span>
+      </button>
+
+      <div class="divider">또는</div>
+
+      <!-- 구글 로그인 -->
+      <button class="btn-google" id="btn-google" onclick="signInWithGoogle()">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        <span id="google-label">구글로 로그인</span>
+      </button>
+    </div>
+
+    <p class="terms">로그인하면 이용약관 및 개인정보처리방침에 동의합니다</p>
+
+    <!-- 결제 안내 -->
+    <div class="purchase-box">
+      <h3>강의 구매 방법</h3>
+      <div class="purchase-step">
+        <div class="step-num">1</div>
+        <span>먼저 로그인 해주세요 (카카오 or 구글)</span>
+      </div>
+      <div class="purchase-step">
+        <div class="step-num">2</div>
+        <span>카카오톡 채널로 구매 문의 후 래피드로 결제</span>
+      </div>
+      <div class="purchase-step">
+        <div class="step-num">3</div>
+        <span>관리자 확인 후 강의실이 열립니다 (보통 1~2시간)</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/supabase-config.js"></script>
+<script>
+var loading = null;
+
+// 이미 로그인된 경우 마이페이지로
+window.addEventListener('DOMContentLoaded', async function() {
+  // URL 오류 파라미터 확인
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('error') === 'auth_failed') {
+    showError('로그인에 실패했습니다. 다시 시도해주세요.');
+  }
+
+  try {
+    var s = getSupabase();
+    var res = await s.auth.getUser();
+    if (res.data && res.data.user) {
+      window.location.href = '/mypage/';
+    }
+  } catch(e) {}
+});
+
+function showError(msg) {
+  var el = document.getElementById('error-box');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function setLoadingState(provider) {
+  loading = provider;
+  document.getElementById('btn-kakao').disabled = true;
+  document.getElementById('btn-google').disabled = true;
+
+  if (provider === 'kakao') {
+    document.getElementById('kakao-label').innerHTML = '<span class="spinner" style="border-color:#191919;border-top-color:transparent"></span>';
+  } else {
+    document.getElementById('google-label').innerHTML = '<span class="spinner" style="border-color:#6B7280;border-top-color:transparent"></span>';
+  }
+}
+
+function resetLoadingState() {
+  loading = null;
+  document.getElementById('btn-kakao').disabled = false;
+  document.getElementById('btn-google').disabled = false;
+  document.getElementById('kakao-label').textContent = '카카오로 로그인';
+  document.getElementById('google-label').textContent = '구글로 로그인';
+}
+
+async function signInWithKakao() {
+  if (loading) return;
+  setLoadingState('kakao');
+  document.getElementById('error-box').classList.remove('show');
+  try {
+    var s = getSupabase();
+    var res = await s.auth.signInWithOAuth({
+      provider: 'kakao',
+      options: { redirectTo: window.location.origin + '/auth/callback/' }
+    });
+    if (res.error) {
+      showError(res.error.message);
+      resetLoadingState();
+    }
+  } catch(e) {
+    showError('카카오 로그인 중 오류가 발생했습니다.');
+    resetLoadingState();
+  }
+}
+
+async function signInWithGoogle() {
+  if (loading) return;
+  setLoadingState('google');
+  document.getElementById('error-box').classList.remove('show');
+  try {
+    var s = getSupabase();
+    var res = await s.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + '/auth/callback/' }
+    });
+    if (res.error) {
+      showError(res.error.message);
+      resetLoadingState();
+    }
+  } catch(e) {
+    showError('구글 로그인 중 오류가 발생했습니다.');
+    resetLoadingState();
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 페이지 — 프리덤클래스</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+  background: #F3F4F6;
+  color: #1A1A1A;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+}
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ===== LOADING ===== */
+#loading-screen {
+  position: fixed; inset: 0;
+  background: #F3F4F6;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999;
+}
+.spinner { width: 36px; height: 36px; border: 4px solid #E5E7EB; border-top-color: #DC2626; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== DENIED ===== */
+#denied-screen {
+  position: fixed; inset: 0;
+  background: #F3F4F6;
+  display: none;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 24px;
+}
+#denied-screen h2 { font-size: 20px; font-weight: 900; margin-bottom: 8px; }
+#denied-screen p { font-size: 14px; color: #6B7280; }
+#denied-screen a { color: #DC2626; text-decoration: underline; margin-top: 12px; display: inline-block; }
+
+/* ===== SIDEBAR + LAYOUT ===== */
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid #E5E7EB;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #F3F4F6;
+}
+.logo-row { display: flex; align-items: center; gap: 8px; }
+.logo-icon { width: 30px; height: 30px; background: #DC2626; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; color: #fff; }
+.logo-text { font-size: 15px; font-weight: 900; }
+.sidebar-badge { margin-top: 6px; font-size: 11px; font-weight: 700; color: #DC2626; background: #FEF2F2; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+
+.sidebar-nav { flex: 1; padding: 12px 10px; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.nav-item:hover { background: #F3F4F6; color: #111827; }
+.nav-item.active { background: #FEF2F2; color: #DC2626; }
+.nav-item .nav-icon { width: 20px; text-align: center; font-size: 15px; }
+
+.sidebar-footer { padding: 16px; border-top: 1px solid #F3F4F6; }
+.btn-logout-side {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: #9CA3AF;
+  padding: 8px 12px; border-radius: 8px;
+  border: none; background: none; cursor: pointer; width: 100%;
+  transition: background 0.15s;
+}
+.btn-logout-side:hover { background: #F3F4F6; color: #374151; }
+
+/* ===== MAIN ===== */
+.main-area { margin-left: 220px; min-height: 100vh; }
+.page-header {
+  background: #fff;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.page-title { font-size: 18px; font-weight: 900; color: #111827; }
+.page-sub { font-size: 12px; color: #9CA3AF; margin-top: 2px; }
+
+.content-area { padding: 24px 28px; }
+
+/* ===== TABS ===== */
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ===== STATS ===== */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; padding: 18px 20px; }
+.stat-label { font-size: 12px; font-weight: 600; color: #9CA3AF; margin-bottom: 6px; }
+.stat-value { font-size: 28px; font-weight: 900; color: #111827; }
+.stat-sub { font-size: 12px; color: #6B7280; margin-top: 2px; }
+
+/* ===== TABLE ===== */
+.section-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+.section-head { padding: 16px 20px; border-bottom: 1px solid #F3F4F6; display: flex; align-items: center; justify-content: space-between; }
+.section-head h2 { font-size: 15px; font-weight: 800; }
+.section-head .count { font-size: 13px; color: #9CA3AF; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px 16px; text-align: left; font-size: 13px; }
+th { font-size: 12px; font-weight: 700; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; background: #F9FAFB; border-bottom: 1px solid #E5E7EB; }
+td { border-bottom: 1px solid #F9FAFB; color: #374151; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #F9FAFB; }
+
+.badge-on { display: inline-flex; align-items: center; gap: 4px; background: #DCFCE7; color: #16A34A; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+.badge-off { display: inline-flex; align-items: center; gap: 4px; background: #FEF2F2; color: #DC2626; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+.badge-wait { display: inline-flex; align-items: center; gap: 4px; background: #FEF9C3; color: #CA8A04; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+
+.provider-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 5px; }
+.provider-kakao { background: #FEE500; color: #191919; }
+.provider-google { background: #EFF6FF; color: #1D4ED8; }
+
+/* 버튼 */
+.btn-grant {
+  padding: 5px 12px;
+  background: #DC2626;
+  color: #fff;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-grant:hover { background: #B91C1C; }
+.btn-revoke {
+  padding: 5px 12px;
+  background: #F3F4F6;
+  color: #6B7280;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-revoke:hover { background: #E5E7EB; color: #374151; }
+.btn-primary {
+  padding: 8px 16px;
+  background: #DC2626;
+  color: #fff;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: #B91C1C; }
+.btn-danger {
+  padding: 5px 12px;
+  background: #FEF2F2;
+  color: #DC2626;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #FECACA;
+  cursor: pointer;
+}
+.btn-danger:hover { background: #fee2e2; }
+.btn-edit {
+  padding: 5px 10px;
+  background: #F9FAFB;
+  color: #374151;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #E5E7EB;
+  cursor: pointer;
+}
+.btn-edit:hover { background: #F3F4F6; }
+
+/* ===== FORM AREA ===== */
+.form-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+.form-card h2 { font-size: 15px; font-weight: 800; margin-bottom: 18px; }
+.form-row { margin-bottom: 14px; }
+.form-row label { display: block; font-size: 12px; font-weight: 700; color: #374151; margin-bottom: 6px; }
+.form-row input, .form-row select, .form-row textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 9px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border 0.15s;
+  color: #111827;
+}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: #DC2626; }
+.form-row textarea { resize: vertical; min-height: 70px; }
+.form-actions { display: flex; gap: 10px; margin-top: 4px; }
+
+/* ===== TOAST ===== */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #111827;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 12px;
+  z-index: 9999;
+  transition: transform 0.3s ease;
+  white-space: nowrap;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ===== 모달 ===== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.modal-title { font-size: 18px; font-weight: 900; margin-bottom: 6px; }
+.modal-sub { font-size: 13px; color: #6B7280; margin-bottom: 20px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.btn-cancel { flex: 1; padding: 10px; background: #F3F4F6; color: #374151; border-radius: 10px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; }
+
+/* ===== EMPTY ===== */
+.empty-row td { text-align: center; color: #9CA3AF; font-size: 13px; padding: 32px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .sidebar { width: 60px; }
+  .sidebar .logo-text, .sidebar .sidebar-badge, .nav-item span, .sidebar-footer .btn-logout-side span { display: none; }
+  .main-area { margin-left: 60px; }
+  .content-area { padding: 16px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .page-header { padding: 12px 16px; }
+}
+</style>
+</head>
+<body>
+
+<div id="loading-screen"><div class="spinner"></div></div>
+
+<div id="denied-screen">
+  <div>
+    <h2>🔒 접근 권한 없음</h2>
+    <p>이 페이지는 관리자만 사용할 수 있습니다.</p>
+    <a href="/login/">로그인 페이지로 돌아가기</a>
+  </div>
+</div>
+
+<div class="layout" id="app" style="display:none">
+
+  <!-- 사이드바 -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-row">
+        <div class="logo-icon">F</div>
+        <span class="logo-text">프리덤클래스</span>
+      </div>
+      <span class="sidebar-badge">ADMIN</span>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" id="nav-users" onclick="showTab('users')">
+        <span class="nav-icon">👥</span>
+        <span>회원 관리</span>
+      </button>
+      <button class="nav-item" id="nav-content" onclick="showTab('content')">
+        <span class="nav-icon">📚</span>
+        <span>콘텐츠 관리</span>
+      </button>
+      <button class="nav-item" id="nav-orders" onclick="showTab('orders')">
+        <span class="nav-icon">💰</span>
+        <span>결제 내역</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout-side" onclick="logout()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>로그아웃</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- 메인 -->
+  <div class="main-area">
+
+    <!-- ===== 회원 관리 탭 ===== -->
+    <div class="tab-pane active" id="tab-users">
+      <div class="page-header">
+        <div>
+          <div class="page-title">회원 관리</div>
+          <div class="page-sub">카카오/구글 로그인 회원 목록 · 강의 접근 권한 관리</div>
+        </div>
+        <button class="btn-primary" onclick="loadUsers()">↻ 새로고침</button>
+      </div>
+      <div class="content-area">
+        <div class="stats-grid" id="user-stats">
+          <div class="stat-card"><div class="stat-label">전체 회원</div><div class="stat-value" id="stat-total">—</div></div>
+          <div class="stat-card"><div class="stat-label">강의 활성</div><div class="stat-value" id="stat-access">—</div><div class="stat-sub">has_access = true</div></div>
+          <div class="stat-card"><div class="stat-label">대기 중</div><div class="stat-value" id="stat-wait">—</div><div class="stat-sub">결제 확인 대기</div></div>
+        </div>
+        <div class="section-card">
+          <div class="section-head">
+            <h2>회원 목록</h2>
+            <span class="count" id="user-count">0명</span>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>이메일</th>
+                  <th>이름</th>
+                  <th>로그인 방법</th>
+                  <th>강의 접근</th>
+                  <th>가입일</th>
+                  <th>메모</th>
+                  <th>관리</th>
+                </tr>
+              </thead>
+              <tbody id="user-table-body">
+                <tr class="empty-row"><td colspan="7">불러오는 중...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 콘텐츠 관리 탭 ===== -->
+    <div class="tab-pane" id="tab-content">
+      <div class="page-header">
+        <div>
+          <div class="page-title">콘텐츠 관리</div>
+          <div class="page-sub">상품·강의·전자책 등록 및 관리</div>
+        </div>
+      </div>
+      <div class="content-area">
+
+        <!-- 상품 추가 폼 -->
+        <div class="form-card">
+          <h2>+ 상품 추가 (강의 패키지)</h2>
+          <div class="form-row"><label>상품명</label><input type="text" id="product-title" placeholder="예: 유튜브 올인원 패키지"></div>
+          <div class="form-row"><label>설명</label><textarea id="product-desc" placeholder="상품 설명을 입력하세요"></textarea></div>
+          <div class="form-row"><label>가격 (원)</label><input type="number" id="product-price" placeholder="0" value="0"></div>
+          <div class="form-actions">
+            <button class="btn-primary" onclick="addProduct()">상품 등록</button>
+          </div>
+        </div>
+
+        <!-- 콘텐츠 추가 폼 -->
+        <div class="form-card">
+          <h2>+ 콘텐츠 추가 (강의/전자책)</h2>
+          <div class="form-row"><label>상품 선택</label><select id="content-product-id"><option value="">상품을 선택하세요</option></select></div>
+          <div class="form-row"><label>제목</label><input type="text" id="content-title" placeholder="예: 1강. 유튜브 채널 만들기"></div>
+          <div class="form-row"><label>유형</label>
+            <select id="content-type">
+              <option value="video">동영상 강의 (YouTube)</option>
+              <option value="ebook">전자책 (PDF 링크)</option>
+              <option value="other">기타 자료</option>
+            </select>
+          </div>
+          <div class="form-row"><label>URL</label><input type="text" id="content-url" placeholder="https://youtu.be/... 또는 https://drive.google.com/..."></div>
+          <div class="form-row"><label>설명 (선택)</label><input type="text" id="content-desc" placeholder="간단한 설명"></div>
+          <div class="form-row"><label>순서 번호</label><input type="number" id="content-order" placeholder="1" value="1"></div>
+          <div class="form-actions">
+            <button class="btn-primary" onclick="addContent()">콘텐츠 등록</button>
+          </div>
+        </div>
+
+        <!-- 상품 목록 -->
+        <div class="section-card">
+          <div class="section-head"><h2>등록된 상품</h2><button class="btn-edit" onclick="loadProducts()">새로고침</button></div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>상품명</th><th>설명</th><th>가격</th><th>상태</th><th>콘텐츠 수</th><th>관리</th></tr></thead>
+              <tbody id="product-table-body"><tr class="empty-row"><td colspan="6">불러오는 중...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 콘텐츠 목록 -->
+        <div class="section-card">
+          <div class="section-head"><h2>등록된 콘텐츠</h2><button class="btn-edit" onclick="loadContents()">새로고침</button></div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>제목</th><th>상품</th><th>유형</th><th>순서</th><th>상태</th><th>관리</th></tr></thead>
+              <tbody id="content-table-body"><tr class="empty-row"><td colspan="6">불러오는 중...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== 결제 내역 탭 ===== -->
+    <div class="tab-pane" id="tab-orders">
+      <div class="page-header">
+        <div>
+          <div class="page-title">결제 내역</div>
+          <div class="page-sub">수동 결제 기록 관리 (래피드 결제 확인 후 입력)</div>
+        </div>
+        <button class="btn-primary" onclick="openAddOrderModal()">+ 결제 기록 추가</button>
+      </div>
+      <div class="content-area">
+        <div class="section-card">
+          <div class="section-head"><h2>결제 목록</h2><button class="btn-edit" onclick="loadOrders()">새로고침</button></div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>이메일</th><th>이름</th><th>상품</th><th>금액</th><th>결제일</th><th>결제 방법</th><th>메모</th><th>관리</th></tr></thead>
+              <tbody id="order-table-body"><tr class="empty-row"><td colspan="8">불러오는 중...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 접근 권한 메모 편집 모달 -->
+<div class="modal-overlay" id="note-modal">
+  <div class="modal-box">
+    <div class="modal-title">결제 메모 편집</div>
+    <div class="modal-sub" id="note-modal-email"></div>
+    <div class="form-row"><label>메모 (래피드 결제 ID, 날짜 등)</label><textarea id="note-input" style="min-height:80px"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeNoteModal()">취소</button>
+      <button class="btn-primary" onclick="saveNote()" style="flex:1">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 결제 기록 추가 모달 -->
+<div class="modal-overlay" id="order-modal">
+  <div class="modal-box">
+    <div class="modal-title">결제 기록 추가</div>
+    <div class="modal-sub">래피드 결제 확인 후 수동으로 기록하세요</div>
+    <div class="form-row"><label>이메일 *</label><input type="email" id="order-email" placeholder="구매자 이메일"></div>
+    <div class="form-row"><label>이름</label><input type="text" id="order-name" placeholder="구매자 이름"></div>
+    <div class="form-row"><label>상품</label>
+      <select id="order-product-id">
+        <option value="">상품 선택</option>
+      </select>
+    </div>
+    <div class="form-row"><label>금액 (원) *</label><input type="number" id="order-amount" placeholder="0"></div>
+    <div class="form-row"><label>결제 방법</label><input type="text" id="order-method" value="래피드(Rapyd)" placeholder="래피드(Rapyd)"></div>
+    <div class="form-row"><label>결제 참조 ID</label><input type="text" id="order-ref" placeholder="래피드 결제 ID"></div>
+    <div class="form-row"><label>메모</label><input type="text" id="order-notes" placeholder="특이사항"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeOrderModal()">취소</button>
+      <button class="btn-primary" onclick="saveOrder()" style="flex:1">기록 저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/supabase-config.js"></script>
+<script>
+/* ===== 관리자 이메일 목록 (여기에 관리자 이메일 추가) ===== */
+var ADMIN_EMAILS = [
+  'ktaerin46@gmail.com'
+  /* 필요하면 더 추가: 'another@email.com' */
+];
+
+var currentNoteUserId = null;
+var s = null;
+
+/* ===== 탭 전환 ===== */
+function showTab(tab) {
+  document.querySelectorAll('.tab-pane').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('nav-' + tab).classList.add('active');
+
+  if (tab === 'users') loadUsers();
+  if (tab === 'content') { loadProducts(); loadContents(); }
+  if (tab === 'orders') loadOrders();
+}
+
+/* ===== TOAST ===== */
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+/* ===== 날짜 포맷 ===== */
+function fmtDate(str) {
+  if (!str) return '—';
+  var d = new Date(str);
+  return d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ===== 회원 목록 ===== */
+async function loadUsers() {
+  var res = await s.from('user_profiles').select('*').order('created_at', { ascending: false });
+  var users = res.data || [];
+
+  document.getElementById('stat-total').textContent = users.length;
+  document.getElementById('stat-access').textContent = users.filter(function(u){return u.has_access;}).length;
+  document.getElementById('stat-wait').textContent = users.filter(function(u){return !u.has_access;}).length;
+  document.getElementById('user-count').textContent = users.length + '명';
+
+  var tbody = document.getElementById('user-table-body');
+  if (users.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">아직 가입한 회원이 없습니다</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = users.map(function(u) {
+    var providerBadge = u.provider === 'kakao'
+      ? '<span class="provider-badge provider-kakao">카카오</span>'
+      : '<span class="provider-badge provider-google">구글</span>';
+    var accessBadge = u.has_access
+      ? '<span class="badge-on">✓ 활성</span>'
+      : '<span class="badge-off">✗ 대기</span>';
+    var grantBtn = u.has_access
+      ? '<button class="btn-revoke" onclick="setAccess(\'' + u.id + '\', false)">비활성화</button>'
+      : '<button class="btn-grant" onclick="setAccess(\'' + u.id + '\', true)">강의 열기</button>';
+
+    return '<tr>' +
+      '<td>' + escHtml(u.email || '—') + '</td>' +
+      '<td>' + escHtml(u.full_name || '—') + '</td>' +
+      '<td>' + providerBadge + '</td>' +
+      '<td>' + accessBadge + '</td>' +
+      '<td>' + fmtDate(u.created_at) + '</td>' +
+      '<td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:#9CA3AF">' + escHtml(u.access_note || '') + '</td>' +
+      '<td style="display:flex;gap:6px;align-items:center">' + grantBtn + '<button class="btn-edit" onclick="openNoteModal(\'' + u.id + '\',\'' + escHtml(u.email||'') + '\',\'' + escHtml(u.access_note||'') + '\')">메모</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+async function setAccess(userId, value) {
+  var updateData = {
+    has_access: value,
+    updated_at: new Date().toISOString()
+  };
+  if (value) updateData.access_granted_at = new Date().toISOString();
+
+  var res = await s.from('user_profiles').update(updateData).eq('id', userId);
+  if (res.error) {
+    showToast('오류: ' + res.error.message);
+  } else {
+    showToast(value ? '강의 접근 권한이 활성화되었습니다.' : '접근 권한이 비활성화되었습니다.');
+    loadUsers();
+  }
+}
+
+/* 메모 모달 */
+function openNoteModal(userId, email, note) {
+  currentNoteUserId = userId;
+  document.getElementById('note-modal-email').textContent = email;
+  document.getElementById('note-input').value = note || '';
+  document.getElementById('note-modal').classList.add('show');
+}
+function closeNoteModal() {
+  document.getElementById('note-modal').classList.remove('show');
+  currentNoteUserId = null;
+}
+async function saveNote() {
+  if (!currentNoteUserId) return;
+  var note = document.getElementById('note-input').value.trim();
+  var res = await s.from('user_profiles').update({ access_note: note, updated_at: new Date().toISOString() }).eq('id', currentNoteUserId);
+  if (res.error) {
+    showToast('오류: ' + res.error.message);
+  } else {
+    showToast('메모가 저장되었습니다.');
+    closeNoteModal();
+    loadUsers();
+  }
+}
+
+/* ===== 상품 ===== */
+async function loadProducts() {
+  var res = await s.from('products').select('*, content_items(count)').order('created_at', { ascending: false });
+  var products = res.data || [];
+
+  /* 상품 선택 드롭다운 동기화 */
+  var selects = [document.getElementById('content-product-id'), document.getElementById('order-product-id')];
+  selects.forEach(function(sel) {
+    var first = sel.options[0];
+    sel.innerHTML = '';
+    sel.appendChild(first);
+    products.forEach(function(p) {
+      var opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.title;
+      sel.appendChild(opt);
+    });
+  });
+
+  var tbody = document.getElementById('product-table-body');
+  if (products.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">등록된 상품이 없습니다</td></tr>';
+    return;
+  }
+  tbody.innerHTML = products.map(function(p) {
+    var count = (p.content_items && p.content_items[0] && p.content_items[0].count) || 0;
+    return '<tr>' +
+      '<td style="font-weight:700">' + escHtml(p.title) + '</td>' +
+      '<td style="color:#6B7280;font-size:12px">' + escHtml(p.description || '') + '</td>' +
+      '<td>' + (p.price ? Number(p.price).toLocaleString() + '원' : '무료') + '</td>' +
+      '<td>' + (p.is_active ? '<span class="badge-on">활성</span>' : '<span class="badge-off">비활성</span>') + '</td>' +
+      '<td>' + count + '개</td>' +
+      '<td><button class="btn-danger" onclick="deleteProduct(\'' + p.id + '\')">삭제</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+async function addProduct() {
+  var title = document.getElementById('product-title').value.trim();
+  var desc = document.getElementById('product-desc').value.trim();
+  var price = parseInt(document.getElementById('product-price').value) || 0;
+  if (!title) { showToast('상품명을 입력하세요'); return; }
+
+  var res = await s.from('products').insert({ title: title, description: desc || null, price: price });
+  if (res.error) { showToast('오류: ' + res.error.message); return; }
+
+  showToast('상품이 등록되었습니다.');
+  document.getElementById('product-title').value = '';
+  document.getElementById('product-desc').value = '';
+  document.getElementById('product-price').value = '0';
+  loadProducts();
+}
+
+async function deleteProduct(id) {
+  if (!confirm('정말 삭제하시겠습니까? 연결된 콘텐츠도 모두 삭제됩니다.')) return;
+  var res = await s.from('products').delete().eq('id', id);
+  if (res.error) { showToast('오류: ' + res.error.message); return; }
+  showToast('상품이 삭제되었습니다.');
+  loadProducts();
+  loadContents();
+}
+
+/* ===== 콘텐츠 ===== */
+async function loadContents() {
+  var res = await s.from('content_items').select('*, products(title)').order('order_index', { ascending: true });
+  var items = res.data || [];
+
+  var tbody = document.getElementById('content-table-body');
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">등록된 콘텐츠가 없습니다</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(function(c) {
+    var typeLabel = c.type === 'video' ? '▶ 동영상' : c.type === 'ebook' ? '📄 전자책' : '🔗 기타';
+    return '<tr>' +
+      '<td style="font-weight:600">' + escHtml(c.title) + '</td>' +
+      '<td style="font-size:12px;color:#6B7280">' + escHtml((c.products && c.products.title) || '—') + '</td>' +
+      '<td><span style="font-size:12px">' + typeLabel + '</span></td>' +
+      '<td>' + (c.order_index || 0) + '</td>' +
+      '<td>' + (c.is_active ? '<span class="badge-on">활성</span>' : '<span class="badge-off">비활성</span>') + '</td>' +
+      '<td><button class="btn-danger" onclick="deleteContent(\'' + c.id + '\')">삭제</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+async function addContent() {
+  var productId = document.getElementById('content-product-id').value;
+  var title = document.getElementById('content-title').value.trim();
+  var type = document.getElementById('content-type').value;
+  var url = document.getElementById('content-url').value.trim();
+  var desc = document.getElementById('content-desc').value.trim();
+  var order = parseInt(document.getElementById('content-order').value) || 1;
+
+  if (!productId) { showToast('상품을 선택하세요'); return; }
+  if (!title) { showToast('제목을 입력하세요'); return; }
+  if (!url) { showToast('URL을 입력하세요'); return; }
+
+  var res = await s.from('content_items').insert({
+    product_id: productId, title: title, type: type,
+    url: url, description: desc || null, order_index: order
+  });
+  if (res.error) { showToast('오류: ' + res.error.message); return; }
+
+  showToast('콘텐츠가 등록되었습니다.');
+  document.getElementById('content-title').value = '';
+  document.getElementById('content-url').value = '';
+  document.getElementById('content-desc').value = '';
+  document.getElementById('content-order').value = '1';
+  loadContents();
+}
+
+async function deleteContent(id) {
+  if (!confirm('삭제하시겠습니까?')) return;
+  var res = await s.from('content_items').delete().eq('id', id);
+  if (res.error) { showToast('오류: ' + res.error.message); return; }
+  showToast('삭제되었습니다.');
+  loadContents();
+}
+
+/* ===== 결제 내역 ===== */
+async function loadOrders() {
+  var res = await s.from('orders').select('*').order('created_at', { ascending: false });
+  var orders = res.data || [];
+
+  var tbody = document.getElementById('order-table-body');
+  if (orders.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="8">기록된 결제 내역이 없습니다</td></tr>';
+    return;
+  }
+  tbody.innerHTML = orders.map(function(o) {
+    return '<tr>' +
+      '<td>' + escHtml(o.user_email || '') + '</td>' +
+      '<td>' + escHtml(o.user_name || '—') + '</td>' +
+      '<td style="font-size:12px">' + escHtml(o.product_title || '—') + '</td>' +
+      '<td style="font-weight:700">' + Number(o.amount||0).toLocaleString() + '원</td>' +
+      '<td>' + fmtDate(o.created_at) + '</td>' +
+      '<td style="font-size:12px">' + escHtml(o.payment_method || '래피드') + '</td>' +
+      '<td style="font-size:12px;color:#9CA3AF;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(o.notes || '') + '</td>' +
+      '<td><button class="btn-danger" onclick="deleteOrder(\'' + o.id + '\')">삭제</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function openAddOrderModal() {
+  loadProducts();
+  document.getElementById('order-modal').classList.add('show');
+}
+function closeOrderModal() {
+  document.getElementById('order-modal').classList.remove('show');
+}
+
+async function saveOrder() {
+  var email = document.getElementById('order-email').value.trim();
+  var name = document.getElementById('order-name').value.trim();
+  var productId = document.getElementById('order-product-id').value;
+  var amount = parseInt(document.getElementById('order-amount').value) || 0;
+  var method = document.getElementById('order-method').value.trim();
+  var ref = document.getElementById('order-ref').value.trim();
+  var notes = document.getElementById('order-notes').value.trim();
+
+  if (!email) { showToast('이메일을 입력하세요'); return; }
+  if (!amount) { showToast('금액을 입력하세요'); return; }
+
+  /* 상품 타이틀 조회 */
+  var productTitle = '';
+  if (productId) {
+    var pRes = await s.from('products').select('title').eq('id', productId).single();
+    if (pRes.data) productTitle = pRes.data.title;
+  }
+
+  /* 해당 이메일의 user_id 조회 */
+  var userId = null;
+  var uRes = await s.from('user_profiles').select('id').eq('email', email).single();
+  if (uRes.data) userId = uRes.data.id;
+
+  var insertData = {
+    user_email: email,
+    user_name: name || null,
+    product_id: productId || null,
+    product_title: productTitle || null,
+    amount: amount,
+    payment_method: method || '래피드(Rapyd)',
+    payment_ref: ref || null,
+    notes: notes || null,
+    user_id: userId
+  };
+
+  var res = await s.from('orders').insert(insertData);
+  if (res.error) { showToast('오류: ' + res.error.message); return; }
+
+  showToast('결제 기록이 저장되었습니다.');
+  closeOrderModal();
+  loadOrders();
+}
+
+async function deleteOrder(id) {
+  if (!confirm('삭제하시겠습니까?')) return;
+  var res = await s.from('orders').delete().eq('id', id);
+  if (res.error) { showToast('오류: ' + res.error.message); return; }
+  showToast('삭제되었습니다.');
+  loadOrders();
+}
+
+/* ===== LOGOUT ===== */
+async function logout() {
+  await s.auth.signOut();
+  window.location.href = '/login/';
+}
+
+/* ===== INIT ===== */
+(async function() {
+  s = getSupabase();
+
+  var userRes = await s.auth.getUser();
+  if (!userRes.data || !userRes.data.user) {
+    window.location.href = '/login/';
+    return;
+  }
+
+  var user = userRes.data.user;
+  var email = user.email || '';
+
+  /* 관리자 이메일 체크 */
+  if (ADMIN_EMAILS.indexOf(email) === -1) {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('denied-screen').style.display = 'flex';
+    return;
+  }
+
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+
+  await loadUsers();
+})();
+</script>
+</body>
+</html>

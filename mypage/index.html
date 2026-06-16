@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 강의실 — 프리덤클래스</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+  background: #F3F4F6;
+  color: #1A1A1A;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+}
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+/* ===== LOADING ===== */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  background: #F3F4F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.spinner {
+  width: 36px; height: 36px;
+  border: 4px solid #E5E7EB;
+  border-top-color: #DC2626;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== HEADER ===== */
+.header {
+  background: #fff;
+  border-bottom: 1px solid #E5E7EB;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  background: #DC2626;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900; color: #fff;
+}
+.logo-text { font-size: 16px; font-weight: 900; color: #1A1A1A; }
+
+.header-right { display: flex; align-items: center; gap: 12px; }
+.user-name { font-size: 13px; color: #6B7280; display: none; }
+@media (min-width: 480px) { .user-name { display: block; } }
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #6B7280;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.btn-logout:hover { background: #F3F4F6; color: #374151; }
+
+/* ===== MAIN ===== */
+.main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+/* ===== 환영 카드 ===== */
+.welcome-card {
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  border-radius: 20px;
+  padding: 24px;
+  color: #fff;
+  margin-bottom: 24px;
+}
+.welcome-small { font-size: 13px; opacity: 0.8; margin-bottom: 4px; }
+.welcome-title { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 4px; }
+.welcome-sub { font-size: 12px; opacity: 0.65; }
+
+/* ===== 대기 화면 ===== */
+.waiting-card {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  padding: 48px 24px;
+  text-align: center;
+}
+.lock-icon {
+  width: 56px; height: 56px;
+  background: #F3F4F6;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 24px;
+}
+.waiting-title { font-size: 18px; font-weight: 800; color: #111827; margin-bottom: 10px; }
+.waiting-desc { font-size: 14px; color: #6B7280; line-height: 1.8; }
+.waiting-desc strong { color: #374151; }
+.waiting-contact { margin-top: 16px; font-size: 12px; color: #9CA3AF; }
+
+/* ===== 콘텐츠 없음 ===== */
+.empty-card {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  padding: 48px 24px;
+  text-align: center;
+}
+.empty-card p { font-size: 14px; color: #9CA3AF; }
+
+/* ===== 상품 섹션 ===== */
+.product-section { margin-bottom: 32px; }
+.section-title { font-size: 18px; font-weight: 900; color: #111827; margin-bottom: 4px; }
+.section-desc { font-size: 13px; color: #9CA3AF; margin-bottom: 14px; }
+
+/* 콘텐츠 아이템 */
+.content-item {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.content-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.content-header:hover { background: #F9FAFB; }
+
+.icon-box {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+.icon-video { background: #FEF2F2; }
+.icon-ebook { background: #F0FDF4; }
+.icon-other { background: #EFF6FF; }
+
+.content-info { flex: 1; min-width: 0; }
+.content-title { font-size: 14px; font-weight: 700; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.content-desc { font-size: 12px; color: #9CA3AF; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.chevron { color: #D1D5DB; font-size: 14px; flex-shrink: 0; transition: transform 0.2s; }
+.chevron.open { transform: rotate(180deg); }
+
+/* 비디오 플레이어 */
+.video-player {
+  border-top: 1px solid #F3F4F6;
+  background: #000;
+  display: none;
+}
+.video-player.show { display: block; }
+.video-embed {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+}
+.video-embed iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+.video-fallback {
+  padding: 16px;
+  text-align: center;
+  color: #9CA3AF;
+  font-size: 13px;
+}
+.video-fallback a { color: #DC2626; text-decoration: underline; }
+
+/* 전자책 링크 */
+.ebook-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.ebook-link:hover { background: #F9FAFB; }
+.ebook-link .content-info { flex: 1; }
+.ebook-arrow { font-size: 12px; color: #DC2626; flex-shrink: 0; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- 로딩 -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+</div>
+
+<!-- 헤더 -->
+<header class="header">
+  <div class="header-inner">
+    <a href="/home/" class="logo">
+      <div class="logo-icon">F</div>
+      <span class="logo-text">프리덤클래스</span>
+    </a>
+    <div class="header-right">
+      <span class="user-name" id="user-name"></span>
+      <button class="btn-logout" onclick="logout()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        로그아웃
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- 메인 -->
+<main class="main" id="main-content" style="display:none">
+
+  <!-- 환영 카드 -->
+  <div class="welcome-card">
+    <p class="welcome-small">안녕하세요 👋</p>
+    <h1 class="welcome-title" id="welcome-name">님의 강의실</h1>
+    <p class="welcome-sub" id="welcome-sub"></p>
+  </div>
+
+  <!-- 접근 대기 -->
+  <div class="waiting-card" id="waiting-section" style="display:none">
+    <div class="lock-icon">🔒</div>
+    <h2 class="waiting-title">결제 확인 중</h2>
+    <p class="waiting-desc">
+      강의 접근 권한을 확인하고 있습니다.<br>
+      래피드에서 결제가 완료되면 관리자가 수동으로<br>
+      확인 후 활성화해드립니다.<br>
+      <strong>보통 1~2시간 내 활성화됩니다.</strong>
+    </p>
+    <p class="waiting-contact">문의: 카카오톡 채널 또는 이메일로 연락해주세요</p>
+  </div>
+
+  <!-- 콘텐츠 목록 -->
+  <div id="content-section" style="display:none">
+    <!-- JS로 동적 생성 -->
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/supabase-config.js"></script>
+<script>
+function extractYoutubeEmbed(url) {
+  var patterns = [
+    /youtu\.be\/([^?&\s]+)/,
+    /youtube\.com\/watch\?v=([^&\s]+)/,
+    /youtube\.com\/embed\/([^?&\s]+)/
+  ];
+  for (var i = 0; i < patterns.length; i++) {
+    var m = url.match(patterns[i]);
+    if (m) return 'https://www.youtube.com/embed/' + m[1];
+  }
+  return null;
+}
+
+function createVideoItem(item) {
+  var embedUrl = extractYoutubeEmbed(item.url);
+  var id = 'item-' + item.id;
+  var div = document.createElement('div');
+  div.className = 'content-item';
+
+  var playerHtml = embedUrl
+    ? '<div class="video-embed"><iframe src="' + embedUrl + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>'
+    : '<div class="video-fallback">영상을 불러올 수 없습니다. <a href="' + item.url + '" target="_blank">직접 보기</a></div>';
+
+  div.innerHTML =
+    '<div class="content-header" onclick="toggleVideo(\'' + id + '\')">' +
+      '<div class="icon-box icon-video">▶️</div>' +
+      '<div class="content-info">' +
+        '<div class="content-title">' + escHtml(item.title) + '</div>' +
+        (item.description ? '<div class="content-desc">' + escHtml(item.description) + '</div>' : '') +
+      '</div>' +
+      '<span class="chevron" id="chevron-' + id + '">▼</span>' +
+    '</div>' +
+    '<div class="video-player" id="player-' + id + '">' + playerHtml + '</div>';
+
+  return div;
+}
+
+function createEbookItem(item) {
+  var div = document.createElement('div');
+  div.className = 'content-item';
+  var a = document.createElement('a');
+  a.className = 'ebook-link';
+  a.href = item.url;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.innerHTML =
+    '<div class="icon-box icon-ebook">📄</div>' +
+    '<div class="content-info">' +
+      '<div class="content-title">' + escHtml(item.title) + '</div>' +
+      (item.description ? '<div class="content-desc">' + escHtml(item.description) + '</div>' : '') +
+    '</div>' +
+    '<span class="ebook-arrow">다운로드 →</span>';
+  div.appendChild(a);
+  return div;
+}
+
+function createOtherItem(item) {
+  var div = document.createElement('div');
+  div.className = 'content-item';
+  var a = document.createElement('a');
+  a.className = 'ebook-link';
+  a.href = item.url;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.innerHTML =
+    '<div class="icon-box icon-other">🔗</div>' +
+    '<div class="content-info">' +
+      '<div class="content-title">' + escHtml(item.title) + '</div>' +
+      (item.description ? '<div class="content-desc">' + escHtml(item.description) + '</div>' : '') +
+    '</div>' +
+    '<span class="ebook-arrow">열기 →</span>';
+  div.appendChild(a);
+  return div;
+}
+
+function toggleVideo(id) {
+  var player = document.getElementById('player-' + id);
+  var chevron = document.getElementById('chevron-' + id);
+  if (player.classList.contains('show')) {
+    player.classList.remove('show');
+    chevron.classList.remove('open');
+  } else {
+    player.classList.add('show');
+    chevron.classList.add('open');
+  }
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+async function logout() {
+  var s = getSupabase();
+  await s.auth.signOut();
+  window.location.href = '/login/';
+}
+
+(async function() {
+  var s = getSupabase();
+
+  // 로그인 확인
+  var userRes = await s.auth.getUser();
+  if (!userRes.data || !userRes.data.user) {
+    window.location.href = '/login/';
+    return;
+  }
+  var user = userRes.data.user;
+
+  // 프로필 조회
+  var profileRes = await s.from('user_profiles').select('*').eq('id', user.id).single();
+  var profile = profileRes.data;
+
+  // 네임 표시
+  var name = (profile && profile.full_name) || user.email || '회원';
+  document.getElementById('user-name').textContent = name;
+  document.getElementById('welcome-name').textContent = name + '님의 강의실';
+  var provider = (profile && profile.provider) || (user.app_metadata && user.app_metadata.provider) || '';
+  document.getElementById('welcome-sub').textContent =
+    (provider === 'kakao' ? '카카오' : '구글') + '로 로그인됨 · ' + (user.email || '');
+
+  // 로딩 숨기기 / 콘텐츠 표시
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+
+  // 접근 권한 확인
+  if (!profile || !profile.has_access) {
+    document.getElementById('waiting-section').style.display = 'block';
+    return;
+  }
+
+  // 콘텐츠 로드
+  var productsRes = await s
+    .from('products')
+    .select('*, content_items(*)')
+    .eq('is_active', true)
+    .order('created_at', { ascending: true });
+
+  var products = productsRes.data || [];
+  var contentSection = document.getElementById('content-section');
+
+  if (products.length === 0) {
+    contentSection.style.display = 'block';
+    contentSection.innerHTML = '<div class="empty-card"><p>아직 등록된 강의가 없습니다.</p></div>';
+    return;
+  }
+
+  contentSection.style.display = 'block';
+
+  products.forEach(function(product) {
+    var items = (product.content_items || [])
+      .filter(function(c) { return c.is_active; })
+      .sort(function(a, b) { return a.order_index - b.order_index; });
+
+    var section = document.createElement('div');
+    section.className = 'product-section';
+    section.innerHTML =
+      '<h2 class="section-title">' + escHtml(product.title) + '</h2>' +
+      (product.description ? '<p class="section-desc">' + escHtml(product.description) + '</p>' : '');
+
+    if (items.length === 0) {
+      section.innerHTML += '<p style="font-size:13px;color:#9CA3AF;">콘텐츠가 아직 없습니다.</p>';
+    } else {
+      items.forEach(function(item) {
+        if (item.type === 'video') {
+          section.appendChild(createVideoItem(item));
+        } else if (item.type === 'ebook') {
+          section.appendChild(createEbookItem(item));
+        } else {
+          section.appendChild(createOtherItem(item));
+        }
+      });
+    }
+
+    contentSection.appendChild(section);
+  });
+})();
+</script>
+</body>
+</html>

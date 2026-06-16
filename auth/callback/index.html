@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로그인 중... — 프리덤클래스</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  background: #F3F4F6;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
+}
+.center {
+  text-align: center;
+  color: #6B7280;
+}
+.spinner {
+  width: 40px; height: 40px;
+  border: 4px solid #E5E7EB;
+  border-top-color: #DC2626;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.msg { font-size: 15px; font-weight: 600; color: #374151; }
+.sub { font-size: 13px; color: #9CA3AF; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="center">
+  <div class="spinner"></div>
+  <p class="msg">로그인 처리 중입니다...</p>
+  <p class="sub">잠시만 기다려주세요</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/supabase-config.js"></script>
+<script>
+(async function() {
+  try {
+    var s = getSupabase();
+
+    // URL의 hash/code를 세션으로 교환
+    var res = await s.auth.exchangeCodeForSession(window.location.href);
+
+    if (res.error) {
+      console.error('Auth callback error:', res.error);
+      window.location.href = '/login/?error=auth_failed';
+      return;
+    }
+
+    // 로그인 성공 — user_profiles 테이블에 저장/업데이트
+    var userRes = await s.auth.getUser();
+    var user = userRes.data && userRes.data.user;
+
+    if (user) {
+      await s.from('user_profiles').upsert({
+        id: user.id,
+        email: user.email,
+        full_name: user.user_metadata && (user.user_metadata.full_name || user.user_metadata.name) || null,
+        avatar_url: user.user_metadata && user.user_metadata.avatar_url || null,
+        provider: user.app_metadata && user.app_metadata.provider || 'unknown',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
+    }
+
+    // 마이페이지로 이동
+    window.location.href = '/mypage/';
+  } catch(e) {
+    console.error('Callback error:', e);
+    window.location.href = '/login/?error=auth_failed';
+  }
+})();
+</script>
+</body>
+</html>

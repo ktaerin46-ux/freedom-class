@@ -444,8 +444,9 @@
         <a href="../index.html">유뿌챌</a>
       </nav>
       <div class="nav-auth-btns" id="nav-auth">
-        <button class="nav-btn-login" onclick="openLoginModal()">로그인</button>
-        <button class="nav-btn-signup" onclick="openApplyModal()">회원가입</button>
+        <a href="/login/" class="nav-btn-login" id="nav-login-btn">로그인</a>
+        <a href="/mypage/" class="nav-btn-signup" id="nav-mypage-btn" style="display:none">내 강의실</a>
+        <button class="nav-btn-signup" onclick="openApplyModal()" id="nav-apply-btn">회원가입</button>
       </div>
     </div>
   </header>
@@ -608,5 +609,20 @@
 </div>
 
 <script src="../auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../supabase-config.js"></script>
+<script>
+(async function() {
+  try {
+    var s = getSupabase();
+    var res = await s.auth.getUser();
+    if (res.data && res.data.user) {
+      document.getElementById('nav-login-btn').style.display = 'none';
+      document.getElementById('nav-apply-btn').style.display = 'none';
+      document.getElementById('nav-mypage-btn').style.display = 'inline-flex';
+    }
+  } catch(e) {}
+})();
+</script>
 </body>
 </html>
