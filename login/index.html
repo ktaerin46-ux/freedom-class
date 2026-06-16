@@ -338,7 +338,12 @@ async function signInWithKakao() {
     var s = getSupabase();
     var res = await s.auth.signInWithOAuth({
       provider: 'kakao',
-      options: { redirectTo: window.location.origin + '/auth/callback/' }
+      options: {
+        redirectTo: window.location.origin + '/auth/callback/',
+        queryParams: {
+          channel_public_id: '_nxhFAX'  /* 카카오 채널 추가 팝업 */
+        }
+      }
     });
     if (res.error) {
       showError(res.error.message);
