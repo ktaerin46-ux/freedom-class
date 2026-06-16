@@ -773,7 +773,9 @@ function openApplyModal() {
   document.body.style.overflow = 'hidden';
 }
 function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
+  var el = document.getElementById(id);
+  el.classList.remove('open');
+  el.style.display = '';
   document.body.style.overflow = '';
 }
 function onOverlayClick(e, id) {
