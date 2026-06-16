@@ -3,416 +3,446 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FREEDOM CLASS — 유튜브로 자유를 만드는 클래스</title>
+<title>프리덤클래스 — 유튜브로 경제적 자유를</title>
 <meta name="description" content="유튜브 시크릿 전자책, 유뿌챌 1기 등 유튜브 성장 프로그램을 만나보세요.">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
-    background: #FFFFFF;
-    color: #1A1A1A;
-    line-height: 1.6;
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    word-break: keep-all;
-    padding-top: 56px;
-  }
-  a { text-decoration: none; color: inherit; }
-  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+  background: #fff;
+  color: #1A1A1A;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+  padding-top: 104px; /* 헤더 두 줄 높이 */
+}
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 
-  /* ===== PROMO BANNER ===== */
-  .promo-banner {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 110;
-    background: #1E3A8A;
-    color: #FFFFFF;
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    text-decoration: none;
-  }
-  .promo-banner .promo-text {
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    text-align: center;
-    color: #FFFFFF;
-  }
-  .promo-banner .promo-text .arrow {
-    display: inline-block;
-    margin-left: 6px;
-    transition: transform 0.2s ease;
-  }
-  .promo-banner:hover .promo-text .arrow { transform: translateX(4px); }
-  .promo-banner .promo-actions {
-    position: absolute;
-    right: 24px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.85);
-  }
-  .promo-banner .promo-hide {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-  }
-  .promo-banner .promo-hide:hover { color: #FFFFFF; }
-  .promo-banner .promo-hide .check {
-    width: 14px;
-    height: 14px;
-    border: 1.5px solid rgba(255, 255, 255, 0.7);
-    border-radius: 3px;
-    display: inline-block;
-    line-height: 11px;
-    text-align: center;
-    font-size: 10px;
-    color: transparent;
-  }
-  .promo-banner .promo-close {
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
-    color: rgba(255, 255, 255, 0.85);
-    padding: 0 4px;
-  }
-  .promo-banner .promo-close:hover { color: #FFFFFF; }
-  body.promo-on { padding-top: 100px; }
-  body.promo-on .top-header { top: 44px; }
-  @media (max-width: 640px) {
-    .promo-banner { padding: 10px 14px; }
-    .promo-banner .promo-text { font-size: 12px; padding-right: 70px; }
-    .promo-banner .promo-actions { right: 12px; gap: 8px; font-size: 11px; }
-    .promo-banner .promo-hide .label { display: none; }
-    body.promo-on { padding-top: 96px; }
-    body.promo-on .top-header { top: 40px; }
-  }
+/* ============================================================
+   PROMO BANNER
+   ============================================================ */
+.promo-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: #1E3A8A;
+  color: #fff;
+  padding: 11px 24px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.promo-banner.show { display: flex; }
+.promo-text { font-size: 13px; font-weight: 700; color: #fff; }
+.promo-text strong { color: #FCD34D; }
+.promo-actions {
+  position: absolute; right: 20px;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 12px; color: rgba(255,255,255,0.8);
+}
+.promo-hide { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.promo-hide:hover { color: #fff; }
+.promo-check {
+  width: 13px; height: 13px;
+  border: 1.5px solid rgba(255,255,255,0.6);
+  border-radius: 3px; display: inline-block;
+}
+.promo-close { font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 4px; }
+.promo-close:hover { color: #fff; }
 
-  /* ===== TOP HEADER ===== */
-  .top-header {
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: saturate(180%) blur(12px);
-    -webkit-backdrop-filter: saturate(180%) blur(12px);
-    color: #1A1A1A;
-    padding: 12px 24px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    border-bottom: 1px solid #F0F0F0;
-  }
-  .top-header .nav-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-  .top-header .logo {
-    display: inline-flex;
-    align-items: center;
-    line-height: 1;
-  }
-  .top-header .logo-main {
-    font-size: 22px;
-    font-weight: 900;
-    letter-spacing: -0.5px;
-    color: #1A1A1A;
-  }
-  .top-header .nav-menu {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-    font-size: 14px;
-    font-weight: 600;
-  }
-  .top-header .nav-menu a {
-    color: #4B5563;
-    transition: color 0.15s ease;
-  }
-  .top-header .nav-menu a:hover {
-    color: #2563EB;
-  }
-  .top-header .nav-menu a.nav-active {
-    color: #2563EB;
-    font-weight: 800;
-  }
-  @media (max-width: 640px) {
-    .top-header { padding: 10px 16px; }
-    .top-header .logo-main { font-size: 18px; }
-    .top-header .nav-menu { gap: 18px; font-size: 13px; }
-  }
+body.promo-on { padding-top: 148px; }
+body.promo-on .main-header { top: 44px; }
 
-  /* ===== HERO ===== */
-  .hero {
-    text-align: center;
-    padding: 64px 24px 32px;
-  }
-  .hero h1 {
-    font-size: 30px;
-    font-weight: 900;
-    letter-spacing: -1px;
-    margin-bottom: 12px;
-    line-height: 1.3;
-  }
-  .hero p {
-    color: #6B7280;
-    font-size: 15px;
-    line-height: 1.6;
-  }
-  @media (max-width: 640px) {
-    .hero { padding: 48px 20px 24px; }
-    .hero h1 { font-size: 24px; }
-    .hero p { font-size: 14px; }
-  }
+/* ============================================================
+   HEADER — 두 줄
+   ============================================================ */
+.main-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid #E5E7EB;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
 
-  /* ===== PRODUCTS ===== */
-  .products {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 36px 24px 80px;
-  }
-  .product-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-  .product-card-link {
-    display: block;
-    transition: transform 0.18s ease;
-  }
-  .product-card-link:hover {
-    transform: translateY(-4px);
-  }
-  .product-square {
-    aspect-ratio: 1 / 1;
-    border-radius: 16px;
-    padding: 28px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: #FFFFFF;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    transition: box-shadow 0.18s ease;
-  }
-  .product-card-link:hover .product-square {
-    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.15);
-  }
+/* 상단 줄: 로고 + 메인 메뉴 + 인증 버튼 */
+.header-top {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+.logo {
+  font-size: 22px;
+  font-weight: 900;
+  color: #111827;
+  letter-spacing: -1px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+.main-nav a {
+  padding: 6px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #374151;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.main-nav a:hover { color: #1E3A8A; background: #EFF6FF; }
+.main-nav a.active { color: #1E3A8A; }
 
-  /* ----- E-BOOK CARD (FREE — SUBDUED) ----- */
-  .product-square.ebook {
-    background: linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  }
-  .product-square.ebook .top-tag {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    background: rgba(255, 255, 255, 0.22);
-    color: #FFFFFF;
-    font-size: 11px;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-weight: 800;
-    letter-spacing: 0.3px;
-    backdrop-filter: blur(4px);
-  }
-  .product-square.ebook .value-tag {
-    display: inline-block;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 4px 12px;
-    border-radius: 999px;
-    color: rgba(255, 255, 255, 0.9);
-  }
-  .product-square.ebook .big-title {
-    font-size: 30px;
-    font-weight: 900;
-    line-height: 1.2;
-    letter-spacing: -1px;
-    margin-bottom: 14px;
-    color: rgba(255, 255, 255, 0.95);
-  }
-  .product-square.ebook .limit-pill {
-    display: inline-block;
-    font-size: 14px;
-    background: rgba(255, 255, 255, 0.9);
-    color: #4B5563;
-    padding: 5px 16px;
-    border-radius: 999px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-  }
+.header-auth {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.btn-login {
+  padding: 7px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.btn-login:hover { background: #F3F4F6; }
+.btn-signup {
+  padding: 7px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  background: #1E3A8A;
+  color: #fff;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-signup:hover { background: #1e40af; }
+.btn-mypage {
+  padding: 7px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  background: #2563EB;
+  color: #fff;
+  border-radius: 8px;
+  display: none;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.btn-mypage:hover { background: #1D4ED8; }
+.btn-mypage.show { display: inline-block; }
 
-  /* ----- YUPPUCHAL CARD (FEATURED — BEST) ----- */
-  .product-square.yuppuchal {
-    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-    border: 3px solid #FCD34D;
-    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.3);
-  }
-  .product-square.yuppuchal .top-tag {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    background: #DC2626;
-    color: #FFFFFF;
-    font-size: 11px;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-weight: 900;
-    letter-spacing: 0.3px;
-    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
-  }
-  .product-square.yuppuchal .small-title {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    opacity: 0.95;
-  }
-  .product-square.yuppuchal .big-title {
-    font-size: 30px;
-    font-weight: 900;
-    line-height: 1.2;
-    letter-spacing: -1px;
-  }
-  .product-square.yuppuchal .gen {
-    display: inline-block;
-    margin-top: 14px;
-    font-size: 22px;
-    background: #FCD34D;
-    color: #78350F;
-    padding: 4px 18px;
-    border-radius: 999px;
-    letter-spacing: -1px;
-    line-height: 1.1;
-    font-weight: 900;
-  }
+/* 하단 줄: 서브 메뉴 */
+.header-sub {
+  border-top: 1px solid #F3F4F6;
+  background: #fff;
+}
+.sub-nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  gap: 0;
+}
+.sub-nav a {
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6B7280;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.sub-nav a:hover { color: #1E3A8A; border-bottom-color: #1E3A8A; }
+.sub-nav a.active { color: #1E3A8A; border-bottom-color: #1E3A8A; font-weight: 800; }
 
-  /* ----- FEATURED BADGE (BEST + 왕관) ----- */
-  .product-card-link.featured {
-    position: relative;
-  }
-  .product-card-link.featured:hover {
-    transform: translateY(-6px);
-  }
-  .featured-badge {
-    position: absolute;
-    top: -16px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, #FBBF24 0%, #DC2626 100%);
-    color: #FFFFFF;
-    padding: 8px 26px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.45);
-    z-index: 2;
-    white-space: nowrap;
-  }
-  .product-card-link.featured .card-caption {
-    color: #1A1A1A;
-    font-weight: 800;
-  }
-  .product-card-link.featured .card-caption .arrow {
-    color: #DC2626;
-  }
+/* ============================================================
+   HERO BANNER
+   ============================================================ */
+.hero-banner {
+  background: linear-gradient(135deg, #1E3A8A 0%, #1e40af 60%, #2563EB 100%);
+  color: #fff;
+  padding: 56px 24px;
+  text-align: center;
+}
+.hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  color: #FCD34D;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 14px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+.hero-title {
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -1.5px;
+  margin-bottom: 14px;
+}
+.hero-title em { color: #FCD34D; font-style: normal; }
+.hero-sub {
+  font-size: 15px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  color: #1E3A8A;
+  font-size: 15px;
+  font-weight: 800;
+  padding: 13px 28px;
+  border-radius: 12px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+@media (max-width: 640px) {
+  .hero-title { font-size: 26px; }
+  .hero-banner { padding: 40px 20px; }
+}
 
-  /* ----- SUBDUED CARD ----- */
-  .product-card-link.subdued:hover {
-    transform: translateY(-2px);
-  }
-  .product-card-link.subdued .card-caption {
-    color: #6B7280;
-    font-weight: 600;
-  }
-  .product-card-link.subdued .card-caption .arrow {
-    color: #9CA3AF;
-  }
-  .product-card-link.subdued .card-caption .sub {
-    color: #9CA3AF;
-  }
+/* ============================================================
+   CATEGORY ICONS
+   ============================================================ */
+.categories {
+  background: #fff;
+  border-bottom: 1px solid #F3F4F6;
+  padding: 24px 0;
+}
+.categories-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-decoration: none;
+  color: #374151;
+  min-width: 80px;
+}
+.cat-item:hover { background: #EFF6FF; }
+.cat-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.cat-label { font-size: 12px; font-weight: 700; color: #374151; text-align: center; }
 
-  /* ----- CAPTION ----- */
-  .card-caption {
-    margin-top: 16px;
-    text-align: center;
-    font-size: 14px;
-    font-weight: 700;
-    color: #1A1A1A;
-    line-height: 1.55;
-  }
-  .card-caption .arrow {
-    color: #2563EB;
-    margin-left: 4px;
-    font-weight: 800;
-  }
-  .card-caption .sub {
-    display: block;
-    font-weight: 500;
-    color: #9CA3AF;
-    font-size: 12px;
-    margin-top: 6px;
-    letter-spacing: 0.2px;
-  }
+/* ============================================================
+   SECTION COMMON
+   ============================================================ */
+.section { padding: 56px 24px; }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+.section-label {
+  display: inline-block;
+  font-size: 12px; font-weight: 800;
+  color: #2563EB; letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.section-title { font-size: 26px; font-weight: 900; color: #111827; letter-spacing: -0.8px; margin-bottom: 6px; }
+.section-sub { font-size: 14px; color: #9CA3AF; margin-bottom: 32px; }
 
-  @media (max-width: 640px) {
-    .products { padding: 32px 14px 60px; }
-    .product-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .product-square { padding: 14px 10px; }
+/* ============================================================
+   PRODUCT CARDS
+   ============================================================ */
+.products-section { background: #F9FAFB; }
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 900px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .product-grid { grid-template-columns: 1fr; } }
 
-    /* E-book scaled down */
-    .product-square.ebook .top-tag { font-size: 9px; padding: 3px 7px; top: 8px; left: 8px; }
-    .product-square.ebook .value-tag { font-size: 10px; padding: 3px 8px; margin-bottom: 8px; }
-    .product-square.ebook .big-title { font-size: 18px; margin-bottom: 10px; }
-    .product-square.ebook .limit-pill { font-size: 11px; padding: 3px 10px; }
+.product-card {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.18s, box-shadow 0.18s;
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+.product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,0.1); }
 
-    /* Yuppuchal scaled down */
-    .product-square.yuppuchal { border-width: 2px; box-shadow: 0 10px 24px rgba(37, 99, 235, 0.3); }
-    .product-square.yuppuchal .top-tag { font-size: 9px; padding: 3px 7px; top: 8px; left: 8px; }
-    .product-square.yuppuchal .small-title { font-size: 10px; margin-bottom: 6px; }
-    .product-square.yuppuchal .big-title { font-size: 18px; }
-    .product-square.yuppuchal .gen { font-size: 13px; padding: 3px 12px; margin-top: 10px; }
+.product-thumb {
+  aspect-ratio: 16 / 9;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+  position: relative;
+}
+.product-thumb.blue { background: linear-gradient(135deg, #2563EB, #1D4ED8); }
+.product-thumb.navy { background: linear-gradient(135deg, #1E3A8A, #1e40af); }
+.product-thumb.gray { background: linear-gradient(135deg, #6B7280, #9CA3AF); }
 
-    /* Featured badge scaled */
-    .featured-badge {
-      font-size: 10px;
-      padding: 5px 14px;
-      top: -11px;
-      letter-spacing: 1.5px;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.45);
-    }
+.product-tag {
+  position: absolute; top: 12px; left: 12px;
+  background: #DC2626; color: #fff;
+  font-size: 11px; font-weight: 800;
+  padding: 3px 8px; border-radius: 5px;
+}
+.product-tag.free { background: #059669; }
+.product-tag.best { background: linear-gradient(90deg, #F59E0B, #DC2626); }
 
-    /* Captions */
-    .card-caption { font-size: 11px; margin-top: 12px; line-height: 1.5; }
-    .card-caption .sub { font-size: 10px; margin-top: 4px; }
-    .card-caption .arrow { font-size: 11px; }
-  }
+.product-body { padding: 16px 18px 20px; }
+.product-name { font-size: 16px; font-weight: 800; color: #111827; margin-bottom: 6px; letter-spacing: -0.3px; }
+.product-desc { font-size: 13px; color: #6B7280; line-height: 1.6; margin-bottom: 14px; }
+.product-foot {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.product-price { font-size: 15px; font-weight: 900; color: #111827; }
+.product-price .free-label { color: #059669; }
+.product-cta {
+  font-size: 13px; font-weight: 700;
+  color: #2563EB;
+  display: flex; align-items: center; gap: 4px;
+}
 
-  /* ===== FOOTER ===== */
-  footer {
-    background: #FAFAFA;
-    color: #9CA3AF;
-    text-align: center;
-    padding: 32px 24px;
-    font-size: 13px;
-    border-top: 1px solid #F0F0F0;
-  }
+/* ============================================================
+   사회적 증거 (후기)
+   ============================================================ */
+.reviews-section { background: #fff; }
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 900px) { .review-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .review-grid { grid-template-columns: 1fr; } }
+
+.review-card {
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 20px;
+  background: #fff;
+}
+.review-stars { color: #F59E0B; font-size: 13px; margin-bottom: 10px; }
+.review-text { font-size: 14px; color: #374151; line-height: 1.7; margin-bottom: 14px; }
+.review-author { display: flex; align-items: center; gap: 8px; }
+.review-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #EFF6FF; display: flex; align-items: center;
+  justify-content: center; font-size: 14px;
+}
+.review-name { font-size: 13px; font-weight: 700; color: #111827; }
+.review-date { font-size: 11px; color: #9CA3AF; }
+
+/* ============================================================
+   CTA 배너
+   ============================================================ */
+.cta-banner {
+  background: linear-gradient(135deg, #1E3A8A, #2563EB);
+  color: #fff;
+  text-align: center;
+  padding: 64px 24px;
+}
+.cta-banner h2 { font-size: 28px; font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; }
+.cta-banner p { font-size: 15px; color: rgba(255,255,255,0.8); margin-bottom: 28px; }
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; color: #1E3A8A;
+  font-size: 15px; font-weight: 800;
+  padding: 14px 32px; border-radius: 12px;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  background: #1F2937;
+  color: #9CA3AF;
+  padding: 40px 24px 32px;
+}
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.footer-logo { font-size: 20px; font-weight: 900; color: #fff; margin-bottom: 12px; }
+.footer-links {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  font-size: 13px; font-weight: 600;
+  margin-bottom: 20px;
+}
+.footer-links a { color: #D1D5DB; transition: color 0.15s; }
+.footer-links a:hover { color: #fff; }
+.footer-info { font-size: 12px; color: #6B7280; line-height: 1.8; }
+.footer-copy { font-size: 12px; color: #4B5563; margin-top: 20px; border-top: 1px solid #374151; padding-top: 20px; }
+
+/* ============================================================
+   MODALS — 기존 auth.css 보완
+   ============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+@media (max-width: 768px) {
+  .main-nav { gap: 0; }
+  .main-nav a { padding: 6px 10px; font-size: 14px; }
+  .header-top { gap: 16px; padding: 0 16px; }
+  .logo { font-size: 18px; }
+  .sub-nav { padding: 0 12px; overflow-x: auto; }
+  .sub-nav a { padding: 0 10px; font-size: 12px; }
+  body { padding-top: 104px; }
+}
+@media (max-width: 560px) {
+  .main-nav { display: none; }
+  body { padding-top: 60px; }
+  body.promo-on { padding-top: 104px; }
+  .header-sub { display: none; }
+}
 </style>
 <link rel="stylesheet" href="../auth.css">
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
@@ -421,137 +451,223 @@
 </head>
 <body>
 
-  <!-- ===== PROMO BANNER ===== -->
-  <a href="../free-lecture/index.html" class="promo-banner" id="promoBanner" style="display:none;">
-    <span class="promo-text">초보도 의지만 있다면 월 100만 원 가능! <strong>[무료 웨비나]</strong><span class="arrow">→</span></span>
-    <span class="promo-actions" onclick="event.stopPropagation(); event.preventDefault();">
-      <span class="promo-hide" onclick="hidePromoToday(event)">
-        <span class="check" id="promoCheck"></span><span class="label">오늘 하루 보지 않기</span>
-      </span>
-      <span class="promo-close" onclick="closePromo(event)">×</span>
+<!-- ===== PROMO BANNER ===== -->
+<a href="../free-lecture/index.html" class="promo-banner" id="promoBanner">
+  <span class="promo-text">초보도 의지만 있다면 <strong>월 100만 원 가능!</strong> [무료 웨비나] →</span>
+  <span class="promo-actions" onclick="event.stopPropagation(); event.preventDefault();">
+    <span class="promo-hide" onclick="hidePromoToday(event)">
+      <span class="promo-check"></span> 오늘 하루 보지 않기
     </span>
-  </a>
+    <span class="promo-close" onclick="closePromo(event)">×</span>
+  </span>
+</a>
 
-  <!-- ===== TOP BAR ===== -->
-  <header class="top-header">
-    <div class="nav-inner">
-      <a href="index.html" class="logo">
-        <span class="logo-main">프리덤클래스</span>
-      </a>
-      <nav class="nav-menu">
-        <a href="index.html" class="nav-active">HOME</a>
-        <a href="../free-lecture/index.html">무료 특강</a>
-        <a href="../index.html">유뿌챌</a>
-      </nav>
-      <div class="nav-auth-btns" id="nav-auth">
-        <a href="/login/" class="nav-btn-login" id="nav-login-btn">로그인</a>
-        <a href="/mypage/" class="nav-btn-signup" id="nav-mypage-btn" style="display:none">내 강의실</a>
-        <button class="nav-btn-signup" onclick="openApplyModal()" id="nav-apply-btn">회원가입</button>
-      </div>
+<!-- ===== HEADER ===== -->
+<header class="main-header">
+  <!-- 상단 줄: 로고 + 메인 메뉴 + 인증 -->
+  <div class="header-top">
+    <a href="index.html" class="logo">프리덤클래스</a>
+    <nav class="main-nav">
+      <a href="index.html" class="active">홈</a>
+      <a href="/login/" id="nav-apply-link">강의신청</a>
+      <a href="../free-lecture/index.html">무료 특강</a>
+      <a href="../index.html">유뿌챌</a>
+      <a href="/mypage/" id="nav-classroom-link" style="display:none">내 강의실</a>
+    </nav>
+    <div class="header-auth">
+      <a href="/login/" class="btn-login" id="btn-login">로그인</a>
+      <button class="btn-signup" onclick="openApplyModal()" id="btn-signup">회원가입</button>
+      <a href="/mypage/" class="btn-mypage" id="btn-mypage">내 강의실 →</a>
     </div>
-  </header>
+  </div>
+  <!-- 하단 줄: 서브 메뉴 -->
+  <div class="header-sub">
+    <nav class="sub-nav">
+      <a href="../free-lecture/index.html">무료 특강</a>
+      <a href="../index.html">유뿌챌 챌린지</a>
+      <a href="https://forms.gle/M81NBt4YT2c6oPpi9" target="_blank" rel="noopener">무료 전자책</a>
+      <a href="/login/">강의 커리큘럼</a>
+      <a href="/login/">수강생 후기</a>
+      <a href="/login/">공지사항</a>
+    </nav>
+  </div>
+</header>
 
-  <!-- ===== HERO ===== -->
-  <section class="hero">
-    <h1>유튜브로 월 100만원 더,<br>경제적 자유까지</h1>
-    <p>지금 바로 시작하실 수 있는 프로그램입니다</p>
-  </section>
+<!-- ===== HERO ===== -->
+<section class="hero-banner">
+  <div class="hero-label">🚀 2026 NEW · 1기 모집 중</div>
+  <h1 class="hero-title">
+    유튜브로 <em>월 100만원</em> 더,<br>경제적 자유까지
+  </h1>
+  <p class="hero-sub">
+    초보도 할 수 있습니다. 지금 바로 시작하세요.
+  </p>
+  <a href="../index.html" class="hero-cta">
+    유뿌챌 1기 신청하기 →
+  </a>
+</section>
 
-  <!-- ===== PRODUCTS ===== -->
-  <section class="products">
+<!-- ===== 카테고리 아이콘 ===== -->
+<section class="categories">
+  <div class="categories-inner">
+    <a href="../free-lecture/index.html" class="cat-item">
+      <div class="cat-icon" style="background:#EFF6FF;">🎥</div>
+      <span class="cat-label">무료 특강</span>
+    </a>
+    <a href="https://forms.gle/M81NBt4YT2c6oPpi9" target="_blank" class="cat-item">
+      <div class="cat-icon" style="background:#F0FDF4;">📚</div>
+      <span class="cat-label">무료 전자책</span>
+    </a>
+    <a href="../index.html" class="cat-item">
+      <div class="cat-icon" style="background:#FEF3C7;">🏆</div>
+      <span class="cat-label">유뿌챌</span>
+    </a>
+    <a href="/mypage/" class="cat-item">
+      <div class="cat-icon" style="background:#FEF2F2;">🎓</div>
+      <span class="cat-label">내 강의실</span>
+    </a>
+    <a href="/login/" class="cat-item">
+      <div class="cat-icon" style="background:#F5F3FF;">⭐</div>
+      <span class="cat-label">수강생 후기</span>
+    </a>
+    <a href="/login/" class="cat-item">
+      <div class="cat-icon" style="background:#FFF7ED;">💬</div>
+      <span class="cat-label">강의 상담</span>
+    </a>
+  </div>
+</section>
+
+<!-- ===== 강의/상품 ===== -->
+<section class="section products-section">
+  <div class="section-inner">
+    <span class="section-label">BEST 프로그램</span>
+    <h2 class="section-title">이번 달 추천 강의</h2>
+    <p class="section-sub">프리덤클래스에서 가장 인기 있는 프로그램입니다</p>
     <div class="product-grid">
 
-      <!-- 전자책 (무료 자료 — 회색 톤) -->
-      <a href="https://forms.gle/M81NBt4YT2c6oPpi9" class="product-card-link subdued" target="_blank" rel="noopener">
-        <div class="product-square ebook">
-          <span class="top-tag">100% 무료</span>
-          <div class="value-tag">💎 100만원 가치</div>
-          <div class="big-title">유튜브 시크릿<br>전자책</div>
-          <span class="limit-pill">선착순 16명</span>
+      <!-- 유뿌챌 -->
+      <a href="../index.html" class="product-card">
+        <div class="product-thumb blue">
+          <span class="product-tag best">👑 BEST</span>
+          <span style="font-size:52px">🎬</span>
         </div>
-        <div class="card-caption">
-          (선착순 16명 100% 무료) 100만원 가치<br>
-          유튜브 시크릿 전자책 다운로드 받기 <span class="arrow">→</span>
-          <span class="sub">구글 설문 작성 후 다운로드</span>
+        <div class="product-body">
+          <div class="product-name">유튜브 뿌시기 챌린지 1기</div>
+          <div class="product-desc">4주 업로드 챌린지로 유튜브 습관을 만들고, 실제 크리에이터로 성장하세요.</div>
+          <div class="product-foot">
+            <span class="product-price">참가비 문의</span>
+            <span class="product-cta">신청하기 →</span>
+          </div>
         </div>
       </a>
 
-      <!-- 유뿌챌 (메인 상품 — BEST 강조) -->
-      <a href="../index.html" class="product-card-link featured">
-        <div class="featured-badge">👑 BEST</div>
-        <div class="product-square yuppuchal">
-          <span class="top-tag">선착순 마감</span>
-          <div class="small-title">4주 업로드 챌린지</div>
-          <div class="big-title">유튜브 뿌시기<br>챌린지</div>
-          <span class="gen">1기</span>
+      <!-- 유튜브 시크릿 전자책 -->
+      <a href="https://forms.gle/M81NBt4YT2c6oPpi9" target="_blank" class="product-card">
+        <div class="product-thumb gray">
+          <span class="product-tag free">100% 무료</span>
+          <span style="font-size:52px">📖</span>
         </div>
-        <div class="card-caption">
-          유튜브 챌린지 1기 신청하기 <span class="arrow">→</span>
-          <span class="sub">2026. 5. 31 (일)까지 모집 · 선착순 마감</span>
+        <div class="product-body">
+          <div class="product-name">유튜브 시크릿 전자책</div>
+          <div class="product-desc">100만원 가치의 유튜브 노하우를 담은 전자책. 선착순 16명 무료 제공.</div>
+          <div class="product-foot">
+            <span class="product-price"><span class="free-label">무료</span></span>
+            <span class="product-cta">다운로드 →</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 무료 특강 -->
+      <a href="../free-lecture/index.html" class="product-card">
+        <div class="product-thumb navy">
+          <span class="product-tag free">무료 특강</span>
+          <span style="font-size:52px">🎤</span>
+        </div>
+        <div class="product-body">
+          <div class="product-name">구독자 0명에서 빠르게 성장하는 법</div>
+          <div class="product-desc">초보도 따라할 수 있는 유튜브 성장 전략을 무료로 배워가세요.</div>
+          <div class="product-foot">
+            <span class="product-price"><span class="free-label">무료</span></span>
+            <span class="product-cta">수강하기 →</span>
+          </div>
         </div>
       </a>
 
     </div>
-  </section>
-
-  <!-- ===== FOOTER ===== -->
-  <footer>
-    <div>© 2026 FREEDOM CLASS</div>
-  </footer>
-
-<script>
-  (function() {
-    var KEY = 'freedom_promo_hidden_until';
-    var banner = document.getElementById('promoBanner');
-    if (location.search.indexOf('promo=reset') !== -1) {
-      localStorage.removeItem(KEY);
-    }
-    var hiddenUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
-    if (Date.now() < hiddenUntil) return;
-    banner.style.display = 'flex';
-    document.body.classList.add('promo-on');
-  })();
-  function hidePromoToday(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    var until = Date.now() + 24 * 60 * 60 * 1000;
-    localStorage.setItem('freedom_promo_hidden_until', String(until));
-    document.getElementById('promoBanner').style.display = 'none';
-    document.body.classList.remove('promo-on');
-  }
-  function closePromo(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    document.getElementById('promoBanner').style.display = 'none';
-    document.body.classList.remove('promo-on');
-  }
-</script>
-
-<!-- ===== 로그인 모달 ===== -->
-<div class="modal-overlay" id="login-modal" style="display:none;" onclick="onOverlayClick(event,'login-modal')">
-  <div class="login-modal-box" onclick="event.stopPropagation()">
-    <button class="modal-close-btn" onclick="closeModal('login-modal')">×</button>
-    <div class="login-modal-title">로그인</div>
-    <p class="login-modal-sub">계정에 로그인하여 강의를 수강하세요</p>
-    <button class="kakao-btn" onclick="loginWithKakao()">
-      <svg viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.477 3 2 6.477 2 10.89c0 2.785 1.65 5.225 4.138 6.728L5.1 21l4.485-2.366A10.9 10.9 0 0 0 12 18.78c5.523 0 10-3.477 10-7.89S17.523 3 12 3z"/></svg>
-      카카오로 로그인
-    </button>
-    <div class="modal-divider"><span>이메일 계정</span></div>
-    <div class="email-form" id="email-form">
-      <div class="modal-field-label">이메일</div>
-      <input type="email" class="modal-input" id="email-input" placeholder="name@example.com">
-      <div class="modal-field-label">비밀번호</div>
-      <input type="password" class="modal-input" id="pw-input" placeholder="비밀번호를 입력해주세요">
-      <button class="email-submit-btn" onclick="loginWithEmail()">로그인</button>
-      <button class="back-kakao-link" onclick="toggleEmailForm(false)">카카오로 로그인하기</button>
-    </div>
-    <button class="email-toggle-link" id="email-toggle-btn" onclick="toggleEmailForm(true)">이메일 계정으로 로그인</button>
   </div>
-</div>
+</section>
+
+<!-- ===== 수강생 후기 ===== -->
+<section class="section reviews-section">
+  <div class="section-inner">
+    <span class="section-label">REVIEW</span>
+    <h2 class="section-title">수강생 실제 후기</h2>
+    <p class="section-sub">프리덤클래스를 경험한 분들의 진짜 이야기입니다</p>
+    <div class="review-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"처음엔 반신반의했는데, 챌린지 참가 후 4주 만에 구독자가 200명이 늘었어요. 꾸준히 올리는 습관이 생겼습니다!"</div>
+        <div class="review-author">
+          <div class="review-avatar">😊</div>
+          <div>
+            <div class="review-name">김**님</div>
+            <div class="review-date">유뿌챌 1기 수강생</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"무료 전자책인데 이 퀄리티가? 유튜브 채널 운영에 대한 모든 게 담겨 있었어요. 강력 추천합니다."</div>
+        <div class="review-author">
+          <div class="review-avatar">🙋</div>
+          <div>
+            <div class="review-name">박**님</div>
+            <div class="review-date">전자책 수강생</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"무료 특강인데 퀄리티가 너무 좋았어요. 실질적인 내용들이라 바로 적용해볼 수 있었습니다."</div>
+        <div class="review-author">
+          <div class="review-avatar">✨</div>
+          <div>
+            <div class="review-name">이**님</div>
+            <div class="review-date">무료 특강 수강생</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA 배너 ===== -->
+<section class="cta-banner">
+  <h2>아직도 고민이시라면?</h2>
+  <p>무료 특강으로 먼저 확인해보세요. 3초만에 신청 가능합니다.</p>
+  <a href="../free-lecture/index.html" class="cta-btn">무료 특강 바로 보기 →</a>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">프리덤클래스</div>
+    <div class="footer-links">
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">환불규정</a>
+      <a href="#">공지사항</a>
+      <a href="/admin/">관리자</a>
+    </div>
+    <div class="footer-info">
+      문의: 카카오톡 채널 @프리덤클래스 | 이메일 ktaerin46@gmail.com
+    </div>
+    <div class="footer-copy">© 2026 FREEDOM CLASS. All Rights Reserved.</div>
+  </div>
+</footer>
 
 <!-- ===== 수강 신청 모달 ===== -->
-<div class="modal-overlay" id="apply-modal" style="display:none;" onclick="onOverlayClick(event,'apply-modal')">
+<div class="modal-overlay" id="apply-modal" onclick="onOverlayClick(event,'apply-modal')">
   <div class="apply-modal-box" onclick="event.stopPropagation()">
     <button class="modal-close-btn" onclick="closeModal('apply-modal')">×</button>
     <div class="apply-left">
@@ -579,9 +695,9 @@
           <label>연령대 *</label>
           <select class="apply-input" id="reg-age" style="cursor:pointer;">
             <option value="">선택해주세요</option>
-            <option value="10대">10대</option><option value="20대">20대</option>
-            <option value="30대">30대</option><option value="40대">40대</option>
-            <option value="50대">50대</option><option value="60대 이상">60대 이상</option>
+            <option>10대</option><option>20대</option>
+            <option>30대</option><option>40대</option>
+            <option>50대</option><option>60대 이상</option>
           </select>
         </div>
       </div>
@@ -598,7 +714,7 @@
 </div>
 
 <!-- ===== 신청 완료 모달 ===== -->
-<div class="modal-overlay" id="success-modal" style="display:none;" onclick="onOverlayClick(event,'success-modal')">
+<div class="modal-overlay" id="success-modal" onclick="onOverlayClick(event,'success-modal')">
   <div class="success-modal-box" onclick="event.stopPropagation()">
     <button class="modal-close-btn" onclick="closeModal('success-modal')">×</button>
     <div class="success-icon">🎉</div>
@@ -612,17 +728,57 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../supabase-config.js"></script>
 <script>
+/* ===== 프로모 배너 ===== */
+(function() {
+  var KEY = 'freedom_promo_hidden_until';
+  if (location.search.indexOf('promo=reset') !== -1) localStorage.removeItem(KEY);
+  var hiddenUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
+  if (Date.now() >= hiddenUntil) {
+    var banner = document.getElementById('promoBanner');
+    banner.classList.add('show');
+    document.body.classList.add('promo-on');
+  }
+})();
+function hidePromoToday(e) {
+  e.preventDefault(); e.stopPropagation();
+  localStorage.setItem('freedom_promo_hidden_until', String(Date.now() + 86400000));
+  document.getElementById('promoBanner').classList.remove('show');
+  document.body.classList.remove('promo-on');
+}
+function closePromo(e) {
+  e.preventDefault(); e.stopPropagation();
+  document.getElementById('promoBanner').classList.remove('show');
+  document.body.classList.remove('promo-on');
+}
+
+/* ===== 로그인 상태 반영 ===== */
 (async function() {
   try {
     var s = getSupabase();
     var res = await s.auth.getUser();
     if (res.data && res.data.user) {
-      document.getElementById('nav-login-btn').style.display = 'none';
-      document.getElementById('nav-apply-btn').style.display = 'none';
-      document.getElementById('nav-mypage-btn').style.display = 'inline-flex';
+      /* 인증 버튼: 로그인/회원가입 숨기고 내 강의실 표시 */
+      document.getElementById('btn-login').style.display = 'none';
+      document.getElementById('btn-signup').style.display = 'none';
+      document.getElementById('btn-mypage').classList.add('show');
+      /* 메인 메뉴: 내 강의실 링크 표시 */
+      document.getElementById('nav-classroom-link').style.display = 'inline';
     }
   } catch(e) {}
 })();
+
+/* ===== 모달 유틸 ===== */
+function openApplyModal() {
+  document.getElementById('apply-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+function onOverlayClick(e, id) {
+  if (e.target === document.getElementById(id)) closeModal(id);
+}
 </script>
 </body>
 </html>
